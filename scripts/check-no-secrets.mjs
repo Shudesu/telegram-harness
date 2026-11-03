@@ -1,8 +1,8 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, lstatSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname;
-const skip = new Set(["node_modules", ".git", "dist", ".next", ".wrangler", ".local"]);
+const skip = new Set(["node_modules", ".pnpm-store", ".git", "dist", ".next", ".wrangler", ".local"]);
 const tokenLike = /\d{8,10}:[A-Za-z0-9_-]{30,}/;
 const liveFlag = /TELEGRAM_ALLOW_NETWORK\s*=\s*["']true["']/;
 const userLiveFlag = /TELEGRAM_USER_ALLOW_NETWORK\s*=\s*["']true["']/;
@@ -12,13 +12,15 @@ function walk(dir) {
   for (const name of readdirSync(dir)) {
     if (skip.has(name)) continue;
     const path = join(dir, name);
-    const stat = statSync(path);
+    const stat = lstatSync(path);
+    if (stat.isSymbolicLink()) continue;
     if (stat.isDirectory()) {
       walk(path);
       continue;
     }
-    if (name === ".env" || name.startsWith(".env.") && name !== ".env.example") {
-      findings.push(`${relative(root, path)} is a local env file and must not be committed`);
+    if (name === ".env" || name.startsWith(".env.")) {
+      if (name !== ".env.example") findings.push(`${relative(root, path)} is a local env file and must not be committed`);
+      continue;
     }
     if (name === "check-no-secrets.mjs") continue;
     const text = readFileSync(path, "utf8");

@@ -1,3 +1,4 @@
+import { dispatchBot, dispatchUser } from "./api-dispatch.js";
 import type { AccountAction, OwnedChat } from "@telegram-harness/shared";
 import { USER_INPUT_LIMITS } from "@telegram-harness/shared";
 import {
@@ -21,15 +22,16 @@ export interface AccountReport {
 }
 
 export async function executeDueAccountActions(deps: Deps): Promise<AccountReport> {
-  if (deps.userAccount.mode === "disabled") {
-    return { posted: [], failed: [], rescheduled: [], blocked: "user_network_disabled" };
+  // Bot-only actions must remain executable without an MTProto session.
+  let userBlocked: AccountReport["blocked"];
+  if (deps.userAccount.mode === "disabled") userBlocked = "user_network_disabled";
+  else {
+    try { await openSession(deps); } catch { userBlocked = "user_not_logged_in"; }
   }
-  try {
-    await openSession(deps);
-  } catch {
-    return { posted: [], failed: [], rescheduled: [], blocked: "user_not_logged_in" };
-  }
-  const claimed = await deps.repo.claimDueAccountActions(nowIso(deps));
+  const claimed = [
+    ...(deps.telegram.mode !== "disabled" ? await deps.repo.claimDueAccountActions(nowIso(deps), 20, "bot") : []),
+    ...(!userBlocked ? await deps.repo.claimDueAccountActions(nowIso(deps), 20, "user") : []),
+  ];
   const posted: string[] = [];
   const failed: { id: string; error: string }[] = [];
   const rescheduled: string[] = [];
@@ -38,19 +40,18 @@ export async function executeDueAccountActions(deps: Deps): Promise<AccountRepor
     if (outcome === "posted") posted.push(action.id);
     else if (outcome === "rescheduled") {
       rescheduled.push(action.id);
-      break;
+      continue;
     } else {
       failed.push({ id: action.id, error: action.error ?? "mtproto_failed" });
-      if (action.error === "rate_limited" || action.error?.startsWith("flood_wait:")) break;
     }
   }
-  return { posted, failed, rescheduled };
+  return { posted, failed, rescheduled, ...(userBlocked ? { blocked: userBlocked } : {}) };
 }
 
 async function runOne(deps: Deps, action: AccountAction): Promise<"posted" | "failed" | "rescheduled"> {
   const secrets = collectSecretValues(deps);
   try {
-    await consumeUserRate(deps, "write");
+    if (action.action !== "bot_api_call") await consumeUserRate(deps, "write");
   } catch (error) {
     if (error instanceof RateLimitError && error.code === "rate_limited_interval") {
       action.status = "scheduled";
@@ -67,9 +68,11 @@ async function runOne(deps: Deps, action: AccountAction): Promise<"posted" | "fa
     return "failed";
   }
   try {
-    const session = await openSession(deps);
-    secrets.push(session);
-    const result = await perform(deps, action, session, secrets);
+    const session = action.action === "bot_api_call" ? "" : await openSession(deps);
+    if (session) secrets.push(session);
+    const result = action.action === "bot_api_call" ? await dispatchBot(deps, action.payload, "write")
+      : action.action === "user_api_call" ? await dispatchUser(deps, action.payload, "write")
+      : await perform(deps, action, session, secrets);
     const next = deps.userAccount.takeSessionUpdate();
     if (next) {
       secrets.push(next);

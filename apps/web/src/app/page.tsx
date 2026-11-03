@@ -44,6 +44,8 @@ interface AccountActionRow {
   action: string;
   status: string;
   summary: string;
+  payload: Record<string, unknown>;
+  scheduledAt: string | null;
 }
 
 interface UserStatus {
@@ -167,8 +169,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       </section>
 
       <section style={{ marginTop: 32 }}>
-        <h2>ユーザーアカウントの承認待ち</h2>
-        <p>作成、編集、管理者変更、BotFather はここを通ります。承認しても、publisher の前には実行しません。</p>
+        <h2>API 操作の承認待ち</h2>
+        <p>Bot API、オーナーアカウント、BotFather の追加操作はここを通ります。承認しても、publisher の前には実行しません。</p>
         {accountActions.length === 0 ? <p>アカウント操作の承認待ちはありません。</p> : null}
         {accountActions.map((action) => (
           <article key={action.id} style={cardStyle}>
@@ -176,6 +178,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               {action.action} / {action.status}
             </p>
             <p>{action.summary}</p>
+            <p>実行予定: {action.scheduledAt ?? "承認後、次の publisher 実行時"}</p>
+            <details><summary>操作の全引数を確認</summary><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{JSON.stringify(action.payload, (key, value) => key === "base64" && typeof value === "string" ? `[base64: ${value.length} characters]` : value, 2)}</pre></details>
             <div style={{ display: "flex", gap: 8 }}>
               <form action={approveAccountAction}>
                 <input type="hidden" name="id" value={action.id} />
