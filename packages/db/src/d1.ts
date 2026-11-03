@@ -471,6 +471,13 @@ export class D1Repo implements Repo {
     if ((result.meta?.changes ?? 0) < 1) throw new Error("account_action_not_found");
   }
 
+  async transitionAccountAction(action: AccountAction, from: AccountAction["status"]): Promise<boolean> {
+    const result = await this.db.prepare(
+      "UPDATE account_actions SET status = ?, approved_at = ?, scheduled_at = ?, error = ?, updated_at = ? WHERE id = ? AND status = ?",
+    ).bind(action.status, action.approvedAt, action.scheduledAt, action.error, action.updatedAt, action.id, from).run();
+    return (result.meta?.changes ?? 0) === 1;
+  }
+
   async getAccountAction(id: string): Promise<AccountAction | null> {
     const row = await this.db.prepare("SELECT * FROM account_actions WHERE id = ?").bind(id).first<AccountActionRow>();
     return row ? mapAccountAction(row) : null;
@@ -485,11 +492,12 @@ export class D1Repo implements Repo {
     return (rows.results ?? []).map(mapAccountAction);
   }
 
-  async claimDueAccountActions(nowIso: string, limit = 20): Promise<AccountAction[]> {
+  async claimDueAccountActions(nowIso: string, limit = 20, provider?: "bot" | "user"): Promise<AccountAction[]> {
+    const providerFilter = provider === "bot" ? " AND action = 'bot_api_call'" : provider === "user" ? " AND action <> 'bot_api_call'" : "";
     const rows = await this.db
       .prepare(
         `SELECT id FROM account_actions
-         WHERE status = 'scheduled' AND (scheduled_at IS NULL OR scheduled_at <= ?)
+         WHERE status = 'scheduled' AND approved_at IS NOT NULL AND (scheduled_at IS NULL OR scheduled_at <= ?)${providerFilter}
          ORDER BY COALESCE(scheduled_at, created_at) ASC
          LIMIT ?`,
       )
@@ -498,8 +506,8 @@ export class D1Repo implements Repo {
     const claimed: AccountAction[] = [];
     for (const row of rows.results ?? []) {
       const update = await this.db
-        .prepare("UPDATE account_actions SET status = 'publishing', updated_at = ? WHERE id = ? AND status = 'scheduled'")
-        .bind(nowIso, row.id)
+        .prepare("UPDATE account_actions SET status = 'publishing', updated_at = ? WHERE id = ? AND status = 'scheduled' AND approved_at IS NOT NULL AND (scheduled_at IS NULL OR scheduled_at <= ?)")
+        .bind(nowIso, row.id, nowIso)
         .run();
       if ((update.meta?.changes ?? 0) !== 1) continue;
       const action = await this.getAccountAction(row.id);

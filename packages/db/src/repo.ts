@@ -36,9 +36,10 @@ export interface Repo {
   addPublishLog(entry: PublishLog): Promise<void>;
   insertAccountAction(action: AccountAction): Promise<void>;
   saveAccountAction(action: AccountAction): Promise<void>;
+  transitionAccountAction(action: AccountAction, from: AccountAction["status"]): Promise<boolean>;
   getAccountAction(id: string): Promise<AccountAction | null>;
   listAccountActions(filter?: { status?: AccountAction["status"]; limit?: number }): Promise<AccountAction[]>;
-  claimDueAccountActions(nowIso: string, limit?: number): Promise<AccountAction[]>;
+  claimDueAccountActions(nowIso: string, limit?: number, provider?: "bot" | "user"): Promise<AccountAction[]>;
   upsertOwnedChat(chat: OwnedChat): Promise<OwnedChat>;
   listOwnedChats(): Promise<OwnedChat[]>;
   getOwnedChat(id: string): Promise<OwnedChat | null>;

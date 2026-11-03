@@ -2,13 +2,19 @@
 
 # Telegram Harness
 
-Telegram のチャンネルとグループを、公式 Bot API だけでまとめて扱う。ソフトウェア利用料はこのリポジトリの範囲では発生しない。Bot API の制約、運用するサーバー、接続先の費用は別である。
+Telegram のチャンネルとグループを、公式 Bot API と、所有者本人の GramJS アカウントで扱う。ソフトウェア利用料はこのリポジトリの範囲では発生しない。Bot API の制約、運用するサーバー、接続先の費用は別である。
 
 投稿、返信、編集、削除は下書きになり、承認するまで送られない。承認も送信そのものではない。送信は publisher が、承認済みで時刻の来た下書きだけに行う。
 
 Bot API の横に、所有者本人のアカウントを GramJS（MTProto、`api_id` / `api_hash` は https://my.telegram.org）で扱う層がある。チャンネルの作成と編集、管理者の変更、BotFather への定型操作も同じ承認キューを通る。セッションとボットトークンは秘密の名前だけで扱い、値はログやリポジトリに置かない。一斉 DM、メンバー収集、知らない人への招待、アカウントの大量作成はできない。未確認の上限と利用規約上の注意は [docs/user-account.md](docs/user-account.md)。
 
 **現バージョン**: v0.2.0 ・ MIT License ・ TypeScript / Cloudflare Workers + D1
+
+## 全 API 対応（未リリース）
+
+Bot API 10.3 の全185メソッドを照合し、181メソッドを型付き HTTP・SDK・MCP から扱える。セッション終了と秘密トークン返却に関わる4メソッドは除外。所有者アカウントには履歴・検索・送信・メディア・投票・フォルダ・ストーリー取得等の32操作を追加した。全書き込みは既存の承認キューを通る。
+
+対応状況と制約は [API カバレッジ](docs/api-coverage.md)、入力例と承認手順は [汎用 API 操作](docs/api-operations.md)。追加操作は `request_bot_api` / `request_user_api` → `approve_account_action` → `run_publisher`。承認画面で対象と引数を確認できる。実 Telegram への接続検証は行っていない。
 
 ## できること
 

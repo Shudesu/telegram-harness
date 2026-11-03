@@ -257,7 +257,7 @@ export function mountUserAccount(app: Hono, deps: Deps): void {
     action.status = "scheduled";
     action.approvedAt = stamp;
     action.updatedAt = stamp;
-    await deps.repo.saveAccountAction(action);
+    if (!await deps.repo.transitionAccountAction(action, "pending")) return fail(c, 409, "Action state changed");
     return send(c, action);
   });
 
@@ -267,7 +267,7 @@ export function mountUserAccount(app: Hono, deps: Deps): void {
     if (action.status !== "pending") return fail(c, 409, "Draft is not pending");
     action.status = "rejected";
     action.updatedAt = nowIso(deps);
-    await deps.repo.saveAccountAction(action);
+    if (!await deps.repo.transitionAccountAction(action, "pending")) return fail(c, 409, "Action state changed");
     return send(c, action);
   });
 
@@ -278,7 +278,7 @@ export function mountUserAccount(app: Hono, deps: Deps): void {
     action.status = "pending";
     action.approvedAt = null;
     action.updatedAt = nowIso(deps);
-    await deps.repo.saveAccountAction(action);
+    if (!await deps.repo.transitionAccountAction(action, "scheduled")) return fail(c, 409, "Action state changed");
     return send(c, action);
   });
 
@@ -290,7 +290,7 @@ export function mountUserAccount(app: Hono, deps: Deps): void {
     action.approvedAt = null;
     action.error = null;
     action.updatedAt = nowIso(deps);
-    await deps.repo.saveAccountAction(action);
+    if (!await deps.repo.transitionAccountAction(action, "failed")) return fail(c, 409, "Action state changed");
     return send(c, action);
   });
 

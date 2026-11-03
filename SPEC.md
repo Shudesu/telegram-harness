@@ -88,7 +88,17 @@ X Harness の growth draft と同じ境界にする。
 
 - 本番デプロイ、本番 D1、実 Bot API への送信、実ログイン
 - `setWebhook` の自動呼び出し
-- ファイルの multipart アップロード（Bot API）
-- アルバムの編集
-- 一斉 DM、メンバー収集、招待リンク、ユーザーアカウントの新規作成
+- 大容量ファイルのストリーミングアップロード（小容量 inline base64 multipart は対応）
+- 旧投稿 UI でのアルバム編集（汎用 API の個別メディア編集は対応）
+- 一斉 DM、メンバー収集、第三者の直接招待、ユーザーアカウントの新規作成（Bot API 招待リンク管理は承認付きで対応）
 - Cloudflare Workers 上での MTProto TCP。ライブ実行は Node の `user-live` だけを想定し、このリポジトリは起動しない
+
+## 全 API ディスパッチャ（未リリース）
+
+公式 Bot API 全メソッドの型と構造スキーマは `packages/shared/src/bot-api.generated.ts`。権限は明示リストで分類し、未知メソッド・除外メソッド・読み書き区分の不一致を拒否する。ユーザーアカウントは `user-api.ts` の有限操作リストのみで、任意 TL 呼出は許可しない。
+
+HTTP は `/api/bot/read`, `/api/bot/requests`, `/api/user/read`, `/api/user/requests`。request は `account_actions` に `bot_api_call` / `user_api_call` を pending 保存する。既存の approve / reject / cancel / requeue と publisher / cron を共用し、publisher 内で入力を再検証する。`0003_api_operations.sql` が既存行を保ったまま CHECK 制約を拡張する。
+
+対象・引数・予定時刻・結果を保存し、承認画面と MCP から確認できる。新規操作の状態変更は比較更新で、同時承認や取消が publisher の取得を上書きしない。Bot 側はオーナーログインなしでも実行できる。無効なプロバイダの項目は取得しない。レート制限で取得済みの後続項目を残さない。
+
+[完全なカバレッジと境界](docs/api-coverage.md)、[入力仕様と例](docs/api-operations.md) を参照。

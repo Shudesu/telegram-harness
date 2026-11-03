@@ -305,3 +305,7 @@ export function redactSecrets(message: string, secrets: readonly string[]): stri
   out = out.replace(/\d{6,}:[A-Za-z0-9_-]{10,}/g, "[redacted-token]");
   return out;
 }
+
+export * from "./api-schema.js";
+export * from "./bot-api.js";
+export * from "./user-api.js";

@@ -99,7 +99,9 @@ CREATE TABLE account_actions (
     'botfather_set_commands',
     'botfather_set_photo',
     'botfather_fetch_token',
-    'botfather_revoke_token'
+    'botfather_revoke_token',
+    'bot_api_call',
+    'user_api_call'
   )),
   status TEXT NOT NULL CHECK (status IN ('pending', 'scheduled', 'publishing', 'posted', 'rejected', 'failed')),
   payload_json TEXT NOT NULL,

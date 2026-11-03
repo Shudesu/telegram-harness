@@ -41,7 +41,7 @@ export const ACCOUNT_ACTIONS = [
   "botfather_revoke_token",
 ] as const;
 
-export type AccountActionName = (typeof ACCOUNT_ACTIONS)[number];
+export type AccountActionName = (typeof ACCOUNT_ACTIONS)[number] | "bot_api_call" | "user_api_call";
 export type OwnedChatKind = "channel" | "supergroup" | "group";
 export type OwnedChatRole = "creator" | "admin";
 export type UserRateKind = "read" | "write" | "login";

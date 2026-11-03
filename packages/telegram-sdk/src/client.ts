@@ -1,3 +1,4 @@
+import { telegramRequestBody, safeCallBody } from "./uploads.js";
 export type TelegramMode = "live" | "dry-run" | "disabled";
 
 export interface TelegramCall {
@@ -38,7 +39,7 @@ export class DryRunTelegram implements TelegramClient {
   async call<T>(token: string, method: string, body: Record<string, unknown>): Promise<T> {
     assertMethod(method);
     if (!token) throw new Error("missing_token");
-    this.calls.push({ method, body: structuredClone(body) });
+    this.calls.push({ method, body: safeCallBody(body) as Record<string, unknown> });
     return fakeResult(method, body, () => {
       this.sequence += 1;
       return this.sequence;
@@ -66,8 +67,7 @@ export class LiveTelegram implements TelegramClient {
     const endpoint = this.options.endpoint ?? "https://api.telegram.org";
     const response = await fetchImpl(`${endpoint}/bot${token}/${method}`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
+      ...telegramRequestBody(body),
     });
     let payload: { ok?: boolean; result?: T; description?: string; error_code?: number };
     try {

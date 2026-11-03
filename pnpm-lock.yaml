@@ -101,6 +101,10 @@ importers:
         version: 5.9.3
 
   packages/sdk:
+    dependencies:
+      '@telegram-harness/shared':
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       typescript:
         specifier: ^5.9.3

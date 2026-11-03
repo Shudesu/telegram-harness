@@ -1,3 +1,4 @@
+import { executeGramOperation } from "./operations.js";
 import { Api, Logger, TelegramClient } from "telegram";
 import { LogLevel } from "telegram/extensions/Logger";
 import { CustomFile } from "telegram/client/uploads";
@@ -39,6 +40,7 @@ export async function openGramJsSession(options: { apiId: number; apiHash: strin
 
 function createSocket(client: TelegramClient, apiId: number, apiHash: string): MtprotoSocket {
   return {
+    executeOperation: (operation, params) => executeGramOperation(client, operation, params),
     invoke: (request) => client.invoke(request as never),
     async sendCode(phone: string) {
       const sent = await client.sendCode({ apiId, apiHash }, phone, false);

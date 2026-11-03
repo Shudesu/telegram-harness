@@ -1,6 +1,6 @@
 # Telegram Harness
 
-Bot API for channel publishing. GramJS (MTProto) only for the owner's own account, behind the same approval queue. No scraped sessions, no mass DMs, no member scraping, no invites, no account signup.
+Bot API for channel publishing. GramJS (MTProto) only for the owner's own account, behind the same approval queue. No scraped sessions, no mass DMs, no member scraping, no third-party user-account invites, no account signup. Bot API invite-link management and owner join/leave are approval-gated.
 
 ## Approval
 
@@ -31,3 +31,12 @@ pnpm check
 ```
 
 That runs the secret scan, typecheck, and mocked tests. Do not deploy, do not point tests at `api.telegram.org`, and do not create a production D1.
+
+## Full API coverage
+
+- Generic methods live in shared registries; never add arbitrary Bot or TL execution routes.
+- Bot reads and owner reads are explicitly classified. getUpdates is a write because offsets acknowledge updates.
+- New writes use account_actions (`bot_api_call` / `user_api_call`) and existing approval/publisher. Only the publisher calls the write dispatcher.
+- Account deletion, auth/session termination, password/2FA and login-email changes remain excluded.
+- Inline uploads are bounded base64, not local paths. Provider/webhook secrets use approved secret-name references.
+- Tests have a network tripwire and injected transports. Regenerate the Bot snapshot only from a downloaded official document, then review policy changes.

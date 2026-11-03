@@ -155,6 +155,14 @@ export class MemoryRepo implements Repo {
     this.accountActions[index] = clone(action);
   }
 
+  async transitionAccountAction(action: AccountAction, from: AccountAction["status"]): Promise<boolean> {
+    const index = this.accountActions.findIndex((item) => item.id === action.id && item.status === from);
+    if (index < 0) return false;
+    const current = this.accountActions[index];
+    this.accountActions[index] = { ...current, status: action.status, approvedAt: action.approvedAt, scheduledAt: action.scheduledAt, error: action.error, updatedAt: action.updatedAt };
+    return true;
+  }
+
   async getAccountAction(id: string): Promise<AccountAction | null> {
     return clone(this.accountActions.find((item) => item.id === id) ?? null);
   }
@@ -169,9 +177,10 @@ export class MemoryRepo implements Repo {
       .map(clone);
   }
 
-  async claimDueAccountActions(nowIso: string, limit = 20): Promise<AccountAction[]> {
+  async claimDueAccountActions(nowIso: string, limit = 20, provider?: "bot" | "user"): Promise<AccountAction[]> {
     const due = this.accountActions
-      .filter((item) => item.status === "scheduled" && (item.scheduledAt === null || item.scheduledAt <= nowIso))
+      .filter((item) => !provider || (provider === "bot" ? item.action === "bot_api_call" : item.action !== "bot_api_call"))
+      .filter((item) => item.status === "scheduled" && item.approvedAt !== null && (item.scheduledAt === null || item.scheduledAt <= nowIso))
       .sort((a, b) => (a.scheduledAt ?? a.createdAt).localeCompare(b.scheduledAt ?? b.createdAt))
       .slice(0, limit);
     const claimed: AccountAction[] = [];
