@@ -8,12 +8,18 @@ import { exchangeWithBotFather, type BotFatherStep } from "./botfather.js";
 import type { OpenSession } from "./client.js";
 import { ADMIN_RIGHTS_OFF, ADMIN_RIGHTS_ON, type MtprotoApi, type MtprotoSocket } from "./mtproto.js";
 
+// GramJS 2.26.22 loops `for (attempt = 0; attempt < requestRetries; attempt++)`.
+// 0 never sends. 1 sends once and does not retry. floodSleepThreshold 0 keeps the library from sleeping.
+export const GRAMJS_CLIENT_OPTIONS = {
+  connectionRetries: 1,
+  requestRetries: 1,
+  autoReconnect: false,
+  floodSleepThreshold: 0,
+} as const;
+
 export async function openGramJsSession(options: { apiId: number; apiHash: string; session: string }): Promise<OpenSession> {
   const client = new TelegramClient(new StringSession(options.session), options.apiId, options.apiHash, {
-    connectionRetries: 1,
-    requestRetries: 0,
-    autoReconnect: false,
-    floodSleepThreshold: 0,
+    ...GRAMJS_CLIENT_OPTIONS,
     baseLogger: new Logger(LogLevel.NONE),
   });
   client.setLogLevel(LogLevel.NONE);

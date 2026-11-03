@@ -207,7 +207,7 @@ async function resolveAdminUsername(deps: Deps, action: AccountAction, secrets: 
     const bot = await deps.repo.getBot(action.payload.botId);
     if (!bot) throw new Error("bot_not_found");
     if (deps.telegram.mode === "disabled") throw new Error("bot_lookup_unavailable");
-    const token = resolveToken(deps.env, bot.tokenEnvName);
+    const token = await resolveToken(deps.env, bot.tokenEnvName, deps.secrets);
     secrets.push(token);
     const me = await deps.telegram.call<{ username?: string; is_bot?: boolean }>(token, "getMe", {});
     if (!me.is_bot || typeof me.username !== "string" || !me.username.toLowerCase().endsWith("bot")) {
