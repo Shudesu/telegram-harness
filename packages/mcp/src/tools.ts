@@ -1,4 +1,4 @@
-import { TelegramHarnessClient } from "@telegram-harness/sdk";
+import { BOT_METHODS, BOT_SCHEMAS, BOT_TYPES, USER_OPERATIONS, publicSchema, TelegramHarnessClient } from "@telegram-harness/sdk";
 
 export interface ToolDef {
   name: string;
@@ -7,6 +7,9 @@ export interface ToolDef {
     type: "object";
     properties: Record<string, unknown>;
     required?: string[];
+    additionalProperties?: boolean;
+    oneOf?: Record<string, unknown>[];
+    $defs?: Record<string, unknown>;
   };
 }
 
@@ -50,6 +53,25 @@ const contentProps = {
 };
 
 export const toolDefs: ToolDef[] = [
+  { name: "list_api_operations", description: "Bot API とオーナーアカウントの操作一覧、読み書き区分、除外理由。操作ごとの型は get_api_operation で取得。", inputSchema: { type: "object", properties: {} } },
+  { name: "get_api_operation", description: "指定操作の JSON Schema と読み書き区分を取得する。", inputSchema: { type: "object", properties: { provider: { type: "string", enum: ["bot", "user"] }, name: { type: "string" } }, required: ["provider", "name"] } },
+  ...(["bot", "user"] as const).flatMap((provider) => (["read", "write"] as const).map((mode): ToolDef => ({
+    name: `${mode === "write" ? "request" : "read"}_${provider}_api`,
+    description: mode === "write" ? "指定操作を pending で保存。実行には approve_account_action と run_publisher が別々に必要。params の型は get_api_operation で確認。" : "許可された読み取り操作を実行。書き込み操作は拒否。params の型は get_api_operation で確認。",
+    inputSchema: {
+      type: "object",
+      properties: {
+        ...(provider === "bot" ? { botId: { type: "string" }, method: { type: "string", enum: Object.entries(BOT_METHODS).filter(([,v]) => v.mode === mode).map(([k]) => k) } } : { operation: { type: "string", enum: Object.entries(USER_OPERATIONS).filter(([,v]) => v.mode === mode).map(([k]) => k) } }),
+        params: { type: "object", description: "get_api_operation の schema に準拠する引数。秘密は secretEnvName で参照。" },
+        ...(mode === "write" ? { scheduledAt: { type: "string", description: "Harness publisher の実行予定 UTC ISO-8601" } } : {}),
+      },
+      required: provider === "bot" ? ["botId", "method", "params"] : ["operation", "params"],
+      additionalProperties: false,
+      ...operationVariants(provider, mode),
+    },
+  }))),
+  { name: "cancel_account_action", description: "publisher が取得する前の scheduled 操作を pending に戻す。", inputSchema: { type: "object", properties: { actionId: { type: "string" } }, required: ["actionId"] } },
+  { name: "get_account_action", description: "操作の全引数、状態、実行結果を確認する。承認前にこの内容を確認。", inputSchema: { type: "object", properties: { actionId: { type: "string" } }, required: ["actionId"] } },
   {
     name: "register_bot",
     description: "ボットを登録する。tokenEnvName は環境変数名で、トークン値は渡さない。Telegram には送らない。",
@@ -415,10 +437,32 @@ export const toolDefs: ToolDef[] = [
   },
 ];
 
+/** Method-specific params are part of the actual MCP schema, not just prose. */
+function operationVariants(provider: "bot" | "user", mode: "read" | "write") {
+  const definitions: Record<string, unknown> = {};
+  const entries = provider === "bot"
+    ? Object.entries(BOT_METHODS).filter(([,entry]) => entry.mode === mode).map(([name]) => [name, publicSchema(BOT_SCHEMAS[name as keyof typeof BOT_SCHEMAS], BOT_TYPES)] as const)
+    : Object.entries(USER_OPERATIONS).filter(([,entry]) => entry.mode === mode).map(([name,entry]) => [name, publicSchema(entry.schema)] as const);
+  const oneOf = entries.map(([name, schema]) => {
+    const { $defs, ...params } = schema;
+    Object.assign(definitions, $defs);
+    return { properties: { [provider === "bot" ? "method" : "operation"]: { const: name }, params } };
+  });
+  return { oneOf, ...(Object.keys(definitions).length ? { $defs: definitions } : {}) };
+}
+
 type Args = Record<string, unknown>;
 
 export async function executeTool(client: TelegramHarnessClient, name: string, args: Args): Promise<unknown> {
   switch (name) {
+    case "list_api_operations": return client.get("/api/operations");
+    case "get_api_operation": return client.get(`/api/operations${query({ provider: args.provider, name: args.name })}`);
+    case "read_bot_api": return client.post("/api/bot/read", args);
+    case "request_bot_api": return client.post("/api/bot/requests", args);
+    case "read_user_api": return client.post("/api/user/read", args);
+    case "request_user_api": return client.post("/api/user/requests", args);
+    case "cancel_account_action": return client.post(`/api/account/actions/${encodeURIComponent(String(args.actionId))}/cancel`, {});
+    case "get_account_action": return client.get(`/api/account/actions/${encodeURIComponent(String(args.actionId))}`);
     case "register_bot":
       return client.post("/api/bots", { name: args.name, tokenEnvName: args.tokenEnvName });
     case "list_bots":

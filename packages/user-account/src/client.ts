@@ -1,3 +1,4 @@
+import { validateUserOperation, type UserOperation, type UserOperationParams } from "@telegram-harness/shared";
 import type { BotFatherStep } from "./botfather.js";
 import { withFloodWait } from "./flood.js";
 import type { ChannelStats, ChatRef, ListedChat, MtprotoApi, MtprotoSocket } from "./mtproto.js";
@@ -29,6 +30,7 @@ export interface OpenSession {
 }
 
 export interface UserAccountClient {
+  executeOperation<M extends UserOperation>(session: string, operation: M, params: UserOperationParams[M]): Promise<unknown>;
   readonly mode: "live" | "dry-run" | "disabled";
   readonly calls: readonly UserCall[];
   takeSessionUpdate(): string | null;
@@ -93,6 +95,8 @@ export class DisabledUserAccount implements UserAccountClient {
     return this.fail();
   }
 
+  executeOperation(): Promise<never> { return this.fail(); }
+
   private fail(): Promise<never> {
     return Promise.reject(new Error("user_network_disabled"));
   }
@@ -141,6 +145,8 @@ export class FailingUserAccount implements UserAccountClient {
   runBotFather(): Promise<never> {
     return this.fail();
   }
+  executeOperation(): Promise<never> { return this.fail(); }
+
   private fail(): Promise<never> {
     return Promise.reject(new Error(this.reason));
   }
@@ -156,6 +162,15 @@ export class DryRunUserAccount implements UserAccountClient {
   private chats: ListedChat[] = [];
 
   constructor(private readonly sleep: (ms: number) => Promise<void> = async () => undefined) {}
+
+  async executeOperation<M extends UserOperation>(session: string, operation: M, params: UserOperationParams[M]): Promise<unknown> {
+    const error = validateUserOperation(operation, params);
+    if (error) throw new Error(error);
+    this.requireSession(session);
+    this.note("executeOperation", operation);
+    await this.maybeFail("executeOperation");
+    return { operation, dryRun: true };
+  }
 
   takeSessionUpdate(): string | null {
     return null;
@@ -300,6 +315,15 @@ export class LiveUserAccount implements UserAccountClient {
     private readonly open: (session: string) => Promise<OpenSession>,
     private readonly sleep: (ms: number) => Promise<void> = delay,
   ) {}
+
+  executeOperation<M extends UserOperation>(session: string, operation: M, params: UserOperationParams[M]): Promise<unknown> {
+    const error = validateUserOperation(operation, params);
+    if (error) return Promise.reject(new Error(error));
+    return this.run(session, "executeOperation", operation, (opened) => {
+      if (!opened.socket.executeOperation) throw new Error("operation_adapter_unavailable");
+      return opened.socket.executeOperation(operation, params);
+    });
+  }
 
   takeSessionUpdate(): string | null {
     const value = this.updated;

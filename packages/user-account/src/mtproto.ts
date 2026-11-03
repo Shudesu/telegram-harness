@@ -1,3 +1,4 @@
+import type { UserOperation, UserOperationParams } from "@telegram-harness/shared";
 import type { BotFatherStep } from "./botfather.js";
 import { publicMtprotoError, rpcErrorName } from "./flood.js";
 
@@ -71,6 +72,7 @@ export const ADMIN_RIGHTS_OFF = {
 } as const;
 
 export interface MtprotoSocket {
+  executeOperation?<M extends UserOperation>(operation: M, params: UserOperationParams[M]): Promise<unknown>;
   invoke(request: unknown): Promise<unknown>;
   sendCode(phone: string): Promise<{ phoneCodeHash: string; isCodeViaApp: boolean }>;
   checkPassword(password: string): Promise<string>;
