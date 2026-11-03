@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+*.log
+.next/
+out/
+*.tsbuildinfo
+.vercel/
+.DS_Store
+.worktrees/
+.local/
+.mcp.json
+
+.env*
+!.env.example

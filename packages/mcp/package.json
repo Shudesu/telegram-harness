@@ -1,0 +1,19 @@
+{
+  "name": "@telegram-harness/mcp",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Telegram Harness MCP server",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "@telegram-harness/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}
