@@ -2,7 +2,9 @@
 
 ## Overview
 
-複数の Telegram チャンネル / グループを、公式 Bot API だけで管理する。ユーザーアカウントや MTProto は使わない。投稿・返信・編集・削除は下書きになり、明示的な approve のあと、publisher が承認済みだけを送る。
+複数の Telegram チャンネル / グループを、公式 Bot API で管理する。投稿・返信・編集・削除は下書きになり、明示的な approve のあと、publisher が承認済みだけを送る。
+
+0.2.0 から、所有者本人のアカウントを GramJS（MTProto）でも扱う。`api_id` と `api_hash` は https://my.telegram.org で本人が取る。チャンネルの作成と編集、管理者の変更、BotFather への定型送信も同じ承認キューを通る。ログインは本人の認証なのでキューには入れない。セッション文字列は暗号化して秘密ストアに置き、平文は保存しない。一斉 DM、メンバー収集、知らない人への招待、ユーザーアカウントの新規作成はしない。詳細と unknown は `docs/user-account.md`。
 
 公開実装の IG Harness OSS と X Harness OSS と同じく、Cloudflare Workers (Hono) + D1 + TypeScript SDK + MCP の pnpm monorepo にする。プライベートの `ig-harness` / `x-harness` はこの作業環境から読めなかった。
 
@@ -40,6 +42,7 @@ telegram-harness/
 ├── packages/
 │   ├── db/              # schema.sql と D1 / memory repository
 │   ├── telegram-sdk/    # Bot API client
+│   ├── user-account/    # GramJS owner-account client, dry-run by default
 │   ├── sdk/             # Harness HTTP client
 │   ├── mcp/             # MCP server
 │   └── shared/          # 型と検証
@@ -77,14 +80,15 @@ X Harness の growth draft と同じ境界にする。
 
 - メンバー数: `getChatMemberCount`
 - チャット概要: `getChat` の id / title / type / username
-- 閲覧数: Bot API の Message に `views` は無い。MTProto の `messages.getMessagesViews` は呼ばない。レスポンスの `views` は `null`
+- 閲覧数: Bot API の Message に `views` は無い。Bot API の統計ルートは `views: null`。ユーザーアカウントの統計ルートだけが `messages.getMessagesViews` を `increment: false` で呼ぶ
 
 数値の出典と、確認できなかった上限は `docs/bot-api-limits.md`。
 
-## Out of scope for 0.1.0
+## Out of scope
 
-- 本番デプロイ、本番 D1、実 Bot API への送信
+- 本番デプロイ、本番 D1、実 Bot API への送信、実ログイン
 - `setWebhook` の自動呼び出し
-- ファイルの multipart アップロード
+- ファイルの multipart アップロード（Bot API）
 - アルバムの編集
-- MTProto、ユーザーアカウント自動化
+- 一斉 DM、メンバー収集、招待リンク、ユーザーアカウントの新規作成
+- Cloudflare Workers 上での MTProto TCP。ライブ実行は Node の `user-live` だけを想定し、このリポジトリは起動しない

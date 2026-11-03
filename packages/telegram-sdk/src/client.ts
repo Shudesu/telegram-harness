@@ -97,6 +97,7 @@ function fakeResult(method: string, body: Record<string, unknown>, nextId: () =>
     const media = Array.isArray(body.media) ? body.media : [];
     return media.map(() => ({ message_id: nextId(), chat: { id: body.chat_id } }));
   }
+  if (method === "getMe") return { id: 1, is_bot: true, username: "harness_dry_run_bot", first_name: "dry-run" };
   if (method === "getChatMemberCount") return 0;
   if (method === "getChat") {
     return { id: body.chat_id, type: "channel", title: "dry-run" };

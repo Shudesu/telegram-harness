@@ -5,6 +5,7 @@ const root = new URL("..", import.meta.url).pathname;
 const skip = new Set(["node_modules", ".git", "dist", ".next", ".wrangler", ".local"]);
 const tokenLike = /\d{8,10}:[A-Za-z0-9_-]{30,}/;
 const liveFlag = /TELEGRAM_ALLOW_NETWORK\s*=\s*["']true["']/;
+const userLiveFlag = /TELEGRAM_USER_ALLOW_NETWORK\s*=\s*["']true["']/;
 const findings = [];
 
 function walk(dir) {
@@ -24,6 +25,9 @@ function walk(dir) {
     if (tokenLike.test(text)) findings.push(`${relative(root, path)} matches a Bot API token pattern`);
     if (liveFlag.test(text) && !text.includes("refuses TELEGRAM_ALLOW_NETWORK")) {
       findings.push(`${relative(root, path)} enables TELEGRAM_ALLOW_NETWORK`);
+    }
+    if (userLiveFlag.test(text) && !text.includes("refuses TELEGRAM_USER_ALLOW_NETWORK")) {
+      findings.push(`${relative(root, path)} enables TELEGRAM_USER_ALLOW_NETWORK`);
     }
   }
 }

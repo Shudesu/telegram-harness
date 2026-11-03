@@ -1,4 +1,7 @@
 import type {
+  AccountAction,
+  AccountActionName,
+  AccountStatus,
   Bot,
   Channel,
   ChannelKind,
@@ -10,8 +13,14 @@ import type {
   IncomingKind,
   IncomingMessage,
   MessageStatus,
+  OwnedChat,
+  OwnedChatKind,
+  OwnedChatRole,
   PublishLog,
   PublishedMessage,
+  UserAccountState,
+  UserLogin,
+  UserRateKind,
 } from "@telegram-harness/shared";
 import type { Repo } from "./repo.js";
 
@@ -415,6 +424,196 @@ export class D1Repo implements Repo {
       .run();
   }
 
+  async insertAccountAction(action: AccountAction): Promise<void> {
+    await this.db
+      .prepare(
+        `INSERT INTO account_actions (
+          id, action, status, payload_json, summary, scheduled_at, approved_at, error, result_json, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(
+        action.id,
+        action.action,
+        action.status,
+        JSON.stringify(action.payload),
+        action.summary,
+        action.scheduledAt,
+        action.approvedAt,
+        action.error,
+        action.result ? JSON.stringify(action.result) : null,
+        action.createdAt,
+        action.updatedAt,
+      )
+      .run();
+  }
+
+  async saveAccountAction(action: AccountAction): Promise<void> {
+    const result = await this.db
+      .prepare(
+        `UPDATE account_actions SET
+          action = ?, status = ?, payload_json = ?, summary = ?, scheduled_at = ?, approved_at = ?,
+          error = ?, result_json = ?, updated_at = ?
+        WHERE id = ?`,
+      )
+      .bind(
+        action.action,
+        action.status,
+        JSON.stringify(action.payload),
+        action.summary,
+        action.scheduledAt,
+        action.approvedAt,
+        action.error,
+        action.result ? JSON.stringify(action.result) : null,
+        action.updatedAt,
+        action.id,
+      )
+      .run();
+    if ((result.meta?.changes ?? 0) < 1) throw new Error("account_action_not_found");
+  }
+
+  async getAccountAction(id: string): Promise<AccountAction | null> {
+    const row = await this.db.prepare("SELECT * FROM account_actions WHERE id = ?").bind(id).first<AccountActionRow>();
+    return row ? mapAccountAction(row) : null;
+  }
+
+  async listAccountActions(filter?: { status?: AccountAction["status"]; limit?: number }): Promise<AccountAction[]> {
+    const limit = Math.min(filter?.limit ?? 50, 100);
+    const statement = filter?.status
+      ? this.db.prepare("SELECT * FROM account_actions WHERE status = ? ORDER BY created_at DESC LIMIT ?").bind(filter.status, limit)
+      : this.db.prepare("SELECT * FROM account_actions ORDER BY created_at DESC LIMIT ?").bind(limit);
+    const rows = await statement.all<AccountActionRow>();
+    return (rows.results ?? []).map(mapAccountAction);
+  }
+
+  async claimDueAccountActions(nowIso: string, limit = 20): Promise<AccountAction[]> {
+    const rows = await this.db
+      .prepare(
+        `SELECT id FROM account_actions
+         WHERE status = 'scheduled' AND (scheduled_at IS NULL OR scheduled_at <= ?)
+         ORDER BY COALESCE(scheduled_at, created_at) ASC
+         LIMIT ?`,
+      )
+      .bind(nowIso, limit)
+      .all<{ id: string }>();
+    const claimed: AccountAction[] = [];
+    for (const row of rows.results ?? []) {
+      const update = await this.db
+        .prepare("UPDATE account_actions SET status = 'publishing', updated_at = ? WHERE id = ? AND status = 'scheduled'")
+        .bind(nowIso, row.id)
+        .run();
+      if ((update.meta?.changes ?? 0) !== 1) continue;
+      const action = await this.getAccountAction(row.id);
+      if (action) claimed.push(action);
+    }
+    return claimed;
+  }
+
+  async upsertOwnedChat(chat: OwnedChat): Promise<OwnedChat> {
+    const existing = await this.db
+      .prepare("SELECT * FROM owned_chats WHERE telegram_id = ?")
+      .bind(chat.telegramId)
+      .first<OwnedChatRow>();
+    if (existing) {
+      await this.db
+        .prepare(
+          `UPDATE owned_chats SET access_hash = ?, title = ?, username = ?, kind = ?, role = ?, synced_at = ? WHERE id = ?`,
+        )
+        .bind(chat.accessHash, chat.title, chat.username, chat.kind, chat.role, chat.syncedAt, existing.id)
+        .run();
+      return mapOwnedChat({ ...existing, access_hash: chat.accessHash, title: chat.title, username: chat.username, kind: chat.kind, role: chat.role, synced_at: chat.syncedAt });
+    }
+    await this.db
+      .prepare(
+        `INSERT INTO owned_chats (id, telegram_id, access_hash, title, username, kind, role, synced_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(chat.id, chat.telegramId, chat.accessHash, chat.title, chat.username, chat.kind, chat.role, chat.syncedAt)
+      .run();
+    return chat;
+  }
+
+  async listOwnedChats(): Promise<OwnedChat[]> {
+    const rows = await this.db.prepare("SELECT * FROM owned_chats ORDER BY title ASC").all<OwnedChatRow>();
+    return (rows.results ?? []).map(mapOwnedChat);
+  }
+
+  async getOwnedChat(id: string): Promise<OwnedChat | null> {
+    const row = await this.db.prepare("SELECT * FROM owned_chats WHERE id = ?").bind(id).first<OwnedChatRow>();
+    return row ? mapOwnedChat(row) : null;
+  }
+
+  async saveUserLogin(login: UserLogin): Promise<void> {
+    await this.db.prepare("DELETE FROM user_login").run();
+    await this.db
+      .prepare(
+        "INSERT INTO user_login (id, status, phone_code_hash, hint, expires_at, updated_at) VALUES ('current', ?, ?, ?, ?, ?)",
+      )
+      .bind(login.status, login.phoneCodeHash, login.hint, login.expiresAt, login.updatedAt)
+      .run();
+  }
+
+  async getUserLogin(): Promise<UserLogin | null> {
+    const row = await this.db.prepare("SELECT * FROM user_login WHERE id = 'current'").first<UserLoginRow>();
+    if (!row) return null;
+    return {
+      id: "current",
+      status: row.status,
+      phoneCodeHash: row.phone_code_hash,
+      hint: row.hint,
+      expiresAt: row.expires_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
+  async clearUserLogin(): Promise<void> {
+    await this.db.prepare("DELETE FROM user_login").run();
+  }
+
+  async saveUserState(state: UserAccountState): Promise<void> {
+    await this.db.prepare("DELETE FROM user_account_state").run();
+    await this.db
+      .prepare("INSERT INTO user_account_state (id, session_env_name, self_user_id, updated_at) VALUES ('self', ?, ?, ?)")
+      .bind(state.sessionEnvName, state.selfUserId, state.updatedAt)
+      .run();
+  }
+
+  async getUserState(): Promise<UserAccountState | null> {
+    const row = await this.db
+      .prepare("SELECT * FROM user_account_state WHERE id = 'self'")
+      .first<{ session_env_name: string; self_user_id: string | null; updated_at: string }>();
+    if (!row) return null;
+    return { sessionEnvName: row.session_env_name, selfUserId: row.self_user_id, updatedAt: row.updated_at };
+  }
+
+  async clearUserState(): Promise<void> {
+    await this.db.prepare("DELETE FROM user_account_state").run();
+  }
+
+  async addUserRateEvent(event: { id: string; kind: UserRateKind; createdAt: string }): Promise<void> {
+    const cutoff = new Date(Date.parse(event.createdAt) - 2 * 60 * 60 * 1000).toISOString();
+    await this.db.prepare("DELETE FROM user_rate_events WHERE created_at < ?").bind(cutoff).run();
+    await this.db
+      .prepare("INSERT INTO user_rate_events (id, kind, created_at) VALUES (?, ?, ?)")
+      .bind(event.id, event.kind, event.createdAt)
+      .run();
+  }
+
+  async countUserRateEvents(kind: UserRateKind, sinceIso: string): Promise<number> {
+    const row = await this.db
+      .prepare("SELECT COUNT(*) AS n FROM user_rate_events WHERE kind = ? AND created_at >= ?")
+      .bind(kind, sinceIso)
+      .first<{ n: number }>();
+    return Number(row?.n ?? 0);
+  }
+
+  async latestUserRateEvent(kind: UserRateKind): Promise<string | null> {
+    const row = await this.db
+      .prepare("SELECT created_at FROM user_rate_events WHERE kind = ? ORDER BY created_at DESC LIMIT 1")
+      .bind(kind)
+      .first<{ created_at: string }>();
+    return row?.created_at ?? null;
+  }
+
   private bindDraft(sql: string, draft: Draft): D1Prepared {
     return this.db
       .prepare(sql)
@@ -437,6 +636,68 @@ export class D1Repo implements Repo {
         draft.updatedAt,
       );
   }
+}
+
+interface AccountActionRow {
+  id: string;
+  action: AccountActionName;
+  status: AccountStatus;
+  payload_json: string;
+  summary: string;
+  scheduled_at: string | null;
+  approved_at: string | null;
+  error: string | null;
+  result_json: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface OwnedChatRow {
+  id: string;
+  telegram_id: string;
+  access_hash: string;
+  title: string;
+  username: string | null;
+  kind: OwnedChatKind;
+  role: OwnedChatRole;
+  synced_at: string;
+}
+
+interface UserLoginRow {
+  status: "code_sent" | "password_required";
+  phone_code_hash: string;
+  hint: string | null;
+  expires_at: string;
+  updated_at: string;
+}
+
+function mapAccountAction(row: AccountActionRow): AccountAction {
+  return {
+    id: row.id,
+    action: row.action,
+    status: row.status,
+    payload: JSON.parse(row.payload_json) as Record<string, unknown>,
+    summary: row.summary,
+    scheduledAt: row.scheduled_at,
+    approvedAt: row.approved_at,
+    error: row.error,
+    result: row.result_json ? (JSON.parse(row.result_json) as Record<string, unknown>) : null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapOwnedChat(row: OwnedChatRow): OwnedChat {
+  return {
+    id: row.id,
+    telegramId: row.telegram_id,
+    accessHash: row.access_hash,
+    title: row.title,
+    username: row.username,
+    kind: row.kind,
+    role: row.role,
+    syncedAt: row.synced_at,
+  };
 }
 
 interface StatementSync {

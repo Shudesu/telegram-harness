@@ -1,8 +1,8 @@
 {
   "name": "telegram-harness",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Telegram Harness — official Bot API, multi-channel drafts, and approval-gated publishing",
+  "description": "Telegram Harness — Bot API publishing and an owner-account GramJS layer, both approval-gated",
   "license": "MIT",
   "author": {
     "name": "野田修一 (Shudesu)",

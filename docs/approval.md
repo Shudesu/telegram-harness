@@ -11,3 +11,5 @@ Nothing in this service posts, replies, edits, or deletes on Telegram inside the
 `POST /api/drafts/:id/cancel` moves `scheduled` back to `pending` before the publisher claims it.
 
 The local node server uses a dry-run client. It records the method it would have called and stores `dryRun: true`. It does not open a connection to `api.telegram.org`. The worker process does that only when `TELEGRAM_ALLOW_NETWORK=true`, which is not the default and is not set by the local server.
+
+User-account writes use the same queue with a separate row type. `request_create_channel` and the other `request_*` tools store `pending`. `approve_account_action` moves that row to `scheduled` and does not call GramJS. `run_publisher` executes due account actions. Login is not an approval item. See `docs/user-account.md`.
