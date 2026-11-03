@@ -1,4 +1,4 @@
-export const VERSION = "0.1.0";
+export const VERSION = "0.2.0";
 
 /**
  * Limits copied from the official Bot API reference.
@@ -24,7 +24,7 @@ export const BOT_API_LIMITS = {
 } as const;
 
 export const VIEWS_REASON =
-  "unsupported_by_bot_api: Message has no views field, and this harness does not call MTProto messages.getMessagesViews";
+  "unsupported_by_bot_api: Message has no views field. This Bot API route does not call messages.getMessagesViews. User-account stats are a separate route.";
 
 export type DraftAction = "publish" | "edit" | "delete" | "reply";
 export type DraftKind = "text" | "photo" | "video" | "album";
@@ -274,6 +274,27 @@ export function safeEqual(left: string, right: string): boolean {
   }
   return diff === 0;
 }
+
+export {
+  ACCOUNT_ACTIONS,
+  USER_INPUT_LIMITS,
+  type AccountAction,
+  type AccountActionName,
+  type AccountRequest,
+  type AccountStatus,
+  type OwnedChat,
+  type OwnedChatKind,
+  type OwnedChatRole,
+  type UserLogin,
+  type UserAccountState,
+  type UserRateKind,
+  validateAccountRequest,
+  validateLoginCode,
+  validateLoginPassword,
+  validatePhone,
+  validatePhotoUrl,
+  validatePublicUsername,
+} from "./account.js";
 
 export function redactSecrets(message: string, secrets: readonly string[]): string {
   let out = message;

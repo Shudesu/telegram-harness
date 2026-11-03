@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- Owner account via GramJS (MTProto), next to the Bot API
+- Phone, code, and optional 2FA login. The string session is encrypted and stored only as a secret
+- Create channels and supergroups, edit title, description, photo, and username, add or remove one admin
+- Scripted BotFather create, profile fields, photo, token fetch, and token revoke. Token values stay in the secret store
+- Own-channel list and message views via `messages.getMessagesViews` with `increment: false`
+- Writes wait for the existing approval queue. Reads are rate limited. `FLOOD_WAIT` is not retried for writes
+- Tests use a mocked GramJS socket. No live login and no deploy
+
 ## 0.1.0
 
 First version of Telegram Harness.

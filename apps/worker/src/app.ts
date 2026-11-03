@@ -1,16 +1,33 @@
 import { VERSION, safeEqual, validateChatId, validateEditPayload, validatePublishPayload, validateScheduledAt, validateSource, validateTokenEnvName, VIEWS_REASON } from "@telegram-harness/shared";
 import type { ChannelKind, Draft, DraftKind, DraftPayload, ParseMode } from "@telegram-harness/shared";
+import { DisabledUserAccount, EnvSecretStore } from "@telegram-harness/user-account";
+import type { SecretStore, UserAccountClient } from "@telegram-harness/user-account";
 import { Hono } from "hono";
 import type { Deps } from "./deps.js";
 import { nowIso } from "./deps.js";
+import { mountUserAccount } from "./routes/user-account.js";
+import { executeDueAccountActions } from "./services/account-executor.js";
 import { publishDue } from "./services/publisher.js";
 import { resolveToken } from "./services/tokens.js";
 import { chatIdOf, classifyUpdate, messageText } from "./services/updates.js";
 
 const MAX_BODY_BYTES = 1_000_000;
 
-export function createApp(input: Omit<Deps, "now"> & { now?: () => Date }) {
-  const deps: Deps = { ...input, now: input.now ?? (() => new Date()) };
+export function createApp(
+  input: Omit<Deps, "now" | "userAccount" | "secrets"> & {
+    now?: () => Date;
+    userAccount?: UserAccountClient;
+    secrets?: SecretStore;
+  },
+) {
+  const deps: Deps = {
+    repo: input.repo,
+    telegram: input.telegram,
+    env: input.env,
+    now: input.now ?? (() => new Date()),
+    userAccount: input.userAccount ?? new DisabledUserAccount(),
+    secrets: input.secrets ?? new EnvSecretStore(input.env),
+  };
   const app = new Hono();
 
   app.use("*", async (c, next) => {
@@ -32,6 +49,7 @@ export function createApp(input: Omit<Deps, "now"> & { now?: () => Date }) {
         name: "telegram-harness",
         version: VERSION,
         telegramMode: deps.telegram.mode,
+        userAccountMode: deps.userAccount.mode,
       },
     }),
   );
@@ -105,8 +123,10 @@ export function createApp(input: Omit<Deps, "now"> & { now?: () => Date }) {
   });
 
   app.get("/api/approvals", async (c) => {
-    const data = await deps.repo.listDrafts({ status: "pending", limit: limitOf(c.req.query("limit")) });
-    return c.json({ success: true, data });
+    const limit = limitOf(c.req.query("limit"));
+    const data = await deps.repo.listDrafts({ status: "pending", limit });
+    const accountActions = await deps.repo.listAccountActions({ status: "pending", limit });
+    return c.json({ success: true, data, accountActions });
   });
 
   app.get("/api/drafts/:id", async (c) => {
@@ -178,8 +198,11 @@ export function createApp(input: Omit<Deps, "now"> & { now?: () => Date }) {
 
   app.post("/api/publisher/run", async (c) => {
     const report = await publishDue(deps);
-    if (report.blocked) return fail(c, 409, report.blocked);
-    return c.json({ success: true, data: report });
+    const account = await executeDueAccountActions(deps);
+    if (report.blocked && account.posted.length === 0 && account.failed.length === 0 && account.rescheduled.length === 0) {
+      return fail(c, 409, report.blocked);
+    }
+    return c.json({ success: true, data: { ...report, account } });
   });
 
   app.get("/api/messages", async (c) => {
@@ -338,6 +361,7 @@ export function createApp(input: Omit<Deps, "now"> & { now?: () => Date }) {
     return c.json({ success: true, data: deps.telegram.calls });
   });
 
+  mountUserAccount(app, deps);
   return app;
 }
 

@@ -1,10 +1,15 @@
 import type {
+  AccountAction,
   Bot,
   Channel,
   Draft,
   IncomingMessage,
+  OwnedChat,
   PublishLog,
   PublishedMessage,
+  UserAccountState,
+  UserLogin,
+  UserRateKind,
 } from "@telegram-harness/shared";
 
 export interface Repo {
@@ -29,4 +34,21 @@ export interface Repo {
   listIncoming(botId?: string): Promise<IncomingMessage[]>;
   getIncoming(id: string): Promise<IncomingMessage | null>;
   addPublishLog(entry: PublishLog): Promise<void>;
+  insertAccountAction(action: AccountAction): Promise<void>;
+  saveAccountAction(action: AccountAction): Promise<void>;
+  getAccountAction(id: string): Promise<AccountAction | null>;
+  listAccountActions(filter?: { status?: AccountAction["status"]; limit?: number }): Promise<AccountAction[]>;
+  claimDueAccountActions(nowIso: string, limit?: number): Promise<AccountAction[]>;
+  upsertOwnedChat(chat: OwnedChat): Promise<OwnedChat>;
+  listOwnedChats(): Promise<OwnedChat[]>;
+  getOwnedChat(id: string): Promise<OwnedChat | null>;
+  saveUserLogin(login: UserLogin): Promise<void>;
+  getUserLogin(): Promise<UserLogin | null>;
+  clearUserLogin(): Promise<void>;
+  saveUserState(state: UserAccountState): Promise<void>;
+  getUserState(): Promise<UserAccountState | null>;
+  clearUserState(): Promise<void>;
+  addUserRateEvent(event: { id: string; kind: UserRateKind; createdAt: string }): Promise<void>;
+  countUserRateEvents(kind: UserRateKind, sinceIso: string): Promise<number>;
+  latestUserRateEvent(kind: UserRateKind): Promise<string | null>;
 }

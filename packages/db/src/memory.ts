@@ -1,10 +1,15 @@
 import type {
+  AccountAction,
   Bot,
   Channel,
   Draft,
   IncomingMessage,
+  OwnedChat,
   PublishLog,
   PublishedMessage,
+  UserAccountState,
+  UserLogin,
+  UserRateKind,
 } from "@telegram-harness/shared";
 import type { Repo } from "./repo.js";
 
@@ -19,6 +24,11 @@ export class MemoryRepo implements Repo {
   private messages: PublishedMessage[] = [];
   private incoming: IncomingMessage[] = [];
   private logs: PublishLog[] = [];
+  private accountActions: AccountAction[] = [];
+  private ownedChats: OwnedChat[] = [];
+  private login: UserLogin | null = null;
+  private userState: UserAccountState | null = null;
+  private rateEvents: { id: string; kind: UserRateKind; createdAt: string }[] = [];
 
   async insertBot(bot: Bot): Promise<void> {
     this.bots.push(clone(bot));
@@ -133,5 +143,106 @@ export class MemoryRepo implements Repo {
 
   async addPublishLog(entry: PublishLog): Promise<void> {
     this.logs.push(clone(entry));
+  }
+
+  async insertAccountAction(action: AccountAction): Promise<void> {
+    this.accountActions.push(clone(action));
+  }
+
+  async saveAccountAction(action: AccountAction): Promise<void> {
+    const index = this.accountActions.findIndex((item) => item.id === action.id);
+    if (index < 0) throw new Error("account_action_not_found");
+    this.accountActions[index] = clone(action);
+  }
+
+  async getAccountAction(id: string): Promise<AccountAction | null> {
+    return clone(this.accountActions.find((item) => item.id === id) ?? null);
+  }
+
+  async listAccountActions(filter?: { status?: AccountAction["status"]; limit?: number }): Promise<AccountAction[]> {
+    const limit = filter?.limit ?? 50;
+    return this.accountActions
+      .filter((item) => !filter?.status || item.status === filter.status)
+      .slice()
+      .reverse()
+      .slice(0, limit)
+      .map(clone);
+  }
+
+  async claimDueAccountActions(nowIso: string, limit = 20): Promise<AccountAction[]> {
+    const due = this.accountActions
+      .filter((item) => item.status === "scheduled" && (item.scheduledAt === null || item.scheduledAt <= nowIso))
+      .sort((a, b) => (a.scheduledAt ?? a.createdAt).localeCompare(b.scheduledAt ?? b.createdAt))
+      .slice(0, limit);
+    const claimed: AccountAction[] = [];
+    for (const item of due) {
+      if (item.status !== "scheduled") continue;
+      item.status = "publishing";
+      item.updatedAt = nowIso;
+      claimed.push(clone(item));
+    }
+    return claimed;
+  }
+
+  async upsertOwnedChat(chat: OwnedChat): Promise<OwnedChat> {
+    const existing = this.ownedChats.find((item) => item.telegramId === chat.telegramId);
+    if (existing) {
+      existing.accessHash = chat.accessHash;
+      existing.title = chat.title;
+      existing.username = chat.username;
+      existing.kind = chat.kind;
+      existing.role = chat.role;
+      existing.syncedAt = chat.syncedAt;
+      return clone(existing);
+    }
+    this.ownedChats.push(clone(chat));
+    return clone(chat);
+  }
+
+  async listOwnedChats(): Promise<OwnedChat[]> {
+    return this.ownedChats.map(clone);
+  }
+
+  async getOwnedChat(id: string): Promise<OwnedChat | null> {
+    return clone(this.ownedChats.find((item) => item.id === id) ?? null);
+  }
+
+  async saveUserLogin(login: UserLogin): Promise<void> {
+    this.login = clone(login);
+  }
+
+  async getUserLogin(): Promise<UserLogin | null> {
+    return clone(this.login);
+  }
+
+  async clearUserLogin(): Promise<void> {
+    this.login = null;
+  }
+
+  async saveUserState(state: UserAccountState): Promise<void> {
+    this.userState = clone(state);
+  }
+
+  async getUserState(): Promise<UserAccountState | null> {
+    return clone(this.userState);
+  }
+
+  async clearUserState(): Promise<void> {
+    this.userState = null;
+  }
+
+  async addUserRateEvent(event: { id: string; kind: UserRateKind; createdAt: string }): Promise<void> {
+    const cutoff = Date.parse(event.createdAt) - 2 * 60 * 60 * 1000;
+    this.rateEvents = this.rateEvents.filter((item) => Date.parse(item.createdAt) >= cutoff);
+    this.rateEvents.push({ ...event });
+  }
+
+  async countUserRateEvents(kind: UserRateKind, sinceIso: string): Promise<number> {
+    return this.rateEvents.filter((item) => item.kind === kind && item.createdAt >= sinceIso).length;
+  }
+
+  async latestUserRateEvent(kind: UserRateKind): Promise<string | null> {
+    const found = this.rateEvents.filter((item) => item.kind === kind).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return found[0]?.createdAt ?? null;
   }
 }

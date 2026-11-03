@@ -186,6 +186,233 @@ export const toolDefs: ToolDef[] = [
       required: ["source", "sourceRef", "channelId", "kind"],
     },
   },
+  {
+    name: "user_login_start",
+    description: "所有者の電話番号へログインコードを送る。セッショントークンは返さない。チャンネル操作はしない。",
+    inputSchema: {
+      type: "object",
+      properties: {
+        phone: { type: "string", description: "E.164, for example +12025550123" },
+        replace: { type: "boolean", description: "Replace the single stored session. Does not create another account." },
+      },
+      required: ["phone"],
+    },
+  },
+  {
+    name: "user_login_code",
+    description: "ログインコードを確定する。パスワードが必要なら password_required を返す。セッション文字列は返さない。",
+    inputSchema: { type: "object", properties: { code: { type: "string" } }, required: ["code"] },
+  },
+  {
+    name: "user_login_password",
+    description: "2FA パスワードでログインを終える。パスワードもセッション文字列もレスポンスに含めない。",
+    inputSchema: { type: "object", properties: { password: { type: "string" } }, required: ["password"] },
+  },
+  {
+    name: "user_session_status",
+    description: "ユーザーセッションの有無とログイン途中の状態。秘密の値は含めない。",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "user_session_forget",
+    description: "ローカルの暗号化セッションを捨てる。Telegram 側のログアウトはしない。",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "list_own_chats",
+    description: "ログイン中のアカウントが作成者または管理者のチャンネルとグループだけを読む。メンバー一覧は取らない。",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "get_own_channel_stats",
+    description: "自分のチャンネルの閲覧数と、取れる範囲の統計を読む。increment はしない。書き込まない。",
+    inputSchema: {
+      type: "object",
+      properties: {
+        ownedChatId: { type: "string" },
+        messageIds: { type: "string", description: "Comma-separated message ids, at most 20." },
+      },
+      required: ["ownedChatId"],
+    },
+  },
+  {
+    name: "request_create_channel",
+    description: "チャンネル作成を承認待ちにする。このツールは作成しない。実行は approve_account_action と run_publisher。",
+    inputSchema: {
+      type: "object",
+      properties: { title: { type: "string" }, about: { type: "string" }, scheduledAt: { type: "string" } },
+      required: ["title"],
+    },
+  },
+  {
+    name: "request_create_supergroup",
+    description: "スーパーグループ作成を承認待ちにする。このツールは作成しない。",
+    inputSchema: {
+      type: "object",
+      properties: { title: { type: "string" }, about: { type: "string" }, scheduledAt: { type: "string" } },
+      required: ["title"],
+    },
+  },
+  {
+    name: "request_edit_channel_title",
+    description: "自分のチャンネルのタイトル変更を承認待ちにする。まだ変更しない。",
+    inputSchema: {
+      type: "object",
+      properties: { ownedChatId: { type: "string" }, title: { type: "string" } },
+      required: ["ownedChatId", "title"],
+    },
+  },
+  {
+    name: "request_edit_channel_description",
+    description: "自分のチャンネルの説明変更を承認待ちにする。まだ変更しない。",
+    inputSchema: {
+      type: "object",
+      properties: { ownedChatId: { type: "string" }, description: { type: "string" } },
+      required: ["ownedChatId"],
+    },
+  },
+  {
+    name: "request_edit_channel_photo",
+    description: "自分のチャンネルの写真変更を承認待ちにする。https の URL のみ。まだ変更しない。",
+    inputSchema: {
+      type: "object",
+      properties: { ownedChatId: { type: "string" }, photoUrl: { type: "string" } },
+      required: ["ownedChatId", "photoUrl"],
+    },
+  },
+  {
+    name: "request_edit_channel_username",
+    description: "自分のチャンネルのユーザー名変更を承認待ちにする。まだ変更しない。",
+    inputSchema: {
+      type: "object",
+      properties: { ownedChatId: { type: "string" }, username: { type: "string" } },
+      required: ["ownedChatId", "username"],
+    },
+  },
+  {
+    name: "request_add_channel_admin",
+    description: "管理者追加を承認待ちにする。対象は登録済みボットの botId か、公開ユーザー名ひとつ。一括招待はできない。",
+    inputSchema: {
+      type: "object",
+      properties: { ownedChatId: { type: "string" }, botId: { type: "string" }, username: { type: "string" } },
+      required: ["ownedChatId"],
+    },
+  },
+  {
+    name: "request_remove_channel_admin",
+    description: "管理者を外す操作を承認待ちにする。ユーザー名ひとつだけ。まだ外さない。",
+    inputSchema: {
+      type: "object",
+      properties: { ownedChatId: { type: "string" }, username: { type: "string" } },
+      required: ["ownedChatId", "username"],
+    },
+  },
+  {
+    name: "request_botfather_create_bot",
+    description: "BotFather でのボット作成を承認待ちにする。トークン値は渡さない。tokenEnvName は保存先の環境変数名。",
+    inputSchema: {
+      type: "object",
+      properties: {
+        displayName: { type: "string" },
+        username: { type: "string" },
+        tokenEnvName: { type: "string" },
+      },
+      required: ["displayName", "username", "tokenEnvName"],
+    },
+  },
+  {
+    name: "request_botfather_set_name",
+    description: "BotFather の名前変更を承認待ちにする。まだ送らない。",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string" }, name: { type: "string" } },
+      required: ["username", "name"],
+    },
+  },
+  {
+    name: "request_botfather_set_description",
+    description: "BotFather の description 変更を承認待ちにする。まだ送らない。",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string" }, text: { type: "string" } },
+      required: ["username", "text"],
+    },
+  },
+  {
+    name: "request_botfather_set_about",
+    description: "BotFather の about 変更を承認待ちにする。まだ送らない。",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string" }, text: { type: "string" } },
+      required: ["username", "text"],
+    },
+  },
+  {
+    name: "request_botfather_set_commands",
+    description: "BotFather のコマンド変更を承認待ちにする。まだ送らない。",
+    inputSchema: {
+      type: "object",
+      properties: {
+        username: { type: "string" },
+        commands: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: { command: { type: "string" }, description: { type: "string" } },
+            required: ["command", "description"],
+          },
+        },
+      },
+      required: ["username", "commands"],
+    },
+  },
+  {
+    name: "request_botfather_set_photo",
+    description: "BotFather のプロフィール写真変更を承認待ちにする。https の URL のみ。まだ送らない。",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string" }, photoUrl: { type: "string" } },
+      required: ["username", "photoUrl"],
+    },
+  },
+  {
+    name: "request_botfather_fetch_token",
+    description: "BotFather からのトークン取得を承認待ちにする。トークン値は環境変数名の先にだけ保存する。",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string" }, tokenEnvName: { type: "string" } },
+      required: ["username", "tokenEnvName"],
+    },
+  },
+  {
+    name: "request_botfather_revoke_token",
+    description: "BotFather でのトークン再発行を承認待ちにする。新しい値は環境変数名の先にだけ保存する。",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string" }, tokenEnvName: { type: "string" } },
+      required: ["username", "tokenEnvName"],
+    },
+  },
+  {
+    name: "approve_account_action",
+    description: "承認待ちのユーザーアカウント操作を scheduled にする。GramJS も Bot API も呼ばない。",
+    inputSchema: { type: "object", properties: { actionId: { type: "string" } }, required: ["actionId"] },
+  },
+  {
+    name: "reject_account_action",
+    description: "承認待ちのユーザーアカウント操作を却下する。Telegram には送らない。",
+    inputSchema: { type: "object", properties: { actionId: { type: "string" } }, required: ["actionId"] },
+  },
+  {
+    name: "requeue_account_action",
+    description: "失敗したユーザーアカウント操作を承認待ちに戻す。再実行には新しい承認が必要。",
+    inputSchema: { type: "object", properties: { actionId: { type: "string" } }, required: ["actionId"] },
+  },
+  {
+    name: "list_account_actions",
+    description: "ユーザーアカウント操作の一覧。status は pending, scheduled, publishing, posted, rejected, failed。",
+    inputSchema: { type: "object", properties: { status: { type: "string" } } },
+  },
 ];
 
 type Args = Record<string, unknown>;
@@ -243,6 +470,67 @@ export async function executeTool(client: TelegramHarnessClient, name: string, a
       });
     case "intake_draft":
       return client.post("/api/intake/drafts", args);
+    case "user_login_start":
+      return client.post("/api/user/login/start", { phone: args.phone, replace: args.replace });
+    case "user_login_code":
+      return client.post("/api/user/login/code", { code: args.code });
+    case "user_login_password":
+      return client.post("/api/user/login/password", { password: args.password });
+    case "user_session_status":
+      return client.get("/api/user/status");
+    case "user_session_forget":
+      return client.post("/api/user/session/forget", {});
+    case "list_own_chats":
+      return client.get("/api/user/chats");
+    case "get_own_channel_stats":
+      return client.get(
+        `/api/user/chats/${encodeURIComponent(String(args.ownedChatId))}/stats${query({ messageIds: args.messageIds })}`,
+      );
+    case "request_create_channel":
+      return client.post("/api/account/actions", { action: "create_channel", title: args.title, about: args.about, scheduledAt: args.scheduledAt });
+    case "request_create_supergroup":
+      return client.post("/api/account/actions", { action: "create_supergroup", title: args.title, about: args.about, scheduledAt: args.scheduledAt });
+    case "request_edit_channel_title":
+      return client.post("/api/account/actions", { action: "edit_title", ownedChatId: args.ownedChatId, title: args.title });
+    case "request_edit_channel_description":
+      return client.post("/api/account/actions", { action: "edit_description", ownedChatId: args.ownedChatId, description: args.description });
+    case "request_edit_channel_photo":
+      return client.post("/api/account/actions", { action: "edit_photo", ownedChatId: args.ownedChatId, photoUrl: args.photoUrl });
+    case "request_edit_channel_username":
+      return client.post("/api/account/actions", { action: "edit_username", ownedChatId: args.ownedChatId, username: args.username });
+    case "request_add_channel_admin":
+      return client.post("/api/account/actions", { action: "add_admin", ownedChatId: args.ownedChatId, botId: args.botId, username: args.username });
+    case "request_remove_channel_admin":
+      return client.post("/api/account/actions", { action: "remove_admin", ownedChatId: args.ownedChatId, username: args.username });
+    case "request_botfather_create_bot":
+      return client.post("/api/account/actions", {
+        action: "botfather_create_bot",
+        displayName: args.displayName,
+        username: args.username,
+        tokenEnvName: args.tokenEnvName,
+      });
+    case "request_botfather_set_name":
+      return client.post("/api/account/actions", { action: "botfather_set_name", username: args.username, name: args.name });
+    case "request_botfather_set_description":
+      return client.post("/api/account/actions", { action: "botfather_set_description", username: args.username, text: args.text });
+    case "request_botfather_set_about":
+      return client.post("/api/account/actions", { action: "botfather_set_about", username: args.username, text: args.text });
+    case "request_botfather_set_commands":
+      return client.post("/api/account/actions", { action: "botfather_set_commands", username: args.username, commands: args.commands });
+    case "request_botfather_set_photo":
+      return client.post("/api/account/actions", { action: "botfather_set_photo", username: args.username, photoUrl: args.photoUrl });
+    case "request_botfather_fetch_token":
+      return client.post("/api/account/actions", { action: "botfather_fetch_token", username: args.username, tokenEnvName: args.tokenEnvName });
+    case "request_botfather_revoke_token":
+      return client.post("/api/account/actions", { action: "botfather_revoke_token", username: args.username, tokenEnvName: args.tokenEnvName });
+    case "approve_account_action":
+      return client.post(`/api/account/actions/${encodeURIComponent(String(args.actionId))}/approve`, {});
+    case "reject_account_action":
+      return client.post(`/api/account/actions/${encodeURIComponent(String(args.actionId))}/reject`, {});
+    case "requeue_account_action":
+      return client.post(`/api/account/actions/${encodeURIComponent(String(args.actionId))}/requeue`, {});
+    case "list_account_actions":
+      return client.get(`/api/account/actions${query({ status: args.status })}`);
     default:
       throw new Error(`unknown_tool:${name}`);
   }

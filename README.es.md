@@ -2,11 +2,11 @@
 
 # Telegram Harness
 
-Administra canales y grupos de Telegram solo con la Bot API oficial. No automatiza cuentas de usuario ni usa MTProto.
+Administra canales con la Bot API oficial y, además, la cuenta del propietario con GramJS (MTProto). Las escrituras pasan por la misma cola de aprobación. Límites no verificados: docs/user-account.md.
 
 Las publicaciones, respuestas, ediciones y borrados son borradores. Aprobar cambia el estado y no envía. El publisher envía únicamente borradores ya aprobados y vencidos. El worker local es un dry-run y no arranca si `TELEGRAM_ALLOW_NETWORK=true`.
 
-**Versión**: v0.1.0 · MIT · TypeScript / Cloudflare Workers + D1
+**Versión**: v0.2.0 · MIT · TypeScript / Cloudflare Workers + D1
 
 Incluye varios bots y canales, borradores de texto, foto, vídeo, álbum y botones, cola de aprobación, envío programado, edición y borrado aprobados, `getChatMemberCount` (las vistas quedan en null), webhooks con respuestas que también esperan aprobación, intake desde otros borradores e integración MCP y SDK.
 

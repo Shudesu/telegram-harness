@@ -1,5 +1,14 @@
 # Progress
 
+## 0.2.0
+
+- `packages/user-account` wraps GramJS behind a socket interface. Tests pass a fake socket and do not connect
+- Login, encrypted session, secret-store bot tokens, owned-chat list, channel edits, one admin at a time, BotFather scripts, message views
+- Account actions use `pending` → approve → publisher. Approve still does not call Telegram
+- Harness rate limits and `FLOOD_WAIT` handling. Official MTProto ceilings remain unknown
+- MCP tools use the same snake_case split (`request_*`, `approve_account_action`, `run_publisher`)
+- Console section for login and the account-action queue
+
 ## 0.1.0
 
 - pnpm monorepo: `apps/worker`, `apps/web`, `packages/db`, `packages/telegram-sdk`, `packages/sdk`, `packages/mcp`, `packages/shared`

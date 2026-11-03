@@ -1,0 +1,26 @@
+{
+  "name": "@telegram-harness/user-account",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Owner-account MTProto layer for Telegram Harness. GramJS is loaded only when the network flag is on.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./file": "./src/file-secrets.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@telegram-harness/shared": "workspace:*",
+    "big-integer": "^1.6.52",
+    "telegram": "2.26.22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}

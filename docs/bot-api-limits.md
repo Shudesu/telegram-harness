@@ -21,7 +21,7 @@ Checked against https://core.telegram.org/bots/api on 2026-11-03. This file reco
 
 `getChatMemberCount` returns an Integer. The harness calls it only when the Telegram client is live.
 
-The Message object on the same page has no `views` field. `messages.getMessagesViews` is an MTProto method and is not called. Stats therefore return `views: null` with reason `unsupported_by_bot_api`.
+The Message object on the same page has no `views` field. This Bot API route does not call `messages.getMessagesViews`. Its `views` stay null. The owner-account route is separate and is documented in `docs/user-account.md`.
 
 ## Unknown — not hardcoded
 

@@ -8,10 +8,16 @@ workers_dev = true
 #   wrangler secret put INTAKE_API_KEY
 #   wrangler secret put TELEGRAM_WEBHOOK_SECRET
 #   wrangler secret put TELEGRAM_BOT_TOKEN_MAIN
-# This file does not deploy. Do not put token values here.
+#   wrangler secret put TELEGRAM_API_ID
+#   wrangler secret put TELEGRAM_API_HASH
+#   wrangler secret put TELEGRAM_SESSION_ENCRYPTION_KEY
+#   wrangler secret put TELEGRAM_USER_SESSION
+# This file does not deploy. Do not put token values, api hashes, or session strings here.
+# MTProto does not run on the Worker by default. Keep TELEGRAM_USER_ALLOW_NETWORK false.
 
 [vars]
 TELEGRAM_ALLOW_NETWORK = "false"
+TELEGRAM_USER_ALLOW_NETWORK = "false"
 
 [[d1_databases]]
 binding = "DB"

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/node-server.ts",
+    "user-live": "tsx src/user-live-server.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -12,6 +13,7 @@
     "@telegram-harness/db": "workspace:*",
     "@telegram-harness/shared": "workspace:*",
     "@telegram-harness/telegram-sdk": "workspace:*",
+    "@telegram-harness/user-account": "workspace:*",
     "hono": "^4.6.0"
   },
   "devDependencies": {
