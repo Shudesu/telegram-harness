@@ -38,3 +38,7 @@ These were not given as a single number on the page checked above. The code does
 ## Delete constraints stated by the page
 
 `deleteMessage` documents the 48-hour rule, the dice exception, and the admin rights required in groups, supergroups, and channels. This harness still calls `deleteMessages` after approval and records a failure if Telegram refuses. It does not try to predict those cases.
+
+## Generic dispatcher update (2026-11-04)
+
+The older table above describes the original draft composer. The new [full API dispatcher](api-coverage.md) also accepts documented file_id/URL inputs, all media-group types in the current reference, and small inline-base64 multipart uploads. It allows setWebhook only through approval. Its structural types were regenerated from Bot API 10.3; Telegram remains responsible for conditional parameter rules and server-side limits. Harness upload bounds are documented separately and are not claims about Telegram limits.

@@ -1,5 +1,15 @@
 # Progress
 
+## Full API coverage（未リリース）
+
+- Bot API 10.3: 185メソッド、既存11 / 追加170 / 除外4。型・構造スキーマを公式 HTML から生成
+- GramJS: 主要操作18既存 / 32追加 / 除外10機能群。任意 TL と認証破壊的操作は公開しない
+- HTTP / SDK / MCP の共通ディスパッチャ、既存 account_actions と publisher で全書込を承認
+- multipart の inline base64、秘密値の名前参照、引数確認 UI、状態変更の比較更新
+- 独立した Bot/オーナーキュー取得、レート制限時に後続項目を publishing に残さない
+- D1 / SQLite migration 0003、ネットワーク拒否付きモックテスト。詳細は docs/api-coverage.md
+- 本番接続・デプロイ・本番 migration は未実施
+
 ## 0.2.0
 
 - `packages/user-account` wraps GramJS behind a socket interface. Tests pass a fake socket and do not connect
@@ -26,9 +36,9 @@
 ## Not in this version
 
 - Production deploy and a real D1 database
-- Calling `setWebhook`
-- Multipart uploads and `file_id` reuse
-- Album edits
+- `setWebhook` の自動呼び出し（明示承認付き呼び出しは追加）
+- 大容量ファイルの multipart ストリーミング（小容量 inline base64 と file_id 指定は追加）
+- 旧投稿専用画面のアルバム編集（汎用 Bot API の editMessageMedia 等は利用可能）
 - A numeric rate-limit scheduler. The unpaid ceiling is unknown; see `docs/bot-api-limits.md`
 - Automatic recovery of a draft stuck in `publishing`
 - Installer package equivalent to `create-ig-harness` / `create-x-harness`

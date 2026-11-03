@@ -17,7 +17,7 @@ These writes are `pending` until `approve_account_action`. Approve only sets `sc
 - add or remove one admin, including a harness bot resolved with `getMe`
 - BotFather changes: create bot, name, description, about, commands, profile photo, fetch token, revoke token
 
-There is no tool that sends a user message except the scripted BotFather exchange, and that exchange runs only after approval. The peer is fixed to `@BotFather`.
+The scripted BotFather exchange fixes its peer to `@BotFather`. The new finite owner-operation dispatcher also supports ordinary user messages, media, polls, and profile changes, all through request → approve → publisher. See [API coverage](api-coverage.md) and [operation examples](api-operations.md). No arbitrary TL invocation is exposed.
 
 ## Secrets
 
