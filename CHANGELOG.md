@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- GramJS `requestRetries` is 1, so an MTProto call is sent once. 0 sent nothing
+- `user-live` stores the queue in SQLite (mode 0600) and binds to 127.0.0.1 unless `HOST` is set
+- Bot tokens are read from the secret store, then the environment
+- The secret file stores only session ciphertext, login state, and bot tokens it saved
+
 ## 0.2.0
 
 - Owner account via GramJS (MTProto), next to the Bot API

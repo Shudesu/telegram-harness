@@ -62,7 +62,13 @@ export function createApp(
     if (name.length < 1 || name.length > 80) return fail(c, 400, "invalid_name");
     const nameError = validateTokenEnvName(tokenEnvName);
     if (nameError) return fail(c, 400, nameError);
-    if (!deps.env[tokenEnvName]) return fail(c, 400, "missing_token_env");
+    try {
+      await resolveToken(deps.env, tokenEnvName, deps.secrets);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (message.startsWith("missing_token_env")) return fail(c, 400, "missing_token_env");
+      return fail(c, 400, "invalid_token_env_name");
+    }
     const stamp = nowIso(deps);
     const bot = { id: crypto.randomUUID(), name, tokenEnvName, createdAt: stamp, updatedAt: stamp };
     await deps.repo.insertBot(bot);
@@ -254,7 +260,7 @@ export function createApp(
     const bot = await deps.repo.getBot(channel.botId);
     if (!bot) return fail(c, 404, "bot_not_found");
     try {
-      const token = resolveToken(deps.env, bot.tokenEnvName);
+      const token = await resolveToken(deps.env, bot.tokenEnvName, deps.secrets);
       const memberCount = await deps.telegram.call<number>(token, "getChatMemberCount", { chat_id: channel.chatId });
       const chat = await deps.telegram.call<Record<string, unknown>>(token, "getChat", { chat_id: channel.chatId });
       return c.json({

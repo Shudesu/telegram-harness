@@ -703,7 +703,7 @@ function mapOwnedChat(row: OwnedChatRow): OwnedChat {
 interface StatementSync {
   get(...args: unknown[]): unknown;
   all(...args: unknown[]): unknown[];
-  run(...args: unknown[]): { changes: number };
+  run(...args: unknown[]): { changes: number | bigint };
 }
 
 interface DatabaseSyncLike {
@@ -729,7 +729,8 @@ export function createNodeSqliteD1(db: DatabaseSyncLike): D1Like {
         },
         async run() {
           const info = statement.run(...args);
-          return { meta: { changes: info.changes } };
+          const changes = typeof info.changes === "bigint" ? Number(info.changes) : info.changes;
+          return { meta: { changes } };
         },
       };
       return prepared;

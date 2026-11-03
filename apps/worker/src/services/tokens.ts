@@ -1,8 +1,15 @@
 import { redactSecrets, validateTokenEnvName } from "@telegram-harness/shared";
+import type { SecretStore } from "@telegram-harness/user-account";
 
-export function resolveToken(env: Record<string, string | undefined>, tokenEnvName: string): string {
+export async function resolveToken(
+  env: Record<string, string | undefined>,
+  tokenEnvName: string,
+  secrets: SecretStore,
+): Promise<string> {
   const nameError = validateTokenEnvName(tokenEnvName);
   if (nameError) throw new Error(nameError);
+  const stored = await secrets.get(tokenEnvName);
+  if (stored) return stored;
   const value = env[tokenEnvName];
   if (!value) throw new Error(`missing_token_env:${tokenEnvName}`);
   return value;

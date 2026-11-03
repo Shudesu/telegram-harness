@@ -58,7 +58,7 @@ async function deliver(deps: Deps, draft: Draft, secrets: string[]): Promise<{ m
   if (!channel) throw new Error("channel_not_found");
   const bot = await deps.repo.getBot(channel.botId);
   if (!bot) throw new Error("bot_not_found");
-  const token = resolveToken(deps.env, bot.tokenEnvName);
+  const token = await resolveToken(deps.env, bot.tokenEnvName, deps.secrets);
   secrets.push(token);
   if (draft.action === "delete") return deletePublished(deps, token, channel, draft);
   if (draft.action === "edit") return editPublished(deps, token, channel, draft);

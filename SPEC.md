@@ -74,7 +74,7 @@ X Harness の growth draft と同じ境界にする。
 
 ## Registration
 
-ボットトークンは保存しない。`tokenEnvName`（例: `TELEGRAM_BOT_TOKEN_MAIN`）だけを保存し、送信時に環境変数から読む。`.env.example` にあるのは名前とプレースホルダだけ。
+ボットトークンはデータベースに保存しない。`tokenEnvName`（例: `TELEGRAM_BOT_TOKEN_MAIN`）だけを保存し、送信時は秘密ストアを先に、無ければ環境変数を読む。`.env.example` にあるのは名前とプレースホルダだけ。
 
 ## Stats
 
