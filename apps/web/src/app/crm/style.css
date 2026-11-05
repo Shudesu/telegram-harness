@@ -211,3 +211,6 @@
 .booking-json { overflow:auto;max-height:320px; }
 .crm-field select,.crm-field > input { padding:10px;border:1px solid #cbd5e1;border-radius:6px;background:white;color:#172033;max-width:100%; }
 .booking-calendar code { overflow-wrap:anywhere; }
+.engagement-json { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 48rem; font-size: 12px; }
+.crm-field select, .crm-field textarea { border: 1px solid #c6cfda; border-radius: 6px; background: white; padding: 10px; font: inherit; max-width: 100%; }
+.crm-table td { overflow-wrap: anywhere; }

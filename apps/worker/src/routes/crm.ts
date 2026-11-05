@@ -21,7 +21,7 @@ export function text(b: Body, key: string, max = 200): string {
     throw new CrmError(`invalid_${key}`, 400);
   return value.trim();
 }
-function choice<T extends string>(
+export function choice<T extends string>(
   b: Body,
   key: string,
   values: readonly T[],
@@ -30,7 +30,7 @@ function choice<T extends string>(
   if (!values.includes(value as T)) throw new CrmError(`invalid_${key}`, 400);
   return value as T;
 }
-function date(b: Body, key: string): string {
+export function date(b: Body, key: string): string {
   const value = text(b, key);
   if (
     !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{3})?(Z|[+-]\d\d:\d\d)$/.test(
@@ -62,14 +62,14 @@ export async function body(request: { json: () => Promise<unknown> }): Promise<B
     throw new CrmError("invalid_json", 400);
   return value as Body;
 }
-export function page(query: (name: string) => string | undefined) {
+export function page(query: (name: string) => string | undefined, maxAfter = 100) {
   const limit = Number(query("limit") ?? 50);
   const after = query("after") ?? "";
   if (
     !Number.isInteger(limit) ||
     limit < 1 ||
     limit > 100 ||
-    after.length > 100
+    after.length > maxAfter
   )
     throw new CrmError("invalid_pagination", 400);
   return { limit, after };

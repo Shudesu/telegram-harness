@@ -1,3 +1,4 @@
+import { mountEngagement } from "./routes/engagement.js";
 import { mountBookingBot } from "./routes/booking-bot.js";
 import { mountCrm } from "./routes/crm.js";
 import { VERSION, safeEqual, validateChatId, validateEditPayload, validatePublishPayload, validateScheduledAt, validateSource, validateTokenEnvName, VIEWS_REASON } from "@telegram-harness/shared";
@@ -372,6 +373,7 @@ export function createApp(
   mountUserAccount(app, deps);
   mountCrm(app, deps);
   mountBookingBot(app, deps);
+  mountEngagement(app, deps);
   return app;
 }
 

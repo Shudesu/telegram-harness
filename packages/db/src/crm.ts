@@ -1,3 +1,4 @@
+import { EngagementRepo } from "./engagement.js";
 import type { D1Like } from "./d1.js";
 
 export interface Customer {
@@ -67,7 +68,8 @@ function customer(
   return { ...rest, tags: JSON.parse(tagsJson) as string[] };
 }
 export class CrmRepo {
-  constructor(private readonly db: D1Like) {}
+  readonly engagement: EngagementRepo;
+  constructor(private readonly db: D1Like) { this.engagement = new EngagementRepo(db); }
   private async all<T>(sql: string, ...args: unknown[]): Promise<T[]> {
     return (
       (

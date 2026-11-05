@@ -13,6 +13,7 @@ export default function CrmLayout({ children }: { children: ReactNode }) {
           <Link href="/crm/customers">顧客台帳</Link>
           <Link href="/crm/bookings">予約管理</Link>
           <Link href="/crm/booking-bot">ボット予約・電話受付</Link>
+          <Link href="/crm/engagement">配信・業種別台帳</Link>
           <Link href="/">投稿管理</Link>
         </nav>
         <p>
@@ -23,7 +24,7 @@ export default function CrmLayout({ children }: { children: ReactNode }) {
       </aside>
       <main className="crm-main">
         <div className="crm-topline">
-          Telegram Harness <span>フェーズ2 · 予約受付</span>
+          Telegram Harness <span>フェーズ3 · 顧客管理</span>
         </div>
         {children}
       </main>

@@ -4,3 +4,6 @@ export { MemoryRepo } from "./memory.js";
 export type { Repo } from "./repo.js";
 export { CrmRepo, CrmError } from "./crm.js";
 export type { Customer, Contact, Consent, Slot, Booking } from "./crm.js";
+
+export { EngagementRepo } from "./engagement.js";
+export type { LedgerRecord, Execution } from "./engagement.js";

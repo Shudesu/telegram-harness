@@ -89,3 +89,12 @@ node scripts/phase2-http-smoke.mjs
 ```
 
 このブランチの依存更新はinstall系スクリプトを実行せず検証しています。GramJSのnpm名は`telegram`で、現在archived/deprecatedです。今回の予約はGramJSに依存しません。既存の本人アカウント機能を再開する前に保守方針を見直してください。
+
+## フェーズ3: 配信・業種別台帳（ローカルモック）
+
+`/crm/engagement` にステップ配信・動画/リンク・セグメント配信・通話記録・6業種のプロフィール/来店台帳を追加。送信はモックです。
+
+- [操作手順とAPI/MCP](docs/phase3.md)
+- [L Harness全機能の判定・未実装範囲](docs/parity-lharness.md)
+- [業種別項目表](docs/industry-templates.md)
+- [残タスクと完了条件](docs/DOD.md)

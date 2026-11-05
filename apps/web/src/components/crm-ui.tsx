@@ -7,12 +7,14 @@ export function CrmField({
   type = "text",
   placeholder,
   defaultValue,
+  required,
 }: {
   label: string;
   name: string;
   type?: "text" | "number";
   placeholder?: string;
   defaultValue?: string;
+  required?: boolean;
 }) {
   return (
     <label className="crm-field">
@@ -23,7 +25,7 @@ export function CrmField({
         type={type}
         placeholder={placeholder}
         defaultValue={defaultValue}
-        required={name !== "tags"}
+        required={required ?? name !== "tags"}
       />
     </label>
   );

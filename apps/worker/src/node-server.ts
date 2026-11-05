@@ -16,6 +16,7 @@ if (process.env.TELEGRAM_USER_ALLOW_NETWORK === "true") {
 
 const env: Record<string, string | undefined> = {
   TELEGRAM_BOOKING_MOCK: "true",
+  TELEGRAM_ENGAGEMENT_MOCK: "true",
   API_KEY: process.env.API_KEY ?? "dev-local-api-key",
   INTAKE_API_KEY: process.env.INTAKE_API_KEY,
   TELEGRAM_WEBHOOK_SECRET: process.env.TELEGRAM_WEBHOOK_SECRET ?? "dev-webhook-secret",
