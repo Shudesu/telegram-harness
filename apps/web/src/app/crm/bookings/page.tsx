@@ -91,7 +91,8 @@ export default async function Bookings({
         <h2>
           予約枠 <CrmBadge>表示時刻：日本時間</CrmBadge>
         </h2>
-        <div className="crm-table-wrap">
+        <p className="crm-table-hint">表は横にスクロールして確認できます。</p>
+        <div className="crm-table-wrap" role="region" aria-label="予約枠" tabIndex={0}>
           <table className="crm-table">
             <thead>
               <tr>
@@ -146,7 +147,8 @@ export default async function Bookings({
       </section>
       <section className="crm-card">
         <h2>予約一覧</h2>
-        <div className="crm-table-wrap">
+        <p className="crm-table-hint">表は横にスクロールして確認できます。</p>
+        <div className="crm-table-wrap" role="region" aria-label="予約一覧" tabIndex={0}>
           <table className="crm-table">
             <thead>
               <tr>

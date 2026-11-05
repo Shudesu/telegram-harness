@@ -66,7 +66,8 @@ export default async function Customers({
         <h2>
           登録済み顧客 <CrmBadge>{list.data.length}件 / このページ</CrmBadge>
         </h2>
-        <div className="crm-table-wrap">
+        <p className="crm-table-hint">表は横にスクロールして確認できます。</p>
+        <div className="crm-table-wrap" role="region" aria-label="登録済み顧客" tabIndex={0}>
           <table className="crm-table">
             <thead>
               <tr>

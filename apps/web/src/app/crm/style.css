@@ -108,9 +108,13 @@
 .crm-table-wrap {
   overflow-x: auto;
 }
+.crm-table-hint {
+  display: none;
+}
 .crm-table {
   border-collapse: collapse;
   width: 100%;
+  min-width: 720px;
   text-align: left;
 }
 .crm-table th {
@@ -194,5 +198,11 @@
   }
   .crm-field {
     min-width: 0;
+  }
+  .crm-table-hint {
+    display: block;
+    margin: 0 0 12px;
+    color: #5c6c80;
+    font-size: 12px;
   }
 }
