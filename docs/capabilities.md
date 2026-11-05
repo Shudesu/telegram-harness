@@ -1,4 +1,6 @@
-# Telegram機能比較
+# Telegram Harness — 機能比較
+
+フェーズ2のモック予約実装は [phase2.md](phase2.md)、Botのチャット種別機能表は [bot-capabilities.md](bot-capabilities.md) を参照。以下の未実装記載はフェーズ1時点の記録。
 
 確認日: 2026-11-05。公式公開資料の仕様と、このリポジトリの実装範囲は別である。フェーズ1はローカルCRM・予約・候補抽出のみ。Telegramの実操作、Login、Mini Apps、決済は未実装／未実機検証。
 

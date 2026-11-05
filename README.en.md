@@ -36,7 +36,7 @@ Load the same environment in another terminal and run `pnpm dev:web`. Open `http
 
 Both servers bind to loopback (worker 8787, web 3005). The UI returns 403 unless explicitly enabled with `TELEGRAM_LOCAL_UI=true`. This is a local operator application, **not a multi-user authentication boundary**. Do not expose it to the internet or LAN. Cloud authentication and tenant isolation are future release gates.
 
-The dry-run worker now persists to `.local/crm-dry-run.sqlite` relative to the worker directory, independently of the user-live database. Set `TELEGRAM_CRM_DB_PATH` to an absolute path to override it. Startup applies pending migrations. Store large databases/build output on an external volume. No D1 deployment is performed.
+The dry-run worker now persists to `.local/crm-dry-run.sqlite` relative to the worker directory, independently of the user-live database. Set `TELEGRAM_CRM_DB_PATH` to an absolute path to override it. Startup applies pending migrations. Follow the storage policy for your environment; this phase-2 task used internal storage only. No D1 deployment is performed.
 
 ## API and MCP
 
@@ -72,3 +72,9 @@ Never commit `.env`, `.dev.vars`, `.local/`, databases, sessions, tokens or cust
 Spam, restriction evasion, member scraping and Japan-facing online casino promotion are unsupported. Stars requires business/product/jurisdiction/terms/refund readiness review before enablement. Phase 1 work does not send to Telegram, change channels, deploy, push or publish.
 
 See [approval flow](docs/approval.md), [Bot API limits](docs/bot-api-limits.md), [owner-account layer](docs/user-account.md), and [security policy](SECURITY.md).
+
+## Phase 2: local booking and phone intake
+
+`/crm/booking-bot` provides an inline calendar, simulated `/book` and callback updates, group/topic bookings linked to CRM, staff phone intake, and mock confirmations/reminders. Five additional MCP tools use the same authenticated API. No live delivery or public Mini App is included. See [phase-2 scope and verification](docs/phase2.md), [bot capabilities](docs/bot-capabilities.md), [client research](docs/research-cn-clients.md), [npm audit](docs/security/npm-audit-20261105.md), and [SMS/phone design](docs/sms-phone.md).
+
+Install with `pnpm install --frozen-lockfile --ignore-scripts`, run `pnpm check`, `pnpm --filter web build`, and `node scripts/phase2-http-smoke.mjs`. The latter uses localhost HTTP and synthetic data without a browser. GramJS (`telegram` on npm) is archived/deprecated; it remains isolated from the new booking path.

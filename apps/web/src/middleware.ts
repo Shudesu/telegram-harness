@@ -1,6 +1,6 @@
 import { isLocalUiRequest } from "./local-ui-policy";
 import { NextResponse, type NextRequest } from "next/server";
-// Local phase 1 only. A Cloud authenticated gateway is a separate release gate.
+// Local workspace only. A Cloud authenticated gateway is a separate release gate.
 export function middleware(request: NextRequest) {
   if (
     !isLocalUiRequest(

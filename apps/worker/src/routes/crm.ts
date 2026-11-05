@@ -10,7 +10,7 @@ import type { Deps } from "../deps.js";
 
 const MAX = 64 * 1024;
 type Body = Record<string, unknown>;
-function text(b: Body, key: string, max = 200): string {
+export function text(b: Body, key: string, max = 200): string {
   const value = b[key];
   if (
     typeof value !== "string" ||
@@ -51,7 +51,7 @@ function tags(b: Body): string[] {
     throw new CrmError("invalid_tags", 400);
   return [...new Set(b.tags.map((t) => text({ tag: t }, "tag", 40)))];
 }
-async function body(request: { json: () => Promise<unknown> }): Promise<Body> {
+export async function body(request: { json: () => Promise<unknown> }): Promise<Body> {
   let value: unknown;
   try {
     value = await request.json();
@@ -62,7 +62,7 @@ async function body(request: { json: () => Promise<unknown> }): Promise<Body> {
     throw new CrmError("invalid_json", 400);
   return value as Body;
 }
-function page(query: (name: string) => string | undefined) {
+export function page(query: (name: string) => string | undefined) {
   const limit = Number(query("limit") ?? 50);
   const after = query("after") ?? "";
   if (

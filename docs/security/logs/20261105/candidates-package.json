@@ -1,0 +1,1 @@
+{"name":"telegram-harness-candidate-audit","private":true,"dependencies":{"telegram":"latest","grammy":"latest","telegraf":"latest","node-telegram-bot-api":"latest","twilio":"latest","@vonage/server-sdk":"latest"}}

@@ -10,7 +10,7 @@ const API_URL = process.env.TELEGRAM_HARNESS_API_URL ?? "http://localhost:8787";
 const API_KEY = process.env.TELEGRAM_HARNESS_API_KEY ?? "";
 
 export function createMcpServer(client = new TelegramHarnessClient(API_URL, API_KEY)): Server {
-  const server = new Server({ name: "telegram-harness", version: "0.2.0" }, { capabilities: { tools: {} } });
+  const server = new Server({ name: "Telegram Harness", version: "0.2.0" }, { capabilities: { tools: {} } });
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: toolDefs }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const args = (request.params.arguments ?? {}) as Record<string, unknown>;

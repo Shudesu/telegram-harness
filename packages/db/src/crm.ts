@@ -78,6 +78,77 @@ export class CrmRepo {
       ).results ?? []
     );
   }
+    async telegramCustomer(bot: string, user: string, name: string, now: string) {
+        const existing = await this.db.prepare(`SELECT ${contactColumns} FROM crm_contacts WHERE kind='telegram' AND value=? AND scope=?`).bind(user, bot).first<Contact>();
+        if (existing)
+            return existing;
+        // Stable IDs allow retries/concurrent updates to finish partial identity creation.
+        const id = `tg:${bot}:${user}`;
+        await this.db.prepare("INSERT OR IGNORE INTO crm_customers VALUES (?,?,?,?,?,?)")
+            .bind(id, name, "telegram-mock", "[]", now, now).run();
+        await this.db.prepare("INSERT OR IGNORE INTO crm_contacts VALUES (?,?,?,?,?,?,?,?)")
+            .bind(id, id, "telegram", user, bot, "mock-update-only", now, now).run();
+        const contact = await this.db.prepare(`SELECT ${contactColumns} FROM crm_contacts WHERE kind='telegram' AND value=? AND scope=?`).bind(user, bot).first<Contact>();
+        if (!contact)
+            throw new CrmError("identity_conflict");
+        return contact;
+    }
+    async calendar(month: string, now: string) {
+        return this.all<Slot>(`SELECT ${slotColumns}, (SELECT count(*) FROM crm_bookings b WHERE b.slot_id=crm_slots.id AND status='confirmed') AS booked FROM crm_slots WHERE substr(starts_at,1,7)=? AND starts_at>? ORDER BY starts_at,id LIMIT 100`, month, now);
+    }
+    async getBooking(id: string) {
+        return this.db.prepare(`SELECT ${bookingColumns} FROM crm_bookings WHERE id=?`).bind(id).first<Booking>();
+    }
+    async attachBookingRoute(bookingId: string, contactId: string, channel: string, destination: string, threadId: number | null, source: string) {
+        await this.db.prepare("INSERT OR IGNORE INTO crm_booking_routes VALUES (?,?,?,?,?,?)").bind(bookingId, contactId, channel, destination, threadId, source).run();
+        const route = await this.db.prepare("SELECT * FROM crm_booking_routes WHERE booking_id=?").bind(bookingId).first<{
+            contact_id: string;
+            channel: string;
+            destination: string;
+            thread_id: number | null;
+        }>();
+        if (!route || route.contact_id !== contactId || route.channel !== channel || route.destination !== destination || route.thread_id !== threadId)
+            throw new CrmError("booking_route_conflict");
+        const slot = await this.db.prepare("SELECT starts_at FROM crm_slots WHERE id=(SELECT slot_id FROM crm_bookings WHERE id=?)").bind(bookingId).first<{
+            starts_at: string;
+        }>();
+        const booking = await this.getBooking(bookingId);
+        if (!slot || !booking)
+            throw new CrmError("booking_not_found", 404);
+        for (const [kind, due] of [["confirmation", booking.createdAt], ["reminder", new Date(Date.parse(slot.starts_at) - 86400000).toISOString()]]) {
+            await this.db.prepare("INSERT OR IGNORE INTO crm_notifications(id,booking_id,kind,due_at) VALUES (?,?,?,?)").bind(`${bookingId}:${kind}`, bookingId, kind, due).run();
+        }
+    }
+    async notifications(after = "", limit = 50) {
+        return this.all<{
+            id: string;
+            bookingId: string;
+            kind: string;
+            dueAt: string;
+            status: string;
+            reason: string | null;
+        }>("SELECT id,booking_id AS bookingId,kind,due_at AS dueAt,status,reason FROM crm_notifications WHERE id>? ORDER BY id LIMIT ?", after, limit);
+    }
+    async dueNotifications(now: string) {
+        return this.all<{
+            id: string;
+            bookingId: string;
+            kind: string;
+            channel: "telegram" | "sms" | "voice";
+            destination: string;
+            threadId: number | null;
+            status: string;
+            startsAt: string;
+            verifiedAt: string | null;
+            consent: string | null;
+        }>(`SELECT n.id,n.booking_id AS bookingId,n.kind,r.channel,r.destination,r.thread_id AS threadId,b.status,s.starts_at AS startsAt,c.verified_at AS verifiedAt,
+      (SELECT status FROM crm_consents WHERE contact_id=c.id AND purpose='booking' ORDER BY sequence DESC LIMIT 1) AS consent
+      FROM crm_notifications n JOIN crm_booking_routes r ON r.booking_id=n.booking_id JOIN crm_bookings b ON b.id=n.booking_id JOIN crm_slots s ON s.id=b.slot_id JOIN crm_contacts c ON c.id=r.contact_id WHERE n.status='pending' AND n.due_at<=? ORDER BY n.due_at,n.id LIMIT 100`, now);
+    }
+    async finishNotification(id: string, status: "mocked" | "skipped", reason: string, now: string) {
+        const result = await this.db.prepare("UPDATE crm_notifications SET status=?,reason=?,completed_at=? WHERE id=? AND status='pending'").bind(status, reason, now, id).run();
+        return Boolean(result.meta?.changes);
+    }
   async listCustomers(after = "", limit = 50): Promise<Customer[]> {
     return (
       await this.all<Omit<Customer, "tags"> & { tagsJson: string }>(

@@ -1,3 +1,4 @@
+import { mountBookingBot } from "./routes/booking-bot.js";
 import { mountCrm } from "./routes/crm.js";
 import { VERSION, safeEqual, validateChatId, validateEditPayload, validatePublishPayload, validateScheduledAt, validateSource, validateTokenEnvName, VIEWS_REASON } from "@telegram-harness/shared";
 import type { ChannelKind, Draft, DraftKind, DraftPayload, ParseMode } from "@telegram-harness/shared";
@@ -47,7 +48,7 @@ export function createApp(
     c.json({
       success: true,
       data: {
-        name: "telegram-harness",
+        name: "Telegram Harness",
         version: VERSION,
         telegramMode: deps.telegram.mode,
         userAccountMode: deps.userAccount.mode,
@@ -370,6 +371,7 @@ export function createApp(
 
   mountUserAccount(app, deps);
   mountCrm(app, deps);
+  mountBookingBot(app, deps);
   return app;
 }
 

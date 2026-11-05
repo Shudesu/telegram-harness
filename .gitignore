@@ -24,3 +24,5 @@ crm-exports/
 # Also ignore symlinks to build output on external storage.
 .next
 .dev.vars.*
+# Deliberately retained public/synthetic audit evidence.
+!docs/security/logs/**/*.log

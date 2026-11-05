@@ -35,7 +35,7 @@ pnpm dev:worker
 
 workerは127.0.0.1:8787、webは127.0.0.1:3005にbindします。webは`TELEGRAM_LOCAL_UI=true`がなければ403です。**インターネット／LANへ公開しないでください**。公開運用の利用者認証・テナント分離は未実装です。
 
-dry-run workerもDBへ永続化します。既定はworker作業ディレクトリ内の`.local/crm-dry-run.sqlite`、`TELEGRAM_CRM_DB_PATH`で絶対パスを指定できます。既存user-liveのDBとは別です。起動時に未適用migrationを実行します。大きいDB・ビルド出力は外部ディスクへ置いてください。D1への適用やデプロイはこの手順では行いません。
+dry-run workerもDBへ永続化します。既定はworker作業ディレクトリ内の`.local/crm-dry-run.sqlite`、`TELEGRAM_CRM_DB_PATH`で絶対パスを指定できます。既存user-liveのDBとは別です。起動時に未適用migrationを実行します。保存先は運用環境の容量・保存ポリシーに合わせて設定してください。2026-11-05フェーズ2の作業は内蔵のみを使用します。D1への適用やデプロイはこの手順では行いません。
 
 ## API / MCP
 
@@ -74,3 +74,18 @@ gitleaks git --redact --no-banner --log-opts=--all
 スパム、制限回避、参加者スクレイピング、日本向けオンラインカジノ誘導は対象外。Starsは商品・対象国・規約・返金体制を確認してから導入する設計です。フェーズ1作業では送信・チャンネル操作・デプロイ・push・公開を行いません。
 
 既存機能の詳細: [承認フロー](docs/approval.md)、[Bot API制約](docs/bot-api-limits.md)、[ユーザーアカウント](docs/user-account.md)、[セキュリティ](SECURITY.md)。
+
+## フェーズ2 — ボット予約・電話受付（ローカルモック）
+
+`/crm/booking-bot`で月別インラインカレンダー、`/book`の模擬受付、グループ／トピックから台帳への予約、電話のスタッフ入力、予約確認・24時間前リマインダーを検証できます。送信はすべてモック。追加の5 MCPツールも同じ管理APIを利用します。Mini Appの公開・認証や実送信は含みません。
+
+[使い方・API/MCP・検証境界](docs/phase2.md) / [Bot機能マップ](docs/bot-capabilities.md) / [中国語圏クライアント調査](docs/research-cn-clients.md) / [npm監査](docs/security/npm-audit-20261105.md) / [SMS・電話設計](docs/sms-phone.md)。
+
+```sh
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm check
+pnpm --filter web build
+node scripts/phase2-http-smoke.mjs
+```
+
+このブランチの依存更新はinstall系スクリプトを実行せず検証しています。GramJSのnpm名は`telegram`で、現在archived/deprecatedです。今回の予約はGramJSに依存しません。既存の本人アカウント機能を再開する前に保守方針を見直してください。

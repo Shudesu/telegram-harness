@@ -1,6 +1,17 @@
 # 開発Definition of Done
 
-2026-11-05。今回の実装対象はフェーズ1のみ。チェック済みはコード・成果物・記録で確認した項目。未チェックを黙って完了にしない。公開、デプロイ、Telegram実操作、送信には別途明示承認が必要。
+2026-11-05。以下にはフェーズ1の完了記録と長期ロードマップを保持する。2026-11-05追加依頼のフェーズ2は次節の6項目を対象とする。チェック済みはコード・成果物・記録で確認した項目。未チェックを黙って完了にしない。公開、デプロイ、Telegram実操作、送信には別途明示承認が必要。
+
+## フェーズ2 — 2026-11-05追加依頼の6項目
+
+- [x] 中国語圏クライアント・運用OSS: `research-cn-clients.md`に機能・ライセンス・commit日・流用可否・出典。不明は明記。コード複製なし。
+- [x] npm監査: `security/npm-audit-20261105.md`と`security/logs/20261105/`に本体・候補のaudit、lock整合、lifecycle・保守・名前の確認。High/Criticalは修正。
+- [x] Bot機能マップ: `bot-capabilities.md`に1対1／group／channel・権限・privacy・ボタン・Web App・topic・参加申請・メンバー管理の公式出典。
+- [x] 予約実装: インラインカレンダー、groupコマンド、台帳紐付け、モック確認／リマインダー、MCP・Kumo画面。テスト・型検査・build・localhost HTTP E2E。
+- [x] 電話・SMS: `sms-phone.md`に候補と出典付き料金、手入力・将来IVR、provider境界とモックテスト。
+- [x] ローカルコミット: `feat/phase2`、gitleaks 0、clean、pushなし。最終ハッシュと確認ログは指定STATUSに記録。
+
+詳細は [phase2.md](phase2.md)。指定STATUSは `~/claudecode/telegram-harness-tasks/20261105/phase2/STATUS.md`。旧ロードマップのMini App/initData/復元/Cloud・実機確認を完了扱いしない。
 
 ## フェーズ1 — ローカル顧客台帳・予約・移行候補
 
