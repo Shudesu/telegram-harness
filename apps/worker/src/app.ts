@@ -1,3 +1,4 @@
+import { mountCrm } from "./routes/crm.js";
 import { VERSION, safeEqual, validateChatId, validateEditPayload, validatePublishPayload, validateScheduledAt, validateSource, validateTokenEnvName, VIEWS_REASON } from "@telegram-harness/shared";
 import type { ChannelKind, Draft, DraftKind, DraftPayload, ParseMode } from "@telegram-harness/shared";
 import { DisabledUserAccount, EnvSecretStore } from "@telegram-harness/user-account";
@@ -368,6 +369,7 @@ export function createApp(
   });
 
   mountUserAccount(app, deps);
+  mountCrm(app, deps);
   return app;
 }
 

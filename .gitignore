@@ -14,3 +14,13 @@ out/
 
 .env*
 !.env.example
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.pem
+*.key
+crm-exports/
+# Also ignore symlinks to build output on external storage.
+.next
+.dev.vars.*

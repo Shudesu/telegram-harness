@@ -1,3 +1,4 @@
+import type { CrmRepo } from "./crm.js";
 import type {
   AccountAction,
   Bot,
@@ -13,6 +14,7 @@ import type {
 } from "@telegram-harness/shared";
 
 export interface Repo {
+  readonly crm?: CrmRepo;
   insertBot(bot: Bot): Promise<void>;
   listBots(): Promise<Bot[]>;
   getBot(id: string): Promise<Bot | null>;

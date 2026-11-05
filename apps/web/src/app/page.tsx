@@ -73,7 +73,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   if (!base || !key) {
     return (
       <main style={{ maxWidth: 720, margin: "40px auto", padding: "0 20px" }}>
-        <h1>Telegram Harness</h1>
+        <a href="/crm/customers">顧客台帳・予約管理 →</a>
+          <h1>Telegram Harness</h1>
         <p>サーバー側の TELEGRAM_HARNESS_API_URL と API_KEY を設定すると、承認キューがここに出ます。</p>
       </main>
     );

@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3005",
+    "dev": "next dev --hostname 127.0.0.1 --port 3005",
     "build": "next build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "start": "next start --hostname 127.0.0.1 --port 3005"
   },
   "dependencies": {
+    "@cloudflare/kumo": "^2.17.0",
+    "@phosphor-icons/react": "^2.1.10",
     "next": "^15.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
