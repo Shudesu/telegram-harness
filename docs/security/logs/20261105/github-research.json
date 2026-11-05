@@ -1,0 +1,170 @@
+[
+  {
+    "repo": "Nekogram/Nekogram",
+    "url": "https://github.com/Nekogram/Nekogram",
+    "description": "Open-source third-party Telegram client with not many but useful modifications.",
+    "archived": false,
+    "pushed_at": "2026-10-30T09:37:18Z",
+    "default_branch": "main",
+    "license": {
+      "spdx": "GPL-2.0",
+      "url": "https://github.com/Nekogram/Nekogram/blob/main/LICENSE"
+    },
+    "last_commit": "2026-10-28T03:35:52Z",
+    "commit_url": "https://github.com/Nekogram/Nekogram/commit/199abde0f100d92cee8d925337561633e6e11186"
+  },
+  {
+    "repo": "NekoX-Dev/NekoX",
+    "url": "https://github.com/NekoX-Dev/NekoX",
+    "description": null,
+    "archived": false,
+    "pushed_at": "2026-02-21T22:10:40Z",
+    "default_branch": "master",
+    "license": {
+      "spdx": "GPL-2.0",
+      "url": "https://github.com/NekoX-Dev/NekoX/blob/master/LICENSE"
+    },
+    "last_commit": "2026-02-14T12:56:36Z",
+    "commit_url": "https://github.com/NekoX-Dev/NekoX/commit/3581a10f8ecaa0f6d42d7a77442742caf95c6a13"
+  },
+  {
+    "repo": "NextAlone/Nagram",
+    "url": "https://github.com/NextAlone/Nagram",
+    "description": "The third-party Telegram android app.",
+    "archived": false,
+    "pushed_at": "2026-11-04T16:49:59Z",
+    "default_branch": "main",
+    "license": {
+      "spdx": "GPL-3.0",
+      "url": "https://github.com/NextAlone/Nagram/blob/main/LICENSE"
+    },
+    "last_commit": "2026-10-20T13:13:00Z",
+    "commit_url": "https://github.com/NextAlone/Nagram/commit/87863c8a57854c739e1452e56591c07ea52415d3"
+  },
+  {
+    "repo": "Telegram-FOSS-Team/Telegram-FOSS",
+    "url": "https://github.com/Telegram-FOSS-Team/Telegram-FOSS",
+    "description": "Unofficial, FOSS-friendly fork of the original Telegram client for Android",
+    "archived": false,
+    "pushed_at": "2024-08-25T10:50:37Z",
+    "default_branch": "master",
+    "license": {
+      "spdx": "GPL-2.0",
+      "url": "https://github.com/Telegram-FOSS-Team/Telegram-FOSS/blob/master/LICENSE"
+    },
+    "last_commit": "2024-07-07T17:04:16Z",
+    "commit_url": "https://github.com/Telegram-FOSS-Team/Telegram-FOSS/commit/10da5406ed92d30c6add3b25d40b2b3b6995d873"
+  },
+  {
+    "repo": "Forkgram/TelegramAndroid",
+    "url": "https://github.com/forkgram/TelegramAndroid",
+    "description": "Fork client of Telegram app for Android.",
+    "archived": false,
+    "pushed_at": "2026-10-26T10:42:13Z",
+    "default_branch": "dev",
+    "license": {
+      "spdx": "GPL-2.0",
+      "url": "https://github.com/forkgram/TelegramAndroid/blob/dev/LICENSE"
+    },
+    "last_commit": "2026-10-26T09:54:06Z",
+    "commit_url": "https://github.com/forkgram/TelegramAndroid/commit/f7f9472ed45cbec41f2914962cf2c387eb662047"
+  },
+  {
+    "repo": "grammyjs/grammY",
+    "url": "https://github.com/grammyjs/grammY",
+    "description": "The Telegram Bot Framework.",
+    "archived": false,
+    "pushed_at": "2026-10-16T15:43:28Z",
+    "default_branch": "main",
+    "license": {
+      "spdx": "MIT",
+      "url": "https://github.com/grammyjs/grammY/blob/main/LICENSE"
+    },
+    "last_commit": "2026-10-16T15:43:25Z",
+    "commit_url": "https://github.com/grammyjs/grammY/commit/e8b3b1bec0ecb0cd76af7f3996354027ba94c303"
+  },
+  {
+    "repo": "telegraf/telegraf",
+    "url": "https://github.com/telegraf/telegraf",
+    "description": "Modern Telegram Bot Framework for Node.js",
+    "archived": false,
+    "pushed_at": "2026-09-24T15:15:55Z",
+    "default_branch": "v4",
+    "license": {
+      "spdx": "MIT",
+      "url": "https://github.com/telegraf/telegraf/blob/v4/LICENSE"
+    },
+    "last_commit": "2026-09-24T15:15:52Z",
+    "commit_url": "https://github.com/telegraf/telegraf/commit/776b0f3c8b5903e10ecf53e67ebad6be0413cfa6"
+  },
+  {
+    "repo": "yagop/node-telegram-bot-api",
+    "url": "https://github.com/yagop/node-telegram-bot-api",
+    "description": "Telegram Bot API for NodeJS",
+    "archived": false,
+    "pushed_at": "2026-11-04T01:07:27Z",
+    "default_branch": "master",
+    "license": {
+      "spdx": "MIT",
+      "url": "https://github.com/yagop/node-telegram-bot-api/blob/master/LICENSE.md"
+    },
+    "last_commit": "2026-11-04T00:53:14Z",
+    "commit_url": "https://github.com/yagop/node-telegram-bot-api/commit/466bc50ec8e8c91eff527d8089058e8ca8fa12fb"
+  },
+  {
+    "repo": "iovxw/rssbot",
+    "url": "https://github.com/iovxw/rssbot",
+    "description": "Lightweight Telegram RSS notification bot. 用于消息通知的轻量级 Telegram RSS 机器人",
+    "archived": false,
+    "pushed_at": "2026-08-17T05:32:38Z",
+    "default_branch": "2.x",
+    "license": {
+      "spdx": "Unlicense",
+      "url": "https://github.com/iovxw/rssbot/blob/2.x/UNLICENSE"
+    },
+    "last_commit": "2026-07-21T08:43:01Z",
+    "commit_url": "https://github.com/iovxw/rssbot/commit/fa441dae34d65f38a3f6ebabaa6313cc30a59c9f"
+  },
+  {
+    "repo": "DIYgod/RSSHub",
+    "url": "https://github.com/DIYgod/RSSHub",
+    "description": "🧡 Everything is RSSible",
+    "archived": false,
+    "pushed_at": "2026-11-05T10:50:11Z",
+    "default_branch": "master",
+    "license": {
+      "spdx": "AGPL-3.0",
+      "url": "https://github.com/DIYgod/RSSHub/blob/master/LICENSE"
+    },
+    "last_commit": "2026-11-05T10:43:28Z",
+    "commit_url": "https://github.com/DIYgod/RSSHub/commit/32706ee76976d04773bb1cacb6d3f94e1846bb92"
+  },
+  {
+    "repo": "Elepover/pmcenter",
+    "url": "https://github.com/Elepover/pmcenter",
+    "description": "A Telegram bot helping you process private messages.",
+    "archived": false,
+    "pushed_at": "2022-12-08T08:56:26Z",
+    "default_branch": "master",
+    "license": {
+      "spdx": "Apache-2.0",
+      "url": "https://github.com/Elepover/pmcenter/blob/master/LICENSE"
+    },
+    "last_commit": "2020-05-29T01:12:25Z",
+    "commit_url": "https://github.com/Elepover/pmcenter/commit/a982a799629de408979694ec91032e10d1239e68"
+  },
+  {
+    "repo": "gram-js/gramjs",
+    "url": "https://github.com/gram-js/gramjs",
+    "description": "NodeJS/Browser MTProto API Telegram client library,",
+    "archived": true,
+    "pushed_at": "2026-07-14T19:50:48Z",
+    "default_branch": "master",
+    "license": {
+      "spdx": "MIT",
+      "url": "https://github.com/gram-js/gramjs/blob/master/LICENSE"
+    },
+    "last_commit": "2026-07-14T19:50:48Z",
+    "commit_url": "https://github.com/gram-js/gramjs/commit/3dc2346fb15ee5a73a03bce3bd191e7d28c76f06"
+  }
+]

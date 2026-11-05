@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.0",
+    "@hono/node-server": "^2.1.6",
     "@telegram-harness/db": "workspace:*",
     "@telegram-harness/shared": "workspace:*",
     "@telegram-harness/telegram-sdk": "workspace:*",

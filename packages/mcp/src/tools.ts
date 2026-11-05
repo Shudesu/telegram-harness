@@ -1,3 +1,6 @@
+import { engagementToolDefs, executeEngagementTool } from "./engagement-tools.js";
+import { bookingToolDefs, executeBookingTool } from "./booking-tools.js";
+import { crmToolDefs, executeCrmTool } from "./crm-tools.js";
 import { TelegramHarnessClient } from "@telegram-harness/sdk";
 
 export interface ToolDef {
@@ -50,6 +53,9 @@ const contentProps = {
 };
 
 export const toolDefs: ToolDef[] = [
+  ...engagementToolDefs,
+  ...crmToolDefs,
+  ...bookingToolDefs,
   {
     name: "register_bot",
     description: "ボットを登録する。tokenEnvName は環境変数名で、トークン値は渡さない。Telegram には送らない。",
@@ -418,6 +424,9 @@ export const toolDefs: ToolDef[] = [
 type Args = Record<string, unknown>;
 
 export async function executeTool(client: TelegramHarnessClient, name: string, args: Args): Promise<unknown> {
+  if (name.startsWith("engagement_")) return executeEngagementTool(client, name, args);
+  if (name.startsWith("booking_")) return executeBookingTool(client, name, args);
+  if (name.startsWith("crm_")) return executeCrmTool(client, name, args);
   switch (name) {
     case "register_bot":
       return client.post("/api/bots", { name: args.name, tokenEnvName: args.tokenEnvName });

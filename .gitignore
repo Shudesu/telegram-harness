@@ -14,3 +14,15 @@ out/
 
 .env*
 !.env.example
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.pem
+*.key
+crm-exports/
+# Also ignore symlinks to build output on external storage.
+.next
+.dev.vars.*
+# Deliberately retained public/synthetic audit evidence.
+!docs/security/logs/**/*.log

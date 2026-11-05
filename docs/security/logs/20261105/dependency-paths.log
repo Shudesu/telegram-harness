@@ -1,0 +1,34 @@
+Legend: production dependency, optional only, dev only
+
+telegram-harness@0.2.0 /Users/ai/telegram-harness (PRIVATE)
+
+devDependencies:
+vitest 4.1.12
+├─┬ @vitest/mocker 4.1.12
+│ └─┬ vite 7.3.7 peer
+│   ├── esbuild 0.28.2
+│   └─┬ tsx 4.23.15 peer
+│     └── esbuild 0.28.2
+└─┬ vite 7.3.7 peer
+  ├── esbuild 0.28.2
+  └─┬ tsx 4.23.15 peer
+    └── esbuild 0.28.2
+
+worker@0.1.0 /Users/ai/telegram-harness/apps/worker (PRIVATE)
+
+dependencies:
+@telegram-harness/user-account link:../../packages/user-account
+└─┬ telegram 2.26.22
+  └─┬ websocket 1.0.35
+    └── yaeti 0.0.6
+
+devDependencies:
+tsx 4.23.15
+└── esbuild 0.28.2
+
+@telegram-harness/user-account@0.2.0 /Users/ai/telegram-harness/packages/user-account (PRIVATE)
+
+dependencies:
+telegram 2.26.22
+└─┬ websocket 1.0.35
+  └── yaeti 0.0.6

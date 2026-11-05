@@ -1,0 +1,10 @@
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Progress: resolved 3, reused 0, downloaded 0, added 0
+ WARN  deprecated telegram@2.26.22: This package is archived and no longer maintained. Development continues in teleproto (https://npmjs.com/package/teleproto), a largely compatible, actively maintained fork. See the migration guide at https://docs.teleproto.dev/migrating-from-gramjs
+Progress: resolved 5, reused 0, downloaded 0, added 0
+Progress: resolved 88, reused 0, downloaded 0, added 0
+Progress: resolved 136, reused 0, downloaded 0, added 0
+ WARN  1 deprecated subdependencies found: yaeti@0.0.6
+Progress: resolved 139, reused 0, downloaded 0, added 0, done
+
+Done in 4.8s using pnpm v10.32.1

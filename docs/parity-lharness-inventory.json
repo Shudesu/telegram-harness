@@ -1,0 +1,4891 @@
+{
+  "sourceCommit": "3db88014af76718f02e810bfffeb0d30985657bd",
+  "method": "working tree including tracked modifications and non-ignored source additions; route/service groups exhaustive; hashes identify the exact inspected content; docs are supporting descriptions, not proof of deployment",
+  "records": [
+    {
+      "path": "COMPETITOR_FEATURES.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "e84288ddbeca20ab4b87dbc7c8c42dc296ef9d2cc58b69fb5ecfea3aa3b8bb8e",
+      "headings": [
+        "# L社 全機能リスト（公式サイトより抽出）",
+        "## コア配信機能",
+        "## ユーザー管理",
+        "## リッチコンテンツ",
+        "## 分析・計測",
+        "## 運用・管理",
+        "## 現在のSPECでカバー済み ✅",
+        "## SPECに未追加 ❌ → 追加必要",
+        "# U社 全機能リスト（公式サイトより抽出）",
+        "## U社独自機能（L社にないもの）",
+        "## SPECに追加すべき機能（U社由来）",
+        "# U社 ヘルプセンター 全機能詳細",
+        "## ファネル機能",
+        "## ページ要素（ノーコードビルダー）",
+        "## 決済関連",
+        "## シナリオ・配信",
+        "## LINE専用機能",
+        "## 会員サイト",
+        "## イベント・予約",
+        "## パートナー（アフィリエイト）",
+        "## 管理・その他"
+      ]
+    },
+    {
+      "path": "README.md",
+      "group": "DOC",
+      "workingTreeState": "modified",
+      "sha256": "5aff7b5280ef58fb3e45fb8e07409e60b26b1ba9bfd7e94500131aa8191c85c1",
+      "headings": [
+        "# LINE Harness",
+        "## 機能",
+        "## 技術スタック",
+        "## アーキテクチャ",
+        "## MCP Server (AI連携)",
+        "### セットアップ",
+        "### 利用可能なツール (25個)",
+        "## 推奨運用: Fork + GitHub Actions + Cloudflare",
+        "## 5分デプロイガイド",
+        "### 前提条件",
+        "### 1. LINE チャネル設定",
+        "### 2. リポジトリのセットアップ",
+        "### 3. Cloudflare D1 データベース作成",
+        "# 出力される database_id を apps/worker/wrangler.toml に記入",
+        "# スキーマを適用",
+        "### 4. Workers のシークレット設定",
+        "### 5. Workers デプロイ",
+        "### 6. LINE Webhook 設定",
+        "### 7. 管理画面デプロイ",
+        "# 環境変数: NEXT_PUBLIC_API_URL のみ（APIキーはログイン画面で入力）",
+        "### 8. 動作確認",
+        "## プロジェクト構成",
+        "## スケーリング",
+        "## ライセンス",
+        "## 開発者 / Author"
+      ]
+    },
+    {
+      "path": "SPEC.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "746e829d3cf0e16222bc929b12e253f3bc551290dc7986b8d173ff3cf82494e8",
+      "headings": [
+        "# LINE OSS CRM - L社/U社 Alternative",
+        "## Overview",
+        "## Tech Stack",
+        "## Architecture",
+        "## Monorepo Structure",
+        "## Core Features (MVP)",
+        "### 1. Friend Management",
+        "### 2. Step Delivery (ステップ配信)",
+        "### 3. Broadcast (一斉配信)",
+        "### 4. Rich Menu Management",
+        "### 5. Auto-Response",
+        "### 6. Analytics Dashboard",
+        "## D1 Schema (Key Tables)",
+        "## Auth",
+        "## Key Design Decisions",
+        "## Deployment Guide (README)",
+        "## Scaling Notes",
+        "## IMPORTANT: API-First / CC-Native Design",
+        "### Philosophy",
+        "### Requirements",
+        "### Full Feature List (L社 + U社 parity)",
+        "### CC Integration Example",
+        "# Create a scenario",
+        "# Add steps",
+        "# Tag friends by segment",
+        "# Send broadcast",
+        "## Extended Features (CVR Optimization & LINE Platform Full)",
+        "### Rich Messages (CVR施策)",
+        "### LINE Login Integration",
+        "### LINE Mini App Support",
+        "### CVR Optimization Tools",
+        "### Audience Sync",
+        "### Webhook Actions (ポストバック)",
+        "### E-commerce Integration",
+        "### Multi-account Support",
+        "## Cross-Account UUID Linking (アカウント間UUID連携) - CRITICAL",
+        "### Problem",
+        "### Solution: Internal UUID System",
+        "### Implementation",
+        "### Account Ban Recovery",
+        "### API",
+        "### Data Portability",
+        "## Affiliate & Conversion Tracking (アフィリエイト・CV計測)",
+        "### Micro Conversion Points",
+        "### Affiliate System",
+        "### Funnel Analytics (UUID-powered)",
+        "### API",
+        "## Stealth Operation (LINE Platform Compliance & Stealth)",
+        "### Principles",
+        "### Implementation Rules",
+        "### What NOT to do"
+      ]
+    },
+    {
+      "path": "apps/worker/src/durable-objects/tenant-scheduler.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "02d572bbe5b0c72c1c6e05edfb86d71c4f4e3069398a6773004cd78fe5e72d16"
+    },
+    {
+      "path": "apps/worker/src/index.ts",
+      "group": "F30",
+      "workingTreeState": "modified",
+      "sha256": "f2f23d40722e03cb548779ddfa2180825806d99a3b86b4fc633d59784d361747",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/qr",
+          "line": 283
+        },
+        {
+          "method": "GET",
+          "path": "/r/:ref",
+          "line": 303
+        },
+        {
+          "method": "GET",
+          "path": "/r/:ref/help",
+          "line": 555
+        },
+        {
+          "method": "GET",
+          "path": "/o",
+          "line": 708
+        },
+        {
+          "method": "GET",
+          "path": "/book",
+          "line": 808
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/account-settings.ts",
+      "group": "F27",
+      "workingTreeState": "HEAD",
+      "sha256": "3f1e9d6992f894e8bdb623ed8fef46acb22a6b7f54231e7a19e3e4c33b4a1358",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/account-settings/test-recipients",
+          "line": 13
+        },
+        {
+          "method": "PUT",
+          "path": "/api/account-settings/test-recipients",
+          "line": 42
+        },
+        {
+          "method": "GET",
+          "path": "/api/account-settings/link-base-url",
+          "line": 67
+        },
+        {
+          "method": "PUT",
+          "path": "/api/account-settings/link-base-url",
+          "line": 79
+        },
+        {
+          "method": "GET",
+          "path": "/api/account-settings/tracked-link-base-url",
+          "line": 98
+        },
+        {
+          "method": "PUT",
+          "path": "/api/account-settings/tracked-link-base-url",
+          "line": 103
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/ad-platforms.ts",
+      "group": "F24",
+      "workingTreeState": "HEAD",
+      "sha256": "bb842f0d6ed660a5b74c4b06791ced226dcb3044b37e378b71e367bab12f8729",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/ad-platforms",
+          "line": 29
+        },
+        {
+          "method": "POST",
+          "path": "/api/ad-platforms",
+          "line": 51
+        },
+        {
+          "method": "PUT",
+          "path": "/api/ad-platforms/:id",
+          "line": 93
+        },
+        {
+          "method": "POST",
+          "path": "/api/ad-platforms/test",
+          "line": 127
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/ad-platforms/:id",
+          "line": 162
+        },
+        {
+          "method": "GET",
+          "path": "/api/ad-platforms/:id/logs",
+          "line": 173
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/admin-auth.ts",
+      "group": "F28",
+      "workingTreeState": "HEAD",
+      "sha256": "42881b98533fb3d31006af02a52c8d195978b087cc7e04befe295b86840ff274",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/auth/login",
+          "line": 29
+        },
+        {
+          "method": "POST",
+          "path": "/api/auth/logout",
+          "line": 57
+        },
+        {
+          "method": "GET",
+          "path": "/api/auth/session",
+          "line": 70
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/admin-sso.ts",
+      "group": "F28",
+      "workingTreeState": "HEAD",
+      "sha256": "096b51ea4fa9628074e3730e46381fd37e2796ade100c2c8332705c7c1784e0e",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/admin/sso",
+          "line": 121
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/admin-update.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "6c610d1a2792343ee3cb6c6cf3af60d3205677088c064497a428faf0144c53b8",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/start",
+          "line": 131
+        },
+        {
+          "method": "GET",
+          "path": "/status/:id",
+          "line": 235
+        },
+        {
+          "method": "GET",
+          "path": "/stream/:id",
+          "line": 271
+        },
+        {
+          "method": "GET",
+          "path": "/history",
+          "line": 355
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/admin-version.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "cb2e35718cec4d9eab7c903a36e0187e294492256e819d8601556c02edf06a42",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/version",
+          "line": 27
+        },
+        {
+          "method": "GET",
+          "path": "/manifest",
+          "line": 38
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/affiliate-offers.ts",
+      "group": "F25",
+      "workingTreeState": "HEAD",
+      "sha256": "e5bc529fd56c3dee24a88949ace14b1de18baf5a005988299ef64cfd3504249a",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/affiliate-offers",
+          "line": 42
+        },
+        {
+          "method": "GET",
+          "path": "/api/affiliate-offers/:id",
+          "line": 54
+        },
+        {
+          "method": "POST",
+          "path": "/api/affiliate-offers",
+          "line": 68
+        },
+        {
+          "method": "PUT",
+          "path": "/api/affiliate-offers/:id",
+          "line": 116
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/affiliate-self.ts",
+      "group": "F25",
+      "workingTreeState": "HEAD",
+      "sha256": "cc1175507d995f6dadbe655f59e75f5542b9a02288918e11e2bd13605e0727fc",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/liff/mileage/me",
+          "line": 167
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/affiliate/register",
+          "line": 213
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/affiliate/me",
+          "line": 283
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/affiliate/links",
+          "line": 330
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/affiliate/offers",
+          "line": 403
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/affiliate/offers/:id/enroll",
+          "line": 462
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/affiliates.ts",
+      "group": "F25",
+      "workingTreeState": "HEAD",
+      "sha256": "3461735a4a12e367170fd79043bd2596e655935fcd97b3c3d7d4db7889561b14",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/affiliates",
+          "line": 40
+        },
+        {
+          "method": "GET",
+          "path": "/api/affiliates/:id",
+          "line": 51
+        },
+        {
+          "method": "POST",
+          "path": "/api/affiliates",
+          "line": 77
+        },
+        {
+          "method": "PUT",
+          "path": "/api/affiliates/:id",
+          "line": 198
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/affiliates/:id",
+          "line": 224
+        },
+        {
+          "method": "GET",
+          "path": "/api/affiliates/:id/report",
+          "line": 237
+        },
+        {
+          "method": "GET",
+          "path": "/api/affiliates/:id/journeys",
+          "line": 257
+        },
+        {
+          "method": "GET",
+          "path": "/api/affiliates/:id/links",
+          "line": 277
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:id/journey",
+          "line": 300
+        },
+        {
+          "method": "POST",
+          "path": "/api/affiliates/click",
+          "line": 311
+        },
+        {
+          "method": "GET",
+          "path": "/api/affiliates-report",
+          "line": 337
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/auto-replies.ts",
+      "group": "F05",
+      "workingTreeState": "HEAD",
+      "sha256": "2550b1e64c271e7c49b7970ae23f50a1353eac5d00c30da60a0a97a1e1aeab2b",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/auto-replies",
+          "line": 108
+        },
+        {
+          "method": "GET",
+          "path": "/api/auto-replies/:id",
+          "line": 136
+        },
+        {
+          "method": "POST",
+          "path": "/api/auto-replies",
+          "line": 151
+        },
+        {
+          "method": "PUT",
+          "path": "/api/auto-replies/:id",
+          "line": 202
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/auto-replies/:id",
+          "line": 249
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/automations.ts",
+      "group": "F18",
+      "workingTreeState": "HEAD",
+      "sha256": "ed3dd7c9339f5cfcb9505c875c1d6eeea23fcc4c48487ff33584460024420835",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/automations",
+          "line": 16
+        },
+        {
+          "method": "GET",
+          "path": "/api/automations/:id",
+          "line": 56
+        },
+        {
+          "method": "POST",
+          "path": "/api/automations",
+          "line": 94
+        },
+        {
+          "method": "PUT",
+          "path": "/api/automations/:id",
+          "line": 137
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/automations/:id",
+          "line": 163
+        },
+        {
+          "method": "GET",
+          "path": "/api/automations/:id/logs",
+          "line": 175
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/booking.ts",
+      "group": "F11",
+      "workingTreeState": "modified",
+      "sha256": "8947cdb0b4df8dd5d8550c6e2cdabfc550204f42c5611bca9b03bf4e4d888338",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/liff/booking/menus",
+          "line": 303
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/booking/menus/:id/staff",
+          "line": 326
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/booking/availability",
+          "line": 347
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/booking/requests",
+          "line": 376
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/booking/me",
+          "line": 576
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/menus",
+          "line": 628
+        },
+        {
+          "method": "POST",
+          "path": "/api/booking/admin/menus",
+          "line": 645
+        },
+        {
+          "method": "PUT",
+          "path": "/api/booking/admin/menus/:id",
+          "line": 690
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/booking/admin/menus/:id",
+          "line": 770
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/menus/:id/staff",
+          "line": 789
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/availability",
+          "line": 813
+        },
+        {
+          "method": "POST",
+          "path": "/api/booking/admin/bookings",
+          "line": 845
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/staff",
+          "line": 990
+        },
+        {
+          "method": "POST",
+          "path": "/api/booking/admin/staff",
+          "line": 1012
+        },
+        {
+          "method": "PUT",
+          "path": "/api/booking/admin/staff/:id",
+          "line": 1047
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/booking/admin/staff/:id",
+          "line": 1085
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/staff/:id/menus",
+          "line": 1102
+        },
+        {
+          "method": "PUT",
+          "path": "/api/booking/admin/staff/:id/menus",
+          "line": 1125
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/staff/:id/availability-rules",
+          "line": 1174
+        },
+        {
+          "method": "PUT",
+          "path": "/api/booking/admin/staff/:id/availability-rules",
+          "line": 1193
+        },
+        {
+          "method": "POST",
+          "path": "/api/booking/admin/staff/:id/google-calendar/oauth/start",
+          "line": 1234
+        },
+        {
+          "method": "GET",
+          "path": "<expression:GOOGLE_OAUTH_CALLBACK_PATH>",
+          "line": 1264
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/staff/:id/google-calendar",
+          "line": 1350
+        },
+        {
+          "method": "PUT",
+          "path": "/api/booking/admin/staff/:id/google-calendar",
+          "line": 1380
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/booking/admin/staff/:id/google-calendar",
+          "line": 1440
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/staff/:id/shifts",
+          "line": 1479
+        },
+        {
+          "method": "PUT",
+          "path": "/api/booking/admin/staff/:id/shifts",
+          "line": 1502
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/booking/admin/staff/:id/shifts/:shiftId",
+          "line": 1529
+        },
+        {
+          "method": "POST",
+          "path": "/api/booking/admin/staff/:id/shifts/generate",
+          "line": 1544
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/requests",
+          "line": 1587
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/booking/admin/requests/:id",
+          "line": 1621
+        },
+        {
+          "method": "GET",
+          "path": "/api/booking/admin/pending-count",
+          "line": 1693
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/broadcasts.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "302ed0492c0778953413894461d2f49348d8f0b308a345d5a825ecb166ce4cf3",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/broadcasts",
+          "line": 147
+        },
+        {
+          "method": "GET",
+          "path": "/api/broadcasts/:id",
+          "line": 159
+        },
+        {
+          "method": "GET",
+          "path": "/api/broadcasts/:id/preview-count",
+          "line": 179
+        },
+        {
+          "method": "GET",
+          "path": "/api/broadcasts/:id/per-account-stats",
+          "line": 246
+        },
+        {
+          "method": "POST",
+          "path": "/api/broadcasts",
+          "line": 335
+        },
+        {
+          "method": "PUT",
+          "path": "/api/broadcasts/:id",
+          "line": 433
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/broadcasts/:id",
+          "line": 531
+        },
+        {
+          "method": "POST",
+          "path": "/api/broadcasts/:id/send",
+          "line": 580
+        },
+        {
+          "method": "POST",
+          "path": "/api/broadcasts/:id/send-segment",
+          "line": 844
+        },
+        {
+          "method": "GET",
+          "path": "/api/broadcasts/:id/insight",
+          "line": 940
+        },
+        {
+          "method": "POST",
+          "path": "/api/broadcasts/:id/fetch-insight",
+          "line": 972
+        },
+        {
+          "method": "POST",
+          "path": "/api/broadcasts/:id/test-send",
+          "line": 1137
+        },
+        {
+          "method": "GET",
+          "path": "/api/broadcasts/:id/progress",
+          "line": 1226
+        },
+        {
+          "method": "POST",
+          "path": "/api/segments/count",
+          "line": 1244
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/calendar.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "6a97e65fa117cea22b16d08ee3c6ce85ad5d877674e0db936d42c4120c336bd3",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/integrations/google-calendar",
+          "line": 22
+        },
+        {
+          "method": "POST",
+          "path": "/api/integrations/google-calendar/connect",
+          "line": 42
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/integrations/google-calendar/:id",
+          "line": 57
+        },
+        {
+          "method": "GET",
+          "path": "/api/integrations/google-calendar/slots",
+          "line": 69
+        },
+        {
+          "method": "GET",
+          "path": "/api/integrations/google-calendar/bookings",
+          "line": 149
+        },
+        {
+          "method": "POST",
+          "path": "/api/integrations/google-calendar/book",
+          "line": 175
+        },
+        {
+          "method": "PUT",
+          "path": "/api/integrations/google-calendar/bookings/:id/status",
+          "line": 231
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/capabilities.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "5561eae32d587d175c82f5263fa56d171cc6a08e2b138aacb1ce5d6f661bdd48",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/capabilities",
+          "line": 37
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/chats.ts",
+      "group": "F21",
+      "workingTreeState": "HEAD",
+      "sha256": "c5ba7c5b741ada93428fcad3aba4e5e4a364e6d8e0c95e6b5a265156c1f5e0ca",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/operators",
+          "line": 136
+        },
+        {
+          "method": "POST",
+          "path": "/api/operators",
+          "line": 157
+        },
+        {
+          "method": "PUT",
+          "path": "/api/operators/:id",
+          "line": 169
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/operators/:id",
+          "line": 183
+        },
+        {
+          "method": "GET",
+          "path": "/api/chats",
+          "line": 195
+        },
+        {
+          "method": "GET",
+          "path": "/api/chats/:id",
+          "line": 403
+        },
+        {
+          "method": "POST",
+          "path": "/api/chats",
+          "line": 481
+        },
+        {
+          "method": "PUT",
+          "path": "/api/chats/:id",
+          "line": 499
+        },
+        {
+          "method": "POST",
+          "path": "/api/chats/:id/loading",
+          "line": 520
+        },
+        {
+          "method": "POST",
+          "path": "/api/chats/:id/send",
+          "line": 557
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/conversations.ts",
+      "group": "F21",
+      "workingTreeState": "HEAD",
+      "sha256": "5a147fa30abc7e84a53e9bbcafb9762c9cf027084c40997914b022f56e447737",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/conversations",
+          "line": 7
+        },
+        {
+          "method": "GET",
+          "path": "/api/conversations/:friendId",
+          "line": 182
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/conversions.ts",
+      "group": "F23",
+      "workingTreeState": "HEAD",
+      "sha256": "62b779c51bbcf78400144006a66d470d864e943f9b133a65c811e2b8e0d2f9d9",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/conversions/points",
+          "line": 24
+        },
+        {
+          "method": "POST",
+          "path": "/api/conversions/points",
+          "line": 44
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/conversions/points/:id",
+          "line": 74
+        },
+        {
+          "method": "POST",
+          "path": "/api/conversions/track",
+          "line": 87
+        },
+        {
+          "method": "GET",
+          "path": "/api/conversions/events",
+          "line": 131
+        },
+        {
+          "method": "GET",
+          "path": "/api/conversions/report",
+          "line": 162
+        },
+        {
+          "method": "GET",
+          "path": "/api/conversions/approvals",
+          "line": 183
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/conversions/events/:id/approval",
+          "line": 211
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/dedup-preview.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "a493025c2bbbed645d8b30973ce758c44830ee3a9b27d7ba9348e69f1069399f",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/broadcasts/dedup-preview",
+          "line": 8
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/duplicates.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "6dfe864ec1038bf0bd8c7c47f5a771715d114e7f0589a562ed3e04930c7ba99d",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/duplicates/stats",
+          "line": 70
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/entry-routes.ts",
+      "group": "F10",
+      "workingTreeState": "HEAD",
+      "sha256": "730c24c0d11c77ed88320df54e38aee18ce7b5c06190335d51d8160b4484f32d",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/entry-routes",
+          "line": 34
+        },
+        {
+          "method": "GET",
+          "path": "/api/entry-routes/:id",
+          "line": 45
+        },
+        {
+          "method": "POST",
+          "path": "/api/entry-routes",
+          "line": 62
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/entry-routes/:id",
+          "line": 90
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/entry-routes/:id",
+          "line": 119
+        },
+        {
+          "method": "GET",
+          "path": "/api/entry-routes/:id/funnel",
+          "line": 131
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/events.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "c4091e204334ae3638cf28344c1cbe82591cfdcbb0943020cf0fb61db6e93de7",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/events/admin/events",
+          "line": 154
+        },
+        {
+          "method": "GET",
+          "path": "/api/events/admin/events",
+          "line": 215
+        },
+        {
+          "method": "GET",
+          "path": "/api/events/admin/events/:id",
+          "line": 254
+        },
+        {
+          "method": "PUT",
+          "path": "/api/events/admin/events/:id",
+          "line": 272
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/events/admin/events/:id",
+          "line": 429
+        },
+        {
+          "method": "GET",
+          "path": "/api/events/admin/events/:id/slots",
+          "line": 515
+        },
+        {
+          "method": "POST",
+          "path": "/api/events/admin/events/:id/slots",
+          "line": 533
+        },
+        {
+          "method": "PUT",
+          "path": "/api/events/admin/events/:id/slots/:slotId",
+          "line": 569
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/events/me",
+          "line": 624
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/events/me/:bookingId",
+          "line": 669
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/events/me/:bookingId/cancel",
+          "line": 701
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/events/:id",
+          "line": 746
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/events/:id/slots",
+          "line": 803
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/events/:id/bookings",
+          "line": 855
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/events/admin/events/:id/slots/:slotId",
+          "line": 1152
+        },
+        {
+          "method": "GET",
+          "path": "/api/events/admin/events/notifications/pending",
+          "line": 1180
+        },
+        {
+          "method": "GET",
+          "path": "/api/events/admin/events/:id/bookings",
+          "line": 1194
+        },
+        {
+          "method": "POST",
+          "path": "/api/events/admin/events/:id/bookings/:bookingId/decide",
+          "line": 1307
+        },
+        {
+          "method": "POST",
+          "path": "/api/events/admin/events/:id/bookings/:bookingId/cancel",
+          "line": 1380
+        },
+        {
+          "method": "PUT",
+          "path": "/api/events/admin/events/:id/bookings/:bookingId",
+          "line": 1406
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/forms.ts",
+      "group": "F08",
+      "workingTreeState": "modified",
+      "sha256": "74b1105e3e60c06d0bcc858d5833a4782dc0d4d7705535d498545e811ebce2bb",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/forms",
+          "line": 182
+        },
+        {
+          "method": "GET",
+          "path": "/api/forms/:id",
+          "line": 203
+        },
+        {
+          "method": "POST",
+          "path": "/api/forms",
+          "line": 224
+        },
+        {
+          "method": "PUT",
+          "path": "/api/forms/:id",
+          "line": 273
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/forms/:id",
+          "line": 327
+        },
+        {
+          "method": "GET",
+          "path": "/api/forms/:id/submissions",
+          "line": 343
+        },
+        {
+          "method": "POST",
+          "path": "/api/forms/:id/opened",
+          "line": 359
+        },
+        {
+          "method": "POST",
+          "path": "/api/forms/:id/partial",
+          "line": 389
+        },
+        {
+          "method": "POST",
+          "path": "/api/forms/:id/submit",
+          "line": 418
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/friends.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "47615f11522c72ae1f9aa03501a383b1188744bb7e72177cec9a4cb4c407728f",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/friends",
+          "line": 87
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/count",
+          "line": 348
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/ref-stats",
+          "line": 367
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:id/mileage",
+          "line": 393
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:id",
+          "line": 417
+        },
+        {
+          "method": "POST",
+          "path": "/api/friends/:id/tags",
+          "line": 454
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/friends/:id/tags/:tagId",
+          "line": 491
+        },
+        {
+          "method": "PUT",
+          "path": "/api/friends/:id/metadata",
+          "line": 509
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:id/messages",
+          "line": 552
+        },
+        {
+          "method": "POST",
+          "path": "/api/friends/:id/messages",
+          "line": 577
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/health.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "ab8855bd834f4784950effd01fe2cf621fa193ddcfe4a0e8b33a5f30c649f619",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "line": 22
+        },
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "line": 23
+        },
+        {
+          "method": "GET",
+          "path": "/api/accounts/:id/health",
+          "line": 27
+        },
+        {
+          "method": "GET",
+          "path": "/api/accounts/migrations",
+          "line": 57
+        },
+        {
+          "method": "POST",
+          "path": "/api/accounts/:id/migrate",
+          "line": 79
+        },
+        {
+          "method": "GET",
+          "path": "/api/accounts/migrations/:migrationId",
+          "line": 122
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/images.ts",
+      "group": "F22",
+      "workingTreeState": "HEAD",
+      "sha256": "2d7d0fc2404501d80cd8028c37a6dcccc06dcf888140410e9bf62ce4641edae1",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/images",
+          "line": 7
+        },
+        {
+          "method": "GET",
+          "path": "/images/:key",
+          "line": 76
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/images/:key",
+          "line": 98
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/inbox.ts",
+      "group": "F21",
+      "workingTreeState": "HEAD",
+      "sha256": "14acc8bceaa63e263ade20886aebfe563a970ffc1b007f4f49fea06173069fb9",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/inbox/activity-digest",
+          "line": 18
+        },
+        {
+          "method": "GET",
+          "path": "/api/inbox/unanswered",
+          "line": 36
+        },
+        {
+          "method": "GET",
+          "path": "/api/inbox/unanswered/count",
+          "line": 60
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/instagram-engagement.ts",
+      "group": "F32",
+      "workingTreeState": "HEAD",
+      "sha256": "bc4ada63274c205a8a360d10c01b57d4e163768f4488cc3f6e5ecad4d6c3ead7",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/integrations/ig-harness/engagement",
+          "line": 13
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/liff.ts",
+      "group": "F08",
+      "workingTreeState": "HEAD",
+      "sha256": "f10b4f1a98e73048464f8859f93ef03b4729a5dff807ddda4f90515d30bca25f",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/auth/line",
+          "line": 317
+        },
+        {
+          "method": "GET",
+          "path": "/auth/oauth",
+          "line": 572
+        },
+        {
+          "method": "GET",
+          "path": "/auth/callback",
+          "line": 652
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/config",
+          "line": 1107
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/profile",
+          "line": 1151
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/link",
+          "line": 1179
+        },
+        {
+          "method": "GET",
+          "path": "/api/analytics/ref-summary",
+          "line": 1405
+        },
+        {
+          "method": "GET",
+          "path": "/api/analytics/ref/:refCode",
+          "line": 1478
+        },
+        {
+          "method": "POST",
+          "path": "/api/links/wrap",
+          "line": 1536
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/send-form-link",
+          "line": 1787
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/line-accounts.ts",
+      "group": "F27",
+      "workingTreeState": "HEAD",
+      "sha256": "388ddb1957b1c9387183c902ea085f96576f760dfda36e6dbba5c765a24803ca",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/line-accounts",
+          "line": 99
+        },
+        {
+          "method": "GET",
+          "path": "/api/line-accounts/delivery-health",
+          "line": 193
+        },
+        {
+          "method": "GET",
+          "path": "/api/line-accounts/:id",
+          "line": 303
+        },
+        {
+          "method": "GET",
+          "path": "/api/line-accounts/:id/follower-insight",
+          "line": 321
+        },
+        {
+          "method": "GET",
+          "path": "/api/line-accounts/:id/follower-import",
+          "line": 356
+        },
+        {
+          "method": "POST",
+          "path": "/api/line-accounts/:id/follower-import/detect",
+          "line": 363
+        },
+        {
+          "method": "POST",
+          "path": "/api/line-accounts/:id/follower-import/start",
+          "line": 385
+        },
+        {
+          "method": "POST",
+          "path": "/api/line-accounts/:id/follower-import/step",
+          "line": 403
+        },
+        {
+          "method": "POST",
+          "path": "/api/line-accounts",
+          "line": 512
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/line-accounts/order",
+          "line": 626
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/line-accounts/:id",
+          "line": 666
+        },
+        {
+          "method": "PUT",
+          "path": "/api/line-accounts/:id",
+          "line": 786
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/line-accounts/:id",
+          "line": 894
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/line-proxy.ts",
+      "group": "F31",
+      "workingTreeState": "HEAD",
+      "sha256": "f3a1faec49edcb320d0108b3e90ebbcbec95e347359de18c20436da305d5b7ef",
+      "endpoints": [
+        {
+          "method": "ALL",
+          "path": "/line-api/*",
+          "line": 901
+        },
+        {
+          "method": "ALL",
+          "path": "/line-api-data/*",
+          "line": 902
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/live-games.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "ab18148dad28c07eac9a4a5644615a3fd5f28526165eaf1187e75ab047a418f8",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/live-games",
+          "line": 52
+        },
+        {
+          "method": "GET",
+          "path": "/api/live-games/:id",
+          "line": 63
+        },
+        {
+          "method": "POST",
+          "path": "/api/live-games/:id/action",
+          "line": 70
+        },
+        {
+          "method": "POST",
+          "path": "/api/live-games/:id/screen-ticket",
+          "line": 85
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/live-games/:id/join",
+          "line": 91
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/live-games/:id/screen",
+          "line": 115
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/live-games/:id/me",
+          "line": 122
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/live-games/:id/action",
+          "line": 129
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/live-games/:id/socket",
+          "line": 142
+        },
+        {
+          "method": "GET",
+          "path": "/api/live-games/:id/participants",
+          "line": 158
+        },
+        {
+          "method": "GET",
+          "path": "/api/live-games/:id/records",
+          "line": 172
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/media-inquiries.ts",
+      "group": "F33",
+      "workingTreeState": "HEAD",
+      "sha256": "4025c3a4d0ada0c34830123492dd8a182186a2384194663409c6ba3649c3f2d3",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/public/media-inquiries",
+          "line": 46
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/meet-callback.ts",
+      "group": "F13",
+      "workingTreeState": "modified",
+      "sha256": "ef20785ccf19da3f06d2329477d86dd4541443ac8c509603fae82f2de07daf59",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/meet-callback",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/meet-consultations.ts",
+      "group": "F13",
+      "workingTreeState": "HEAD",
+      "sha256": "147a5980aa3d84c1a33c66b29911e4603792b83d64c756ed21259125271a16fe",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/meet-consultations",
+          "line": 11
+        },
+        {
+          "method": "POST",
+          "path": "/api/meet-consultations",
+          "line": 36
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/meet-consultations/:externalEventId",
+          "line": 48
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/message-templates.ts",
+      "group": "F06",
+      "workingTreeState": "HEAD",
+      "sha256": "ed5716bd5e60f9c2abaf4fc845cab7628d4ef925849db074ebfa8902633a9a78",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/message-templates",
+          "line": 26
+        },
+        {
+          "method": "GET",
+          "path": "/api/message-templates/:id",
+          "line": 37
+        },
+        {
+          "method": "POST",
+          "path": "/api/message-templates",
+          "line": 49
+        },
+        {
+          "method": "PUT",
+          "path": "/api/message-templates/:id",
+          "line": 87
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/message-templates/:id",
+          "line": 127
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/notifications.ts",
+      "group": "F20",
+      "workingTreeState": "HEAD",
+      "sha256": "3fcee72e7b3db1864ac6f6f711d793306637ffe4235ae7d4dc77c3a5370d8dc4",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/notifications/rules",
+          "line": 16
+        },
+        {
+          "method": "GET",
+          "path": "/api/notifications/rules/:id",
+          "line": 48
+        },
+        {
+          "method": "POST",
+          "path": "/api/notifications/rules",
+          "line": 70
+        },
+        {
+          "method": "PUT",
+          "path": "/api/notifications/rules/:id",
+          "line": 85
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/notifications/rules/:id",
+          "line": 102
+        },
+        {
+          "method": "GET",
+          "path": "/api/notifications",
+          "line": 114
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/openapi.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "77ff142962fe4abc68899bb60ec073d187129611e8e86fc718a67733efca8012",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/openapi.json",
+          "line": 1183
+        },
+        {
+          "method": "GET",
+          "path": "/docs",
+          "line": 1188
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/profile-refresh.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "153afbf6078ea4e84e9efa39c8134a9b6febf1d0cf674a1af79311ed004b1cc3",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/admin/refresh-profiles",
+          "line": 19
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/broadcasts/:id/reset-to-draft",
+          "line": 131
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/tag-leak-check",
+          "line": 197
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/content-leak-check",
+          "line": 250
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/broadcast-coverage",
+          "line": 300
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/tag-remove-content-dups",
+          "line": 409
+        },
+        {
+          "method": "GET",
+          "path": "/api/admin/auto-reply-stats",
+          "line": 456
+        },
+        {
+          "method": "GET",
+          "path": "/api/admin/recent-messages",
+          "line": 529
+        },
+        {
+          "method": "GET",
+          "path": "/api/admin/automations-summary",
+          "line": 577
+        },
+        {
+          "method": "GET",
+          "path": "/api/admin/friend-debug/:id",
+          "line": 605
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/reminders.ts",
+      "group": "F14",
+      "workingTreeState": "HEAD",
+      "sha256": "0e5ff33f7f0454930c86aa7ca8665151649ff46d85c67901c27bdd83086657f5",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/reminders",
+          "line": 22
+        },
+        {
+          "method": "GET",
+          "path": "/api/reminders/:id",
+          "line": 52
+        },
+        {
+          "method": "POST",
+          "path": "/api/reminders",
+          "line": 85
+        },
+        {
+          "method": "PUT",
+          "path": "/api/reminders/:id",
+          "line": 102
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/reminders/:id",
+          "line": 116
+        },
+        {
+          "method": "POST",
+          "path": "/api/reminders/:id/steps",
+          "line": 128
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/reminders/:reminderId/steps/:stepId",
+          "line": 148
+        },
+        {
+          "method": "POST",
+          "path": "/api/reminders/:id/enroll/:friendId",
+          "line": 160
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:friendId/reminders",
+          "line": 177
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/friend-reminders/:id",
+          "line": 198
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/rich-menu-groups.ts",
+      "group": "F07",
+      "workingTreeState": "HEAD",
+      "sha256": "2692bea8f4bd377915c896f7e4c318e26031869027d9a35b8ab578e218afcfb4",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/rich-menu-groups/external/:richMenuId/image",
+          "line": 253
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menu-groups/import",
+          "line": 281
+        },
+        {
+          "method": "GET",
+          "path": "/api/rich-menu-groups/external",
+          "line": 463
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/rich-menu-groups/external/:richMenuId",
+          "line": 553
+        },
+        {
+          "method": "GET",
+          "path": "/api/rich-menu-groups",
+          "line": 593
+        },
+        {
+          "method": "GET",
+          "path": "/api/rich-menu-groups/:groupId",
+          "line": 637
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menu-groups",
+          "line": 644
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/rich-menu-groups/:groupId",
+          "line": 659
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/rich-menu-groups/:groupId",
+          "line": 682
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menu-groups/:groupId/pages/:pageId/image",
+          "line": 706
+        },
+        {
+          "method": "GET",
+          "path": "/api/rich-menu-images/:key{.+}",
+          "line": 747
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menu-groups/:groupId/publish",
+          "line": 854
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menu-groups/:groupId/unpublish",
+          "line": 913
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menu-groups/:groupId/apply-to-tag",
+          "line": 961
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/rich-menus.ts",
+      "group": "F07",
+      "workingTreeState": "HEAD",
+      "sha256": "ffac1b7db0949752b506b714bc09231f6adcc4e39f638ad5db4df911193f8b58",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/rich-menus",
+          "line": 19
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menus",
+          "line": 32
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/rich-menus/:id",
+          "line": 46
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menus/:id/default",
+          "line": 60
+        },
+        {
+          "method": "POST",
+          "path": "/api/friends/:friendId/rich-menu",
+          "line": 74
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/friends/:friendId/rich-menu",
+          "line": 107
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:friendId/rich-menu",
+          "line": 135
+        },
+        {
+          "method": "POST",
+          "path": "/api/rich-menus/:id/image",
+          "line": 204
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/scenarios.ts",
+      "group": "F03",
+      "workingTreeState": "HEAD",
+      "sha256": "7e14d585c8ffdaa0e19e15063001b60eb9f92f996e711d770fcae191e7002152",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/scenarios",
+          "line": 178
+        },
+        {
+          "method": "GET",
+          "path": "/api/scenarios/:id",
+          "line": 214
+        },
+        {
+          "method": "POST",
+          "path": "/api/scenarios",
+          "line": 237
+        },
+        {
+          "method": "PUT",
+          "path": "/api/scenarios/:id",
+          "line": 286
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/scenarios/:id",
+          "line": 322
+        },
+        {
+          "method": "POST",
+          "path": "/api/scenarios/:id/steps",
+          "line": 334
+        },
+        {
+          "method": "PUT",
+          "path": "/api/scenarios/:id/steps/:stepId",
+          "line": 418
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/scenarios/:id/steps/:stepId",
+          "line": 590
+        },
+        {
+          "method": "POST",
+          "path": "/api/scenarios/:id/steps/reorder",
+          "line": 602
+        },
+        {
+          "method": "GET",
+          "path": "/api/scenarios/:id/preview",
+          "line": 679
+        },
+        {
+          "method": "GET",
+          "path": "/api/scenarios/:id/stats",
+          "line": 770
+        },
+        {
+          "method": "GET",
+          "path": "/api/scenarios/:id/enrollments",
+          "line": 797
+        },
+        {
+          "method": "POST",
+          "path": "/api/scenarios/:id/enroll/:friendId",
+          "line": 888
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/scoring.ts",
+      "group": "F17",
+      "workingTreeState": "HEAD",
+      "sha256": "1b38ac986c3d9c637b2b5231893fae12bcdeff21df15eb4584f1bff4c4bd9332",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/mileage/overview",
+          "line": 45
+        },
+        {
+          "method": "GET",
+          "path": "/api/mileage/rules",
+          "line": 62
+        },
+        {
+          "method": "POST",
+          "path": "/api/mileage/events",
+          "line": 74
+        },
+        {
+          "method": "POST",
+          "path": "/api/mileage/rules",
+          "line": 120
+        },
+        {
+          "method": "PUT",
+          "path": "/api/mileage/rules/:id",
+          "line": 156
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/mileage/rules/:id",
+          "line": 187
+        },
+        {
+          "method": "GET",
+          "path": "/api/scoring-rules",
+          "line": 201
+        },
+        {
+          "method": "GET",
+          "path": "/api/scoring-rules/:id",
+          "line": 222
+        },
+        {
+          "method": "POST",
+          "path": "/api/scoring-rules",
+          "line": 236
+        },
+        {
+          "method": "PUT",
+          "path": "/api/scoring-rules/:id",
+          "line": 250
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/scoring-rules/:id",
+          "line": 264
+        },
+        {
+          "method": "GET",
+          "path": "/api/friends/:id/score",
+          "line": 276
+        },
+        {
+          "method": "POST",
+          "path": "/api/friends/:id/score",
+          "line": 304
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/setup.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "122aa0e9c1135e3d79f740418ecde157f9ea0fb759f62c49a979ee73379e610b",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/setup",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/six-games.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "0815bde21956e4ce701e5ba862ba4ef682efc8eb545ecadcf3ffa70c8b8982a0",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/six-games",
+          "line": 32
+        },
+        {
+          "method": "GET",
+          "path": "/api/six-games",
+          "line": 39
+        },
+        {
+          "method": "GET",
+          "path": "/api/six-games/:id",
+          "line": 40
+        },
+        {
+          "method": "POST",
+          "path": "/api/six-games/:id/action",
+          "line": 41
+        },
+        {
+          "method": "POST",
+          "path": "/api/six-games/:id/ticket",
+          "line": 46
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/six-games/:id/join",
+          "line": 47
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/six-games/:id/me",
+          "line": 64
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/six-games/:id/action",
+          "line": 65
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/six-games/:id/screen",
+          "line": 69
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/six-games/:id/leaderboard",
+          "line": 70
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/six-games/:id/socket",
+          "line": 71
+        },
+        {
+          "method": "GET",
+          "path": "/api/six-games/:id/players",
+          "line": 76
+        },
+        {
+          "method": "GET",
+          "path": "/api/six-games/:id/records",
+          "line": 77
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/staff.ts",
+      "group": "F28",
+      "workingTreeState": "HEAD",
+      "sha256": "9cfb5addeed149cbaa52e2ec978851718730357b257e1a1126f380a3bade8191",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/staff/me",
+          "line": 35
+        },
+        {
+          "method": "GET",
+          "path": "/api/staff",
+          "line": 73
+        },
+        {
+          "method": "GET",
+          "path": "/api/staff/:id",
+          "line": 84
+        },
+        {
+          "method": "POST",
+          "path": "/api/staff",
+          "line": 99
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/staff/:id",
+          "line": 127
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/staff/:id",
+          "line": 178
+        },
+        {
+          "method": "POST",
+          "path": "/api/staff/:id/regenerate-key",
+          "line": 208
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/stripe.ts",
+      "group": "F16",
+      "workingTreeState": "modified",
+      "sha256": "43067cc74f880f9b245ac9aaf6d04406770caae0e9e94db8fe9efc2a43a0a64a",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/integrations/stripe/events",
+          "line": 31
+        },
+        {
+          "method": "POST",
+          "path": "/api/integrations/stripe/webhook",
+          "line": 58
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/tags.ts",
+      "group": "F02",
+      "workingTreeState": "HEAD",
+      "sha256": "bbe10d586aea3d209e1e73dcf1db0c9250b40569210ab6476685d3bdf620348b",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/tags",
+          "line": 34
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/tags/:id/mileage",
+          "line": 48
+        },
+        {
+          "method": "POST",
+          "path": "/api/tags",
+          "line": 95
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/tags/:id",
+          "line": 123
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/templates.ts",
+      "group": "F06",
+      "workingTreeState": "HEAD",
+      "sha256": "f5c29c6190eec22c0c4a9ac8ffc331e84a3160d8e1385b359188d46af2d4184b",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/templates",
+          "line": 14
+        },
+        {
+          "method": "GET",
+          "path": "/api/templates/:id",
+          "line": 37
+        },
+        {
+          "method": "GET",
+          "path": "/api/templates/:id/usages",
+          "line": 63
+        },
+        {
+          "method": "POST",
+          "path": "/api/templates",
+          "line": 121
+        },
+        {
+          "method": "PUT",
+          "path": "/api/templates/:id",
+          "line": 135
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/templates/:id",
+          "line": 152
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/tracked-links.ts",
+      "group": "F09",
+      "workingTreeState": "HEAD",
+      "sha256": "59bbdb557427fbe93c6fbd20dd39608172168efbc4977a9887e43f2b1e82e714",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/tracked-links",
+          "line": 94
+        },
+        {
+          "method": "GET",
+          "path": "/api/tracked-links/:id",
+          "line": 106
+        },
+        {
+          "method": "POST",
+          "path": "/api/tracked-links",
+          "line": 134
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/tracked-links/:id",
+          "line": 178
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/tracked-links/:id",
+          "line": 207
+        },
+        {
+          "method": "GET",
+          "path": "/t/:linkId",
+          "line": 312
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/traffic-pools.ts",
+      "group": "F10",
+      "workingTreeState": "HEAD",
+      "sha256": "0e072097d8494baca01153310c666283a9e8b64393ae934473794aa472f2a732",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/pool/:slug",
+          "line": 35
+        },
+        {
+          "method": "GET",
+          "path": "/api/traffic-pools",
+          "line": 57
+        },
+        {
+          "method": "POST",
+          "path": "/api/traffic-pools",
+          "line": 68
+        },
+        {
+          "method": "PUT",
+          "path": "/api/traffic-pools/:id",
+          "line": 93
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/traffic-pools/:id",
+          "line": 119
+        },
+        {
+          "method": "GET",
+          "path": "/api/traffic-pools/:id/accounts",
+          "line": 153
+        },
+        {
+          "method": "POST",
+          "path": "/api/traffic-pools/:id/accounts",
+          "line": 164
+        },
+        {
+          "method": "PUT",
+          "path": "/api/traffic-pools/:id/accounts/:accountId",
+          "line": 182
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/traffic-pools/:id/accounts/:accountId",
+          "line": 195
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/usage.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "7995e29f268e94b0925991c91084c7a31d7b63c0a37f546a00c0b2ba61d1533f",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/usage",
+          "line": 9
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/users-grouped.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "c37c658af0ae98bae881c75172266343c4708a606d58eae81ea65b88ab71136c",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/users-grouped",
+          "line": 8
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/users.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "cfabdf358e6b30e6120264f7e1a736a8dbcbcea0b503de9f9a3c3318ae4acfee",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/users",
+          "line": 38
+        },
+        {
+          "method": "GET",
+          "path": "/api/users/:id",
+          "line": 49
+        },
+        {
+          "method": "POST",
+          "path": "/api/users",
+          "line": 64
+        },
+        {
+          "method": "PUT",
+          "path": "/api/users/:id",
+          "line": 82
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/users/:id",
+          "line": 110
+        },
+        {
+          "method": "POST",
+          "path": "/api/users/:id/link",
+          "line": 121
+        },
+        {
+          "method": "GET",
+          "path": "/api/users/:id/accounts",
+          "line": 139
+        },
+        {
+          "method": "POST",
+          "path": "/api/users/match",
+          "line": 159
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/webhook.ts",
+      "group": "F19",
+      "workingTreeState": "HEAD",
+      "sha256": "eb66a76a7bb1b0f02189d63743733fbb72e858e46d72a073821b78b1bc4457e6",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/webhook",
+          "line": 77
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/webhooks.ts",
+      "group": "F19",
+      "workingTreeState": "HEAD",
+      "sha256": "b4ca4fcd9e923f49f4db1480b78cd62430d4ef605a1c61105df0485f8c87d523",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/webhooks/incoming",
+          "line": 70
+        },
+        {
+          "method": "POST",
+          "path": "/api/webhooks/incoming",
+          "line": 91
+        },
+        {
+          "method": "PUT",
+          "path": "/api/webhooks/incoming/:id",
+          "line": 128
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/webhooks/incoming/:id",
+          "line": 177
+        },
+        {
+          "method": "GET",
+          "path": "/api/webhooks/outgoing",
+          "line": 189
+        },
+        {
+          "method": "POST",
+          "path": "/api/webhooks/outgoing",
+          "line": 211
+        },
+        {
+          "method": "PUT",
+          "path": "/api/webhooks/outgoing/:id",
+          "line": 258
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/webhooks/outgoing/:id",
+          "line": 329
+        },
+        {
+          "method": "POST",
+          "path": "/api/webhooks/incoming/:id/receive",
+          "line": 341
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/routes/webinars.ts",
+      "group": "F15",
+      "workingTreeState": "modified",
+      "sha256": "ba1ca3edadd23a61a3800ffa9261bcaec08d80c24b1aff691c8bed4129c17f02",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/liff/webinars/:slug",
+          "line": 129
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/webinars/:slug/heartbeat",
+          "line": 328
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/webinars/:slug/comments",
+          "line": 362
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/webinars/:slug/register",
+          "line": 423
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/webinars/:slug/cta-click",
+          "line": 475
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/webinars/:slug/funnel-event",
+          "line": 525
+        },
+        {
+          "method": "GET",
+          "path": "/api/liff/webinars/:slug/consultation-slots",
+          "line": 579
+        },
+        {
+          "method": "POST",
+          "path": "/api/liff/webinars/:slug/consultation-book",
+          "line": 608
+        },
+        {
+          "method": "GET",
+          "path": "/webinar-assets/:token/:slug/*",
+          "line": 655
+        },
+        {
+          "method": "GET",
+          "path": "/api/webinars",
+          "line": 813
+        },
+        {
+          "method": "POST",
+          "path": "/api/webinars",
+          "line": 827
+        },
+        {
+          "method": "GET",
+          "path": "/api/webinars/:id",
+          "line": 844
+        },
+        {
+          "method": "PUT",
+          "path": "/api/webinars/:id",
+          "line": 855
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/webinars/:id",
+          "line": 879
+        },
+        {
+          "method": "GET",
+          "path": "/api/webinars/:id/comments",
+          "line": 892
+        },
+        {
+          "method": "PUT",
+          "path": "/api/webinars/:id/comments",
+          "line": 910
+        },
+        {
+          "method": "GET",
+          "path": "/api/webinars/:id/ctas",
+          "line": 942
+        },
+        {
+          "method": "PUT",
+          "path": "/api/webinars/:id/ctas",
+          "line": 970
+        },
+        {
+          "method": "GET",
+          "path": "/api/webinars/:id/analytics",
+          "line": 1034
+        },
+        {
+          "method": "GET",
+          "path": "/api/webinars/:id/user-comments",
+          "line": 1111
+        },
+        {
+          "method": "PUT",
+          "path": "/api/webinars/:id/assets/:revision/*",
+          "line": 1148
+        },
+        {
+          "method": "POST",
+          "path": "/api/webinars/:id/video",
+          "line": 1260
+        }
+      ]
+    },
+    {
+      "path": "apps/worker/src/scheduled.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "8e5185074a86564ab9de0bfc9204c73aec8c687573bd9ce85eefccc1501fe2ed"
+    },
+    {
+      "path": "apps/worker/src/services/activity-digest.ts",
+      "group": "F20",
+      "workingTreeState": "HEAD",
+      "sha256": "a22c2ed6e070089af85d392c6d29896621dd5e417ed38e11bf8ae8deee852cb3"
+    },
+    {
+      "path": "apps/worker/src/services/activity-mileage.ts",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "b09acf9364d1bb9fd6c77b219801193997683d9e6f553534485000660c9c71d4"
+    },
+    {
+      "path": "apps/worker/src/services/ad-conversion.ts",
+      "group": "F24",
+      "workingTreeState": "HEAD",
+      "sha256": "61513bced2162e823348cf20cd5ba282051ca1d43a7edd02aab2d6ba6a2abe2f"
+    },
+    {
+      "path": "apps/worker/src/services/affiliate-notifier.ts",
+      "group": "F25",
+      "workingTreeState": "HEAD",
+      "sha256": "1f9158cb04f1bb19d639b18f775aff82058a9fb2186214f13703fdff780ead55"
+    },
+    {
+      "path": "apps/worker/src/services/auto-reply.ts",
+      "group": "F05",
+      "workingTreeState": "HEAD",
+      "sha256": "6bfe7b02d19f4af989899a600f06031b363b61411ba39f3aa986b642446c797f"
+    },
+    {
+      "path": "apps/worker/src/services/auto-track.ts",
+      "group": "F09",
+      "workingTreeState": "HEAD",
+      "sha256": "3bb9345260602b9ccf27327494c57f1a602833a000ceddb065683f61ccf8b1db"
+    },
+    {
+      "path": "apps/worker/src/services/availability.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "c853550c10c3e8afe0cc91caf1b248d932208c48e0d3b0ac9501615a340bb4d0"
+    },
+    {
+      "path": "apps/worker/src/services/ban-monitor.ts",
+      "group": "F27",
+      "workingTreeState": "HEAD",
+      "sha256": "7d1bb43274a4a876753b44e8d91bb396d6ebbf11b943a966a71ee7efa1349f3b"
+    },
+    {
+      "path": "apps/worker/src/services/booking-calendar-sync.ts",
+      "group": "F11",
+      "workingTreeState": "modified",
+      "sha256": "cd614edd49fa65ad7976c94b5902032cbbbec803757567493154403128bfe563"
+    },
+    {
+      "path": "apps/worker/src/services/booking-confirm.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "312977c1d7b65ba96008c8d3b46243b2851870d321a3ba5ccd74fdb6a15e3c57"
+    },
+    {
+      "path": "apps/worker/src/services/booking-expirer.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "419ea70b884523174e8f6f18b96e04299bc216f3481726592a8685ae7deb7742"
+    },
+    {
+      "path": "apps/worker/src/services/booking-idempotency.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "f9b96a407d5ba9b7d4b3d80f38d7e6d87b66c09b09de588400e430ecba14c050"
+    },
+    {
+      "path": "apps/worker/src/services/booking-notifier.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "2acfc717cd3115db2de132f5a733f52aeb077386de9182ccb70bb0dd1fdf398f"
+    },
+    {
+      "path": "apps/worker/src/services/booking-reminders.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "94c3937ba494b7ab3a1a1833a5c7c37f7ea00a80c8b86e1f7f43e879039b3a60"
+    },
+    {
+      "path": "apps/worker/src/services/booking-state.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "d48e86a8a459309d1b0e14dae1b4118d41072bca1ae5f8995f7a93db48ddf491"
+    },
+    {
+      "path": "apps/worker/src/services/booking-types.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "933b7da96e574ab10e488f1e3e36a372fc2a0b4bac4cd4b4218cf023d629b323"
+    },
+    {
+      "path": "apps/worker/src/services/broadcast-delivery-error.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "d6984e4566df31f995e2bf66a75fc40b382637a60cf9b1655ab0738e16697166"
+    },
+    {
+      "path": "apps/worker/src/services/broadcast-retry-key.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "614ec9a1890070646bc57073466806148cd2b54bde561121f05f17aee4a44457"
+    },
+    {
+      "path": "apps/worker/src/services/broadcast-sender.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "f12792c6ba97001d18c2fce23d835981ad82dbe20cd766edad066d21ef7b37b8"
+    },
+    {
+      "path": "apps/worker/src/services/broadcast.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "4464d30f4bfff2c1a759df9c5e74737238af7d7d8f4eae88d0dd32996aa9e991"
+    },
+    {
+      "path": "apps/worker/src/services/camp-offer-delivery.ts",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "a7eb581e0f35e65eb786aba120a88b451d1487f3656e600c1b07e2390bbcebe1"
+    },
+    {
+      "path": "apps/worker/src/services/dedup-broadcast.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "22de8d6d0156d146a42ab2bfc3bb433f4ab842e35f5d9f0c0905f2c9daee0441"
+    },
+    {
+      "path": "apps/worker/src/services/duplicate-detect.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "369c60b416dee6f646696a79f73b8dc99bf60dd674693a7c3ea5e741901d9ad9"
+    },
+    {
+      "path": "apps/worker/src/services/duplicates-stats.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "76980025ea78b1ff28345d74ddc5299fe9d45b6d924a9cc4a2c34dc2c55d1017"
+    },
+    {
+      "path": "apps/worker/src/services/event-availability.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "259a3081b0babbcd848276f31f88f1a8e6b145995234dac2d8638429e7e2883a"
+    },
+    {
+      "path": "apps/worker/src/services/event-booking-expirer.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "4761cbbb1dc79d3f00d09ad56589438856e6c187fdab759277b9528ba383121b"
+    },
+    {
+      "path": "apps/worker/src/services/event-booking-idempotency.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "82d750c23b97794a51b0b6ffa47e79bdb63f9edce9102d6b866f755437179a7c"
+    },
+    {
+      "path": "apps/worker/src/services/event-booking-notifier.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "46d37eeedb46dafb46e0cb9cd07592036cfc17e633ea7a93d0786d6c26b11778"
+    },
+    {
+      "path": "apps/worker/src/services/event-booking-reminders.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "cae1eeca66a2f11bed5754edb844f70053e1c8adbe4b922ee1fc2ebe7bebd120"
+    },
+    {
+      "path": "apps/worker/src/services/event-booking-state.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "6991c2fad4c0ab33579428895b9d891756df75b04ef7c2237cc8f89e1e4de2c7"
+    },
+    {
+      "path": "apps/worker/src/services/event-booking-types.ts",
+      "group": "F12",
+      "workingTreeState": "HEAD",
+      "sha256": "e1aeba628402b1d1f9322c0604c601a795565139a7fcf844d8039df0b56b2a2a"
+    },
+    {
+      "path": "apps/worker/src/services/event-bus.ts",
+      "group": "F18",
+      "workingTreeState": "HEAD",
+      "sha256": "007e691a3166515475a1df4f7fdd8b58f7b260d92ee8f03463e8693d36212023"
+    },
+    {
+      "path": "apps/worker/src/services/follower-import.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "10074aceaaa42f4f583e6dc0a35d51de067a3c92771e1383798385f37164fffd"
+    },
+    {
+      "path": "apps/worker/src/services/friend-tag-attach.ts",
+      "group": "F02",
+      "workingTreeState": "HEAD",
+      "sha256": "f6c7a3cad0d05d77a7b1bfde86825f03180da396540fcab514306a3ec6f7064e"
+    },
+    {
+      "path": "apps/worker/src/services/google-calendar.ts",
+      "group": "F11",
+      "workingTreeState": "modified",
+      "sha256": "16a50ca349bc650f4d04e4007b5fee4c841d9eb25a4e1a7bcf777076a67842aa"
+    },
+    {
+      "path": "apps/worker/src/services/google-oauth.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "1473e3bf570847785b3be0dd0399c6c9737b9805b2f55c098de6cc08cd485f5e"
+    },
+    {
+      "path": "apps/worker/src/services/google-service-account.ts",
+      "group": "F11",
+      "workingTreeState": "HEAD",
+      "sha256": "f98d9b7f7efca8a4ec1f76aafc2013f13e19a2690cfa54f193a9457493428f08"
+    },
+    {
+      "path": "apps/worker/src/services/immediate-first-step.ts",
+      "group": "F03",
+      "workingTreeState": "HEAD",
+      "sha256": "4b7f03cf76ebf6a95fe520f079b41d2c7f3f4b0f07126fa5e09803d6792d63d0"
+    },
+    {
+      "path": "apps/worker/src/services/incoming-image.ts",
+      "group": "F22",
+      "workingTreeState": "HEAD",
+      "sha256": "02651366808821d3a861213d7691e45ddceea96ed5b1149457f278f629b9bb05"
+    },
+    {
+      "path": "apps/worker/src/services/insight-fetcher.ts",
+      "group": "F24",
+      "workingTreeState": "HEAD",
+      "sha256": "a9858cf79ccb6c2169efd959c115bf504a2a9e3a652419b35ec04612daea5dfc"
+    },
+    {
+      "path": "apps/worker/src/services/intro-message.ts",
+      "group": "F03",
+      "workingTreeState": "HEAD",
+      "sha256": "2ee7e7c6d6debc2d19c0ef36fe63a8e33756e716b94ed0b4f265b18864c379e1"
+    },
+    {
+      "path": "apps/worker/src/services/keyword-match.ts",
+      "group": "F05",
+      "workingTreeState": "HEAD",
+      "sha256": "8360d9e9e4dae21a2b6e3d71fd74c39708c073b938b28b5f836268a2ac507378"
+    },
+    {
+      "path": "apps/worker/src/services/liff-auth.ts",
+      "group": "F08",
+      "workingTreeState": "HEAD",
+      "sha256": "83eab87bbe0b764c78076e9121cce0a0fe6041f11d1a635bcdef77593ca1c1dd"
+    },
+    {
+      "path": "apps/worker/src/services/line-proxy-send.ts",
+      "group": "F31",
+      "workingTreeState": "HEAD",
+      "sha256": "22b66918d689cbb089cda7f7c2596e9f33f0e1d1eeaf73d42cd26487995907a4"
+    },
+    {
+      "path": "apps/worker/src/services/live-game-auth.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "9ebb2a3ff26b58c2cdb5396ede7f97847d03a19d547359afa667b4e0a2d6e64b"
+    },
+    {
+      "path": "apps/worker/src/services/live-game-store.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "0ee01a45718c7b51fc68fc3aac63770cb72f29b9c6cad3837e25573c73dca7b5"
+    },
+    {
+      "path": "apps/worker/src/services/live-game.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "3cd0ae1a8f4772a1f14bfb8a5c940c6732c5b046707e29602a636d5fdce2d46e"
+    },
+    {
+      "path": "apps/worker/src/services/local-line-proxy.ts",
+      "group": "F31",
+      "workingTreeState": "HEAD",
+      "sha256": "68db03be006955a4b062b439fc22e300f211532c1d04dfe3e8c9a45068279205"
+    },
+    {
+      "path": "apps/worker/src/services/log-retention.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "0ffc2f142603138f6b06e3e45cc35a1a6cd905ddc1e9a51367c9d51c92c08e6d"
+    },
+    {
+      "path": "apps/worker/src/services/meet-consultation-reminders.ts",
+      "group": "F13",
+      "workingTreeState": "modified",
+      "sha256": "c5bb7c15aa7f7db4596c0581e0b7245c57b1d3e127417a92631f85ee3e9f062e"
+    },
+    {
+      "path": "apps/worker/src/services/message-group.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "301f6470285cbca04cdd48f0a533659cce75fd644be685150ee8e7c701ecba0d"
+    },
+    {
+      "path": "apps/worker/src/services/quota-alert.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "a6f7ecfd729dc71455a7f62d850a1592ff89a9e5a06d7b60804ae6b0d0b6b2cf"
+    },
+    {
+      "path": "apps/worker/src/services/quota.ts",
+      "group": "F30",
+      "workingTreeState": "HEAD",
+      "sha256": "7bd4358016d6ea118ec8046f3c4221eacfe99d4bdb0fdc5f385b8f3821b96704"
+    },
+    {
+      "path": "apps/worker/src/services/reminder-delivery.ts",
+      "group": "F14",
+      "workingTreeState": "HEAD",
+      "sha256": "3f4883f55a3ae7568bf73b600a04387b6229e9bc0cbaad718a394d9d520c914c"
+    },
+    {
+      "path": "apps/worker/src/services/render-message.ts",
+      "group": "F06",
+      "workingTreeState": "HEAD",
+      "sha256": "4a0348a4da1e53348eca6ad80e1a80a1bfb49a170fc9ca26a108211daa7e2abe"
+    },
+    {
+      "path": "apps/worker/src/services/reward-message.ts",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "27a65e2fb246b717de3fdb1f9b9ea9e743585d6183b8174b23f2acb592434eab"
+    },
+    {
+      "path": "apps/worker/src/services/reward-resolver.ts",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "94e5a9791fdfb9147d57bad634c3a4ae415655e323157689dee67d40dda2e939"
+    },
+    {
+      "path": "apps/worker/src/services/sales-consultation-policy.ts",
+      "group": "F13",
+      "workingTreeState": "untracked",
+      "sha256": "f6d07a89f57ac5641f866049b41e17c71fb73f1ab6a7c69e718423cc8999cc2f"
+    },
+    {
+      "path": "apps/worker/src/services/scenario-stats.ts",
+      "group": "F03",
+      "workingTreeState": "HEAD",
+      "sha256": "d2dd39d8d9fbe649aa1998448fbb7222c02fe5ba40af5e5fc4194b6976457053"
+    },
+    {
+      "path": "apps/worker/src/services/segment-query.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "57bbb888a2038bdcb07c6492570fff4b5183d465c534efabd645a5b140a938bd"
+    },
+    {
+      "path": "apps/worker/src/services/segment-send.ts",
+      "group": "F04",
+      "workingTreeState": "HEAD",
+      "sha256": "f380e50a99de9611744e7265614c518658f51b62c972f0fd86561aebb51743ad"
+    },
+    {
+      "path": "apps/worker/src/services/six-community.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "34980e9b8a75cf81b54f8650fff8c41fb825e8cc0c3ed3dcd5bc001f5a08d556"
+    },
+    {
+      "path": "apps/worker/src/services/six-game-auth.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "c4e2119bf91634d13a40064a7252c7ea2fcbf18511cc275a80662597facb829f"
+    },
+    {
+      "path": "apps/worker/src/services/six-game-store.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "751f3a05d860d71781283b0513032fdd44bf91ab6d40499bb160ef141a79caa8"
+    },
+    {
+      "path": "apps/worker/src/services/six-game.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "29536c253c85fe3c4bf2317b36978a19dae0dece85fff4850b7eb2d7647ce025"
+    },
+    {
+      "path": "apps/worker/src/services/six-leaderboard.ts",
+      "group": "F26",
+      "workingTreeState": "HEAD",
+      "sha256": "914be80d191920860aa968cecd3699863bf4dd9e81cf76f9c81b770ce2211a68"
+    },
+    {
+      "path": "apps/worker/src/services/stealth.ts",
+      "group": "X01",
+      "workingTreeState": "HEAD",
+      "sha256": "4f592d81c781d7df1c0747bccbdfa874f250417efbe435ac18b1e05a212893f0"
+    },
+    {
+      "path": "apps/worker/src/services/step-delivery.ts",
+      "group": "F03",
+      "workingTreeState": "HEAD",
+      "sha256": "944b45b158d3d85dc864385db50a4e8da71d1405a7d2adfc57e25f705cf5856b"
+    },
+    {
+      "path": "apps/worker/src/services/tag-automation-context.ts",
+      "group": "F02",
+      "workingTreeState": "HEAD",
+      "sha256": "17578eac313885f94f878f6c4e2eed94c9e7ad56c9e3b1876ab6d100cdc98f72"
+    },
+    {
+      "path": "apps/worker/src/services/token-refresh.ts",
+      "group": "F27",
+      "workingTreeState": "HEAD",
+      "sha256": "23174ceaa8e37514dd15bf330b3cd472901554e7228ab8dab851c00f746e2de0"
+    },
+    {
+      "path": "apps/worker/src/services/unanswered-inbox.ts",
+      "group": "F21",
+      "workingTreeState": "HEAD",
+      "sha256": "c64063e1f8b606550a90665539760ce241e1648990967368af91686544742587"
+    },
+    {
+      "path": "apps/worker/src/services/users-grouped.ts",
+      "group": "F01",
+      "workingTreeState": "HEAD",
+      "sha256": "adcf20eeb74cfa402e93329cbb2e7a6d5d8ab978c1f510c21819e43732b414cf"
+    },
+    {
+      "path": "apps/worker/src/services/webhook-signature.ts",
+      "group": "F19",
+      "workingTreeState": "untracked",
+      "sha256": "ccbde29875fa7aa4597a1c5d9d33c2919bd32d0ec948169db88cf9c04af1c7ef"
+    },
+    {
+      "path": "apps/worker/src/services/webinar-consultation-booking.ts",
+      "group": "F13",
+      "workingTreeState": "modified",
+      "sha256": "70685495b73060b50c1461c13cd502630a68c19664f858ac69f69e1a7be42b9f"
+    },
+    {
+      "path": "apps/worker/src/services/webinar-followups.ts",
+      "group": "F15",
+      "workingTreeState": "modified",
+      "sha256": "d0dfc5ee7faf21f6b7f16bd01e2c7e1a4fa63aad2f2746675156c7d991c465fd"
+    },
+    {
+      "path": "apps/worker/src/services/webinar-mileage.ts",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "2fbb9e1409754e80caa3e215fbc697e9b2d7593fe80bc6e8a4dae7a608dd654c"
+    },
+    {
+      "path": "apps/worker/src/services/webinar-reminders.ts",
+      "group": "F15",
+      "workingTreeState": "HEAD",
+      "sha256": "82d68f266b006342155938584c2b8aba41b9ac29f096d08beb57b0082438512a"
+    },
+    {
+      "path": "apps/worker/src/services/webinar-schedule.ts",
+      "group": "F15",
+      "workingTreeState": "HEAD",
+      "sha256": "734b4e967cce8e7d5cb371b33d07c5fca06c665aa4b8bafafaeb63ed7e932fb4"
+    },
+    {
+      "path": "docs/community-mile-rewards/100-prompt-kit.md",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "e36c01852378074cfc283832b7ce3c01faa92dd4b18eeee1a089d291f064c692"
+    },
+    {
+      "path": "docs/community-mile-rewards/300-work-brief.md",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "192f49f8c495c3846ad5d3a0186cb276ba452b119436ddefa40827379b562058"
+    },
+    {
+      "path": "docs/community-mile-rewards/500-weekly-review.md",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "34d41e732fc35dec5f06f660277ec833c2077699c5f45f1acc33aa6298fd4b18"
+    },
+    {
+      "path": "docs/community-mile-rewards/README.md",
+      "group": "F35",
+      "workingTreeState": "HEAD",
+      "sha256": "155e7e1804feaf598bf231cf0ebe7d5a3c37347fb01bfcc7e842125f56f73be0"
+    },
+    {
+      "path": "docs/manual/01-intro.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "c2c92e4d1c8d9aa88e90d59160378ad4f6a1baf64773694d95ba491753cb60f1",
+      "headings": [
+        "# 第1章 イントロ",
+        "## 章の目的",
+        "## 想定読者",
+        "## 本文",
+        "## 目次",
+        "## 前提",
+        "## 次の章"
+      ]
+    },
+    {
+      "path": "docs/manual/02-setup.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "3fd894636271b2f24cc97a1946eaaebf39429581c7129afdac61e417a363e488",
+      "headings": [
+        "# 第2章 セットアップ",
+        "## 章の目的",
+        "## 想定読者",
+        "## 目次",
+        "## 前提",
+        "## 次の章"
+      ]
+    },
+    {
+      "path": "docs/manual/03-basics.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "992e1d8f317a297f94d4f79545c0adc2cddd34199fa7978b27b4a82becfaa4b9",
+      "headings": [
+        "# 第3章 基本機能",
+        "## 章の目的",
+        "## 想定読者",
+        "## 目次",
+        "## 前提",
+        "## 次の章"
+      ]
+    },
+    {
+      "path": "docs/manual/04-campaign-design.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "3d343055e6c53ba9ec5b0d2bb26bb79a60fd1ba2340f5eb3a0009d0f959489aa",
+      "headings": [
+        "# 第4章 キャンペーン設計",
+        "## 章の目的",
+        "## 想定読者",
+        "## 4.1 設計の原則 — 「測れない配信は打たない」",
+        "## 4.2 トラッキングリンク設計 — `create_tracked_link` の正しい使い方と落とし穴",
+        "### なぜ直リンクが禁止なのか",
+        "### `create_tracked_link` の最小構成",
+        "# 1. tracked_link を発行 (originalUrl は LP やフォームのトップ URL でよい)",
+        "# → レスポンスの id (UUID) をメモする",
+        "### よくある落とし穴",
+        "### ABテストはリンクを分けるだけ",
+        "### 短縮ハブ `/r/:ref` を SNS / オフライン QR で使う",
+        "## 4.3 ref_code first-touch モデル — 「最初に踏んだ流入元」を友だちに焼き付ける",
+        "### なぜ first-touch か",
+        "### 焼き付けの仕組み",
+        "### ref を導線で受け渡す",
+        "### 設計上の判断ポイント",
+        "## 4.4 診断 → セグメントの組み立て — LIFFフォーム + タグ + メタデータ",
+        "### 診断は「分けるためにやる」",
+        "### LIFF フォーム + 自動タグ付与",
+        "# 例: AAA向け「興味分野診断」フォーム",
+        "### タグ命名規則 — 排他か包含か",
+        "### メタデータ vs タグ — 使い分け",
+        "### セグメントは「配信時に決まる」",
+        "## 4.5 ステップ配信シナリオの組み方 — トリガー、ジッター、分岐",
+        "### キャンペーン分離の鉄則",
+        "### 3つのトリガータイプの使い分け",
+        "### 即時配信とジッター",
+        "### 条件分岐の典型パターン",
+        "# 概念例: セミナー前リマインドシナリオ",
+        "# Step 1 (delay 0)    : セミナー3日前 → 「予習資料はこちら」(LP リンク)",
+        "# Step 2 (delay 1d)   : 条件: tag_exists \"clicked_lp\"",
+        "#                       true  → Step 3 (詳細解説)",
+        "#                       false → next_step_on_false=4 (再リマインド)",
+        "# Step 3 (delay 0)    : 「資料見てくれた人向け追加情報」",
+        "# Step 4 (delay 0)    : 「まだ見てない方へ - 5分で読めます」",
+        "# Step 5 (delay 1d)   : セミナー前日リマインド (全員共通)",
+        "### ステップ間の delay 設計",
+        "## 4.6 CV計測と効果測定 — `/api/conversions/*` 設計、ABテスト、レポーティング",
+        "### CVは1キャンペーンに1つだけ",
+        "### `/api/conversions/track` への送信タイミング",
+        "### ABテストの最小構成",
+        "### レポートを「自分で出す」習慣",
+        "### 落とし穴: CVを変えるな",
+        "## 章のまとめにかえて"
+      ]
+    },
+    {
+      "path": "docs/manual/05-operations.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "a730a9112fff3842a6b822e1fd6f132235aa5cd6d8c055c00eebbe3b01aea06d",
+      "headings": [
+        "# 第5章 運用フロー",
+        "## 章の目的",
+        "## 想定読者",
+        "## 目次",
+        "## 前提",
+        "## 次の章"
+      ]
+    },
+    {
+      "path": "docs/manual/06-mcp-claude-code.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "cdb2779128054502987ecfca64b29d66b22ed1ba9fd4d0d4c5b60f6eb36b092d",
+      "headings": [
+        "# 第6章 MCP × Claude Code で自動化",
+        "## 章の目的",
+        "## 想定読者",
+        "## 目次",
+        "## 前提",
+        "## 次の章"
+      ]
+    },
+    {
+      "path": "docs/manual/07-troubleshooting.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "2a5c2ca4da4de08588432bb62893cd7f4ccbe39747141fce209bfc619506f513",
+      "headings": [
+        "# 第7章 トラブルシュート",
+        "## 章の目的",
+        "## 想定読者",
+        "## 目次",
+        "## 参考ナレッジリンク（見出しのみ）",
+        "### 配信系",
+        "### デプロイ・本番環境系",
+        "### LIFF / 認証系",
+        "### Cloudflare / wrangler 系",
+        "### OSS 同期 / シークレット系",
+        "### 運用判断系",
+        "## 前提",
+        "## 次の章"
+      ]
+    },
+    {
+      "path": "docs/manual/README.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "b454faa74933da6d50b32cdfc8a3ccb5a4b7a26b86eae45b9a7b5227110a5f5d",
+      "headings": [
+        "# L Harness 運用マニュアル",
+        "## 想定読者",
+        "## 章構成",
+        "## 読み方",
+        "## 統合プレイブック ¥98,000"
+      ]
+    },
+    {
+      "path": "docs/plugins/README.md",
+      "group": "DOC",
+      "workingTreeState": "untracked",
+      "sha256": "27cdb0a23bfeecb1795297e1bfc0c3ce634b746cdc12b1a853d12f633dff53b2",
+      "headings": [
+        "# L Harness Plugin Market",
+        "## すぐ試す",
+        "## 本体の更新から守る構成",
+        "## 開発・リリースの約束",
+        "## マーケットに掲載する"
+      ]
+    },
+    {
+      "path": "docs/wiki/09-Rich-Menus.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "c7e39c7fff5e72e27c735739bd58c4e5434efd8ee569a9765425d888c1fcad24",
+      "headings": [
+        "# 9. リッチメニュー (Rich Menus)",
+        "## 概要",
+        "## アーキテクチャ",
+        "## データモデル",
+        "### RichMenu オブジェクト",
+        "### サイズオプション",
+        "### RichMenuArea",
+        "### アクションタイプ",
+        "## デフォルト vs ユーザー別アサイン",
+        "### デフォルトリッチメニュー",
+        "### ユーザー別アサイン",
+        "### 優先順位",
+        "## タグベースのメニュー切替",
+        "### 実現方法",
+        "## 画像アップロード",
+        "### 方法1: Base64 JSON",
+        "### 方法2: バイナリアップロード",
+        "### 画像要件",
+        "## APIエンドポイント",
+        "### 全リッチメニュー一覧取得",
+        "### リッチメニュー作成",
+        "### リッチメニュー画像アップロード（Base64）",
+        "### リッチメニュー画像アップロード（バイナリ）",
+        "### デフォルトリッチメニュー設定",
+        "### 友だちにリッチメニューをアサイン",
+        "### 友だちのリッチメニューアサイン解除",
+        "### リッチメニュー削除",
+        "## 典型的な運用フロー",
+        "### 1. メニュー作成 → 画像アップロード → デフォルト設定",
+        "# 1. メニュー構造を作成",
+        "# 2. 画像をアップロード",
+        "# 3. デフォルトに設定",
+        "### 2. VIP用メニューの自動切替",
+        "# VIPタグ付与時にVIPメニューに自動切替するオートメーション作成",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/10-Tracked-Links.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "e71c1d622ab1aeb30e270b80930f08d30fb2b826e593cb199590c47025d92ccf",
+      "headings": [
+        "# 10. トラッキングリンク (Tracked Links)",
+        "## 概要",
+        "## アーキテクチャ (v0.4.0)",
+        "### URL自動追跡 (v0.4.0)",
+        "## データモデル",
+        "### tracked_links テーブル",
+        "### link_clicks テーブル",
+        "## クリック記録メカニズム",
+        "### トラッキングURL形式",
+        "### 処理フロー",
+        "### 匿名クリック vs 友だち紐付きクリック",
+        "## 短縮ドメイン設定（メッセージ内リンク）",
+        "### 設定方法",
+        "### ドメイン側の設定パターン",
+        "### 挙動の詳細",
+        "## APIレスポンス形式",
+        "### TrackedLink オブジェクト",
+        "### TrackedLinkWithClicks オブジェクト（詳細取得時）",
+        "## APIエンドポイント",
+        "### トラッキングリンク一覧取得",
+        "### トラッキングリンク作成",
+        "### トラッキングリンク詳細取得（クリック履歴付き）",
+        "### トラッキングリンク削除",
+        "### クリックトラッキング（リダイレクト）",
+        "# 友だち特定（メッセージ内で動的にfriendIdを埋め込む）",
+        "# 匿名（リッチメニューやWebページに配置）",
+        "## 活用パターン",
+        "### パターン1: メッセージ内でクリック計測",
+        "### パターン2: クリック→タグ→メニュー切替の連鎖",
+        "### パターン3: クリック分析",
+        "# リンクの詳細を取得してクリック率を計算",
+        "## キャンペーンメッセージ (v0.10+)",
+        "### 追加カラム",
+        "### intro メッセージ",
+        "### reward メッセージ — キャンペーン単位の解決 (v0.10.1+)",
+        "### MCP からテンプレを紐付ける",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/11-Forms-and-LIFF.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "d63e8597d6aa10604bdeb2b4d2d29cb11faa4caa7dc1333d09c2ad3718ef8171",
+      "headings": [
+        "# 11. フォーム & LIFF (Forms and LIFF)",
+        "## 概要",
+        "## データモデル",
+        "### forms テーブル",
+        "### form_submissions テーブル",
+        "## フィールド定義",
+        "### FormField 型",
+        "### フィールドタイプ一覧",
+        "### フィールド定義例",
+        "## LIFF統合",
+        "### LIFFとは",
+        "### LIFF設定",
+        "### フォーム表示URL",
+        "## フォーム送信フロー",
+        "### 自動アクション",
+        "### メタデータへの保存",
+        "## カレンダー予約LIFF",
+        "## APIエンドポイント",
+        "### フォーム一覧取得",
+        "### フォーム詳細取得",
+        "### フォーム作成",
+        "### フォーム更新",
+        "### フォーム削除",
+        "### フォーム回答一覧取得",
+        "### フォーム送信（LIFF/公開エンドポイント）",
+        "## 活用パターン",
+        "### パターン1: セミナー申込 → フォローアップシナリオ",
+        "# 1. セミナーフォローアップシナリオを作成",
+        "# 2. 「セミナー申込済み」タグを作成",
+        "# 3. フォーム作成（タグ+シナリオ連動）",
+        "### パターン2: プログレッシブプロファイリング",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/12-Reminders.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "c7ba7623ac43020cfad69e04cd6424c6b5b26fc1b72dc2191051620cbf9ced13",
+      "headings": [
+        "# 12. リマインダー配信 (Reminders)",
+        "## 概要",
+        "## データモデル",
+        "### reminders テーブル（リマインダー定義）",
+        "### reminder_steps テーブル（配信ステップ）",
+        "### friend_reminders テーブル（友だち登録）",
+        "### friend_reminder_deliveries テーブル（配信ログ）",
+        "## offset_minutes の解説",
+        "### 重要: 符号の意味",
+        "### offset_minutes 早見表",
+        "### 例: セミナーリマインダー",
+        "## 配信メカニズム",
+        "### Cron Trigger",
+        "### 配信判定ロジック",
+        "### ステルス配信",
+        "### メッセージ形式",
+        "## APIエンドポイント",
+        "### リマインダー一覧取得",
+        "### リマインダー詳細取得（ステップ付き）",
+        "### リマインダー作成",
+        "### リマインダー更新",
+        "### リマインダー削除",
+        "### ステップ追加",
+        "### ステップ削除",
+        "### 友だちをリマインダーに登録",
+        "### 友だちのリマインダー一覧取得",
+        "### 友だちリマインダーのキャンセル",
+        "## よくあるパターン",
+        "### パターン1: セミナーリマインダー",
+        "# 1. リマインダー作成",
+        "# 2. ステップ追加（3日前、1日前、1時間前、翌日）",
+        "# 3. 申込者を登録",
+        "### パターン2: 誕生日メッセージ",
+        "# 1. 誕生日リマインダー作成",
+        "# 2. 当日0時にメッセージ",
+        "# 3. 各友だちの誕生日を登録",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/13-Scoring.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "1fda3152be1790421e883acf834f1b1724c26c07104572ad7fc83e0682859e29",
+      "headings": [
+        "# 13. スコアリング (Scoring / Lead Scoring)",
+        "## 概要",
+        "## アーキテクチャ",
+        "## データモデル",
+        "### scoring_rules テーブル",
+        "### friend_scores テーブル（スコア履歴）",
+        "### friends.score カラム（キャッシュ）",
+        "## イベントタイプ",
+        "## スコアリングの自動実行",
+        "### addScore の内部処理",
+        "## スコア閾値アクション",
+        "## APIエンドポイント",
+        "### スコアリングルール一覧取得",
+        "### スコアリングルール詳細取得",
+        "### スコアリングルール作成",
+        "### スコアリングルール更新",
+        "### スコアリングルール削除",
+        "### 友だちのスコア取得（現在値+履歴）",
+        "### 手動スコア加算/減算",
+        "# 加算",
+        "# 減算",
+        "## 運用パターン",
+        "### パターン1: 基本スコアリングルール一式",
+        "# 友だち追加: +5",
+        "# メッセージ返信: +3",
+        "# URLクリック: +10",
+        "# フォーム送信: +20",
+        "# 購入: +100",
+        "### パターン2: ホットリード自動検出",
+        "# スコア50以上で「ホットリード」タグを自動付与",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/14-Automation.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "23ea755c36c73bb757c37bb19b2bc31d933c742731bdf9f4b436899cdbb0ea97",
+      "headings": [
+        "# 14. オートメーション (Automation / IF-THEN ルール)",
+        "## 概要",
+        "## アーキテクチャ",
+        "## データモデル",
+        "### automations テーブル",
+        "### automation_logs テーブル",
+        "## イベントタイプ（7種）",
+        "## アクションタイプ（8種）",
+        "## 条件 (Conditions) のJSON形式",
+        "### 空条件（常にマッチ）",
+        "### score_threshold 条件",
+        "### tag_id 条件",
+        "### 条件の組み合わせ",
+        "## 優先順位 (Priority)",
+        "## 実行ログ",
+        "### ログのステータス",
+        "### ログの actions_result 形式",
+        "## APIエンドポイント",
+        "### オートメーション一覧取得",
+        "### オートメーション詳細取得（ログ付き）",
+        "### オートメーション作成",
+        "### オートメーション更新",
+        "### オートメーション削除",
+        "### 実行ログ取得",
+        "# 特定オートメーションのログ",
+        "## オートメーションチェーニングパターン",
+        "### パターン1: 友だち追加 → タグ → メニュー → シナリオ",
+        "### パターン2: キーワード検知 → アクション",
+        "# 「資料請求」メッセージ受信時",
+        "### パターン3: 外部Webhook → LINE内アクション",
+        "# Stripe決済完了Webhook受信時",
+        "### パターン4: チェーニング（イベント → アクション → 新イベント → アクション）",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/15-Webhooks-and-Notifications.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "700c52624ac4dd37201052a66bde2dd0696c3108a5ad4171902eddc34df35f19",
+      "headings": [
+        "# 15. Webhook & 通知 (Webhooks and Notifications)",
+        "## 概要",
+        "## 1. LINE Webhookイベント処理",
+        "### エンドポイント",
+        "### 署名検証",
+        "### 処理されるイベント",
+        "### 即時配信の仕組み",
+        "### イベントバス発火",
+        "## 2. 受信Webhook (Incoming Webhooks)",
+        "### データモデル",
+        "### 受信エンドポイント",
+        "### APIエンドポイント",
+        "# Stripeからの決済通知を受信（認証不要）",
+        "## 3. 送信Webhook (Outgoing Webhooks)",
+        "### データモデル",
+        "### event_types の設定",
+        "### HMAC署名検証",
+        "### 送信ペイロード形式",
+        "### APIエンドポイント",
+        "## 4. 通知ルール (Notification Rules)",
+        "### データモデル",
+        "### 通知チャネル",
+        "### APIエンドポイント",
+        "# 全通知",
+        "# ステータスでフィルタ",
+        "## 活用パターン",
+        "### パターン: Stripe → L Harness → Slack通知 + 顧客タグ付け",
+        "# 1. 受信Webhook作成（Stripe用）",
+        "# 2. 送信Webhook作成（Slack通知用）",
+        "# 3. オートメーション作成（決済完了→タグ付与）",
+        "# 4. Stripeのwebhook URLに設定:",
+        "# https://line-crm-worker.line-crm-api.workers.dev/api/webhooks/incoming/{IN_WH}/receive",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/16-Chat-and-AutoReply.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "b392f2d762c2f2ccda2a6d971e1e23240356d5b0df93448e6b56aaade1e774e0",
+      "headings": [
+        "# 16. チャット & 自動応答 (Chat and AutoReply)",
+        "## 概要",
+        "## アーキテクチャ",
+        "## データモデル",
+        "### operators テーブル",
+        "### chats テーブル",
+        "### auto_replies テーブル",
+        "### messages_log テーブル",
+        "## チャットステータスライフサイクル",
+        "### upsertChatOnMessage の動作",
+        "## LINE APIメッセージ送信",
+        "### replyMessage（自動応答で使用）",
+        "### pushMessage（オペレーター送信で使用）",
+        "## 自動応答ルール",
+        "### マッチタイプ",
+        "### レスポンスタイプ",
+        "### マッチング順序",
+        "### メッセージログ",
+        "## APIエンドポイント",
+        "### オペレーターCRUD",
+        "### チャット管理",
+        "# 全チャット",
+        "# 未読のみ",
+        "# 特定オペレーター担当",
+        "# 組み合わせ",
+        "# オペレーターアサイン + 対応中に変更",
+        "# 対応完了",
+        "# アサイン解除",
+        "# テキストメッセージ送信",
+        "# Flexメッセージ送信",
+        "## 運用パターン",
+        "### パターン1: FAQ自動応答 + エスカレーション",
+        "### パターン2: オペレーターのワークフロー",
+        "# 1. 未読チャットを確認",
+        "# 2. チャットを自分にアサイン",
+        "# 3. メッセージ履歴を確認",
+        "# 4. 返信",
+        "# 5. 対応完了",
+        "## ソースコード参照"
+      ]
+    },
+    {
+      "path": "docs/wiki/17-CV-Tracking-and-Affiliates.md",
+      "group": "DOC",
+      "workingTreeState": "modified",
+      "sha256": "6c9217dcb68e45c4f38b36e3d3f76271835daafa29b7d49cc59f55b24ff13c61",
+      "headings": [
+        "# 17. CV (コンバージョン) トラッキング & アフィリエイト",
+        "## アーキテクチャ概要",
+        "## データモデル",
+        "### conversion_points テーブル",
+        "### conversion_events テーブル",
+        "### affiliates テーブル",
+        "### affiliate_clicks テーブル",
+        "### entry_routes テーブル (流入経路)",
+        "### ref_tracking テーブル",
+        "## API エンドポイント",
+        "### CV ポイント管理",
+        "### CV イベント記録・取得",
+        "### アフィリエイト管理",
+        "### アフィリエイトクリック記録",
+        "### アフィリエイトレポート",
+        "## Stripe 決済連携",
+        "### データモデル (stripe_events テーブル)",
+        "### Stripe イベント一覧取得",
+        "### Stripe Webhook レシーバー",
+        "# Stripe が自動送信するWebhook",
+        "## 流入経路トラッキング (Entry Routes)",
+        "### SDK からの利用",
+        "### 流入経路の仕組み",
+        "## 実装上の注意点"
+      ]
+    },
+    {
+      "path": "docs/wiki/18-Multi-Account-and-BAN.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "2ada3c133ac27db9a40e85fda510373fce0f3f665eea61dda68822dd3ff5597e",
+      "headings": [
+        "# 18. マルチアカウント管理 & BAN 検知",
+        "## アーキテクチャ概要",
+        "## LINE アカウント管理 (Multi-Account)",
+        "### データモデル (line_accounts テーブル)",
+        "### API エンドポイント",
+        "## UUID クロスアカウントリンキング",
+        "### 概要",
+        "### データモデル",
+        "### リンク手順",
+        "# 1. ユーザー作成",
+        "# 2. 友だちをリンク",
+        "# 3. UUID紐付き友だち一覧取得",
+        "### メール/電話でユーザー検索",
+        "## アカウントヘルスモニタリング",
+        "### BAN 検知メカニズム",
+        "### データモデル (account_health_logs テーブル)",
+        "### ヘルス状態取得",
+        "## アカウント移行",
+        "### データモデル (account_migrations テーブル)",
+        "### 移行開始",
+        "### 移行一覧取得",
+        "### 移行詳細取得",
+        "## ステルスモード機能",
+        "### 機能一覧",
+        "## BAN 防止ベストプラクティス",
+        "## 環境変数"
+      ]
+    },
+    {
+      "path": "docs/wiki/19-SDK-Reference.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "a1d50d052347305a2f16094c9b652b4bf8ad1ef08531562e879772f00bdc1498",
+      "headings": [
+        "# 19. SDK リファレンス",
+        "## インストール",
+        "# npm",
+        "# pnpm",
+        "# GitHub から直接",
+        "## 設定 (LineHarness コンストラクタ)",
+        "### LineHarnessConfig",
+        "## リソースクラス",
+        "### friends (FriendsResource)",
+        "### tags (TagsResource)",
+        "### scenarios (ScenariosResource)",
+        "### broadcasts (BroadcastsResource)",
+        "### richMenus (RichMenusResource)",
+        "### trackedLinks (TrackedLinksResource)",
+        "### forms (FormsResource)",
+        "## ワークフローヘルパー",
+        "### createStepScenario(name, triggerType, steps)",
+        "### broadcastText(text)",
+        "### broadcastToTag(tagId, messageType, content)",
+        "### broadcastToSegment(messageType, content, conditions)",
+        "### sendTextToFriend(friendId, text)",
+        "### sendFlexToFriend(friendId, flexJson)",
+        "### getAuthUrl(options?)",
+        "## エラーハンドリング",
+        "### LineHarnessError",
+        "## TypeScript 型リファレンス",
+        "## 完全なコード例",
+        "### 友だち追加後の自動シナリオ構築"
+      ]
+    },
+    {
+      "path": "docs/wiki/20-API-Reference.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "f0990dcf58db443a855dbe4d1f666f9dc585403a89a5669f591f8a68f392fa56",
+      "headings": [
+        "# 20. API リファレンス",
+        "## 認証",
+        "### 公開エンドポイント (認証不要)",
+        "## ベース URL",
+        "## レスポンス形式",
+        "### 成功時",
+        "### エラー時",
+        "### ページネーション",
+        "## エンドポイント一覧",
+        "### /api/friends/*",
+        "### /api/tags/*",
+        "### /api/scenarios/*",
+        "### /api/broadcasts/*",
+        "### /api/rich-menus/*",
+        "### /api/tracked-links/*",
+        "### /api/forms/*",
+        "### /api/reminders/*",
+        "### /api/scoring-rules/*",
+        "### /api/automations/*",
+        "### /api/webhooks/*",
+        "### /api/notifications/*",
+        "### /api/chats/*",
+        "### /api/conversions/*",
+        "### /api/affiliates/*",
+        "### /api/users/*",
+        "### /api/line-accounts/*",
+        "### /api/accounts/* (ヘルス & 移行)",
+        "### /api/templates/*",
+        "### /api/integrations/*",
+        "### その他",
+        "## HTTP ステータスコード"
+      ]
+    },
+    {
+      "path": "docs/wiki/21-Deployment.md",
+      "group": "DOC",
+      "workingTreeState": "modified",
+      "sha256": "6c66c3fbaf12357550a76c44f2781b223611d5d286f82b7332a83c9a44a8da2c",
+      "headings": [
+        "# 21. デプロイメント",
+        "## プロジェクト構成",
+        "## ローカル開発セットアップ",
+        "### 前提条件",
+        "### 初期セットアップ",
+        "# リポジトリクローン",
+        "# 依存インストール",
+        "# パッケージビルド",
+        "# ローカル D1 データベース作成 + マイグレーション",
+        "### Worker 開発サーバー",
+        "# => wrangler dev (http://localhost:8787)",
+        "# apps/worker/.dev.vars",
+        "### 管理パネル開発",
+        "# => next dev (http://localhost:3000)",
+        "## Cloudflare Workers デプロイ",
+        "### 手動デプロイ",
+        "# 1. パッケージビルド",
+        "# 2. Worker デプロイ",
+        "# => wrangler deploy (apps/worker/)",
+        "### wrangler.toml 設定",
+        "### シークレット設定",
+        "# Stripe 連携を利用する場合は必須",
+        "# Meet Harness 連携を利用する場合は必須",
+        "## GitHub Actions 自動デプロイ",
+        "### トリガー条件",
+        "### ワークフロー内容",
+        "### 必要な GitHub Secrets",
+        "## 管理パネル デプロイ (Cloudflare Pages)",
+        "# 1. ビルド",
+        "# => next build (apps/web/)",
+        "# 2. Cloudflare Pages にデプロイ",
+        "# Dashboard から GitHub リポジトリを接続、または:",
+        "### Pages 設定",
+        "## LIFF（Worker 統合）",
+        "### LIFF ビルド時環境変数",
+        "### LIFF エンドポイント URL",
+        "## D1 データベースマイグレーション",
+        "### リモート (本番)",
+        "# => wrangler d1 execute line-crm --file=packages/db/schema.sql",
+        "### ローカル",
+        "# => wrangler d1 execute line-crm --file=packages/db/schema.sql --local",
+        "### D1 データベース作成 (初回のみ)",
+        "# => database_id が出力される → wrangler.toml に記入",
+        "## 環境変数チェックリスト",
+        "### Worker (必須)",
+        "### Worker (オプション)",
+        "## DNS / ドメイン設定",
+        "### workers.dev サブドメイン (デフォルト)",
+        "### カスタムドメイン",
+        "### LINE Webhook URL 設定",
+        "## コスト概算",
+        "### Cloudflare Workers Free Tier",
+        "### 有料 (Workers Paid / $5/月)",
+        "### LINE Messaging API",
+        "### 目安",
+        "## デプロイ後の確認",
+        "# API ヘルスチェック",
+        "# 認証テスト",
+        "# Swagger UI",
+        "## 既存環境のマイグレーション（LIFF 統合）",
+        "### 手順"
+      ]
+    },
+    {
+      "path": "docs/wiki/22-Operations.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "38631f1345585ce8c5391df71f39e2636f1878ad6fb1a86fb005a4198c02dbea",
+      "headings": [
+        "# 22. 運用ガイド",
+        "## 日常モニタリングチェックリスト",
+        "### 毎日確認すべき項目",
+        "### 週次確認",
+        "### モニタリング curl コマンド",
+        "# アカウントヘルスチェック",
+        "# 友だち総数",
+        "# 未読チャット数 (limit を明示する: /api/chats はデフォルト 300 件で頭打ちになる)",
+        "# 今週の CV",
+        "# 失敗した自動化ログ",
+        "## アカウントヘルスモニタリング",
+        "### 自動チェック (Cron)",
+        "### リスクレベル対応フロー",
+        "### アラート自動化の設定例",
+        "# danger 検出時にSlack通知する自動化ルール",
+        "## バックアップ戦略",
+        "### D1 データベースエクスポート",
+        "# テーブル単位でエクスポート",
+        "### バックアップスクリプト例",
+        "### リストア",
+        "# schema.sql で空テーブル作成",
+        "# JSON からデータ復元（手動 INSERT が必要）",
+        "## スケーリング考慮事項",
+        "### D1 の制限",
+        "### ボトルネック対策",
+        "### Cron 実行の負荷",
+        "## セキュリティベストプラクティス",
+        "### API キーローテーション",
+        "# 1. 新しい API キーを生成",
+        "# 2. Worker に設定",
+        "# => 新しいキーを入力",
+        "# 3. SDK クライアント側のキーを更新",
+        "# LineHarness({ apiKey: NEW_KEY })",
+        "### 管理パネル認証",
+        "### API アクセスの原則",
+        "### 機密データの取り扱い",
+        "## トラブルシューティング",
+        "### よくある問題と対処法",
+        "# LINE Webhook URL が正しいか確認",
+        "# LINE Developers Console > Messaging API > Webhook URL",
+        "# => https://line-crm-worker.line-crm-api.workers.dev/webhook",
+        "# Webhook の検証",
+        "# => 200 OK が返ればルーティングは正常",
+        "# API キーが正しいか確認",
+        "# テーブルサイズ確認",
+        "## ログ分析",
+        "### Cloudflare Workers ログ",
+        "# リアルタイムログ",
+        "# フィルタ付き",
+        "### アプリケーションログ",
+        "### 自動化ログ",
+        "# 特定の自動化ルールの実行ログ",
+        "## パフォーマンス最適化",
+        "### クエリ最適化",
+        "### 送信の最適化",
+        "### レスポンスキャッシュ"
+      ]
+    },
+    {
+      "path": "docs/wiki/23-Claude-Code-Integration.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "16430b5bc0afb60e46f89f53ea2d95fbaa26f3c70521a38ed2001715d592b4df",
+      "headings": [
+        "# 23. Claude Code 連携ガイド",
+        "## 概要",
+        "## セットアップ",
+        "### 1. API キーの確認",
+        "# API が動作していることを確認",
+        "### 2. line-harness スキルの設定",
+        "## L Harness",
+        "### 3. SDK の利用 (TypeScript プロジェクトの場合)",
+        "## Claude Code からの一般的なコマンド",
+        "### 友だち管理",
+        "# 友だち数確認",
+        "# 友だち一覧（最新20件）",
+        "# 特定タグの友だち",
+        "# 友だちにタグ追加",
+        "# メタデータ更新",
+        "### タグ管理",
+        "# タグ一覧",
+        "# タグ作成",
+        "### メッセージ送信",
+        "# 個別テキスト送信",
+        "# 一斉配信（全員）",
+        "# 即時配信",
+        "### シナリオ管理",
+        "# シナリオ一覧",
+        "# シナリオ作成 + ステップ追加",
+        "### 分析・レポート",
+        "# CV レポート (今月)",
+        "# アフィリエイト全体レポート",
+        "# アカウントヘルス",
+        "## ワークフロー例",
+        "### 1. 自然言語からシナリオ作成",
+        "# シナリオ作成",
+        "# ステップ1: 即時挨拶",
+        "# ステップ2: 1時間後のサービス案内",
+        "# ステップ3: 3日後のクーポン",
+        "### 2. セグメント配信",
+        "# VIPタグのID取得",
+        "# 配信作成",
+        "# セグメント配信",
+        "### 3. フォーム作成 + 自動タグ付け",
+        "# タグ作成",
+        "# フォーム作成",
+        "### 4. デプロイ",
+        "# パッケージビルド",
+        "# Worker デプロイ",
+        "# デプロイ確認",
+        "### 5. データベースマイグレーション",
+        "# スキーマ適用",
+        "## AI ファースト運用のティップス",
+        "### 1. 全操作を API 経由で行う",
+        "### 2. SDK を活用する",
+        "### 3. OpenAPI スペックを活用",
+        "# エンドポイント一覧を確認",
+        "### 4. jq でデータ加工",
+        "# 友だちの名前一覧",
+        "# タグ別の友だち数",
+        "## 自動化パターン",
+        "### Cron + Claude Code",
+        "# 毎週月曜日に CV レポートを Slack に送信",
+        "### Webhook トリガー",
+        "# 受信 Webhook を作成",
+        "### Stripe 連携の自動化",
+        "## ファイルパス一覧 (Claude Code 用)"
+      ]
+    },
+    {
+      "path": "docs/wiki/24-MCP-Server.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "b210b73141873055c01a16f6e358e769777a25308c2a5dc1de69d1ec054b4758",
+      "headings": [
+        "# 24. MCP Server",
+        "## セットアップ",
+        "### npx (推奨)",
+        "### ローカルビルド",
+        "# 実行",
+        "## ツール一覧 (25個)",
+        "### 読み取り系",
+        "### 書き込み系",
+        "### 管理系",
+        "### Resources (MCP Resources)",
+        "## URL自動追跡",
+        "### 動作",
+        "### スキップされる URL",
+        "## 使用例",
+        "### Claude Code での操作例",
+        "## アーキテクチャ",
+        "## 開発",
+        "# ビルド",
+        "# ウォッチモード",
+        "# 依存パッケージ",
+        "# - @line-harness/sdk (workspace)",
+        "# - @modelcontextprotocol/sdk",
+        "# - zod"
+      ]
+    },
+    {
+      "path": "docs/wiki/25-Staff-Management.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "c45f09d997a7935fe3e3078bab8f1a2f4ecce1ce6523f2746bc611062b7820d1",
+      "headings": [
+        "# 25. スタッフ管理 (Staff Management)",
+        "## 概要",
+        "## 権限マトリクス",
+        "## 認証フロー",
+        "### 後方互換性",
+        "## API エンドポイント",
+        "### `GET /api/staff/me`",
+        "### `GET /api/staff` (owner only)",
+        "### `POST /api/staff` (owner only)",
+        "### `PATCH /api/staff/:id` (owner only)",
+        "### `DELETE /api/staff/:id` (owner only)",
+        "### `POST /api/staff/:id/regenerate-key` (owner only)",
+        "## MCP で操作",
+        "## SDK で操作",
+        "## 管理画面",
+        "## DB スキーマ"
+      ]
+    },
+    {
+      "path": "docs/wiki/26-Manual-Update.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "c486da1bb0096ea9260f78501bf070ee9834cc2cb8031cc052e6a93b2af2f117",
+      "headings": [
+        "# 手動アップデートガイド",
+        "## 先に結論: 旧バージョンは CLI から更新する",
+        "## バージョン別の安全な経路",
+        "## 方法 1: create-line-harness でインストールした場合",
+        "### バージョンが `v0.0.0-dev` と表示される場合（旧 CLI インストール）",
+        "## 方法 2: git クローンして運用している場合",
+        "# 1. 最新を取得",
+        "# 2. 依存を更新",
+        "# 3. DBをバックアップ",
+        "# 4. 自分の変更と新しいマイグレーションをステージング環境で検証",
+        "#    SQLファイル全体のエラーを `|| true` で無視しないでください。",
+        "#    先頭の「列が既にある」で後続SQLまで未適用になる可能性があります。",
+        "# 5. デプロイ",
+        "## 方法 3: フォークして独自変更がある場合",
+        "## リリース情報"
+      ]
+    },
+    {
+      "path": "docs/wiki/27-Affiliate-ASP.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "c670fa0b7f07d95d1d1b9c528bc70791ea9e6e9046fccf760d8b0de835cded8b",
+      "headings": [
+        "# 27. アフィリエイト ASP（セルフサーブ計測）",
+        "## 1. 機能概要",
+        "## 2. アフィリエイター向け: LIFF でのセルフサーブ操作",
+        "### 2-1. 登録",
+        "### 2-2. リンク発行（媒体別ラベル付き）",
+        "### 2-3. 実績確認",
+        "## 3. 帰属ルール",
+        "### 3-1. last-touch / 90 日窓",
+        "### 3-2. 自己クリック除外",
+        "### 3-3. CV 時スナップショット",
+        "## 4. 管理者向け: /affiliates 画面",
+        "### 4-1. 一覧画面の列",
+        "### 4-2. 詳細画面",
+        "### 4-3. ⚠ 重複フラグ（`duplicateFlags`）",
+        "### 4-4. ジャーニー API（管理者向け）",
+        "## 5. 短縮 URL 設定",
+        "### 5-1. アカウント設定（管理画面）",
+        "### 5-2. ドメイン側 Redirect Rule の設定",
+        "## 6. Phase 2: 案件（オファー）",
+        "### 6-1. 案件の構成",
+        "### 6-2. LIFF での参加とリンク取得",
+        "### 6-3. 案件に紐づく流入後フロー（tag / シナリオ自動適用）",
+        "## 7. Phase 2: 成果承認フロー",
+        "### 7-1. 帰属 CV が pending で発生する仕組み",
+        "### 7-2. 管理画面「案件・承認」タブ",
+        "### 7-3. 承認・却下",
+        "### 7-4. ⚠ 重複バッジの意味",
+        "### 7-5. 確定報酬の計算",
+        "## 8. API リファレンス",
+        "### 認証方式",
+        "### セルフ API（アフィリエイター向け）",
+        "### ジャーニー API",
+        "### レポート API",
+        "### 案件 CRUD API（管理者向け）",
+        "### 承認 API（管理者向け）"
+      ]
+    },
+    {
+      "path": "docs/wiki/28-Google-Calendar-and-Webinar-Booking.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "9859ddbd4a73bce4321dc34d351f08b7f417ece8a34468fe58104c770b5163e7",
+      "headings": [
+        "# 28. Googleカレンダー連携とライブCTA即時予約",
+        "## できること",
+        "### 空き枠の考え方",
+        "## 普段使う人の設定",
+        "### 1. 予約メニューを用意する",
+        "### 2. 毎週の受付時間を保存する",
+        "### 3. Googleアカウントを接続する",
+        "### 4. ウェビナーと予約メニューを結び付ける",
+        "### 5. テスト予約する",
+        "## 予約後に自動で行われること",
+        "## OSS設置者が最初に一度だけ行う設定",
+        "### 1. Google Calendar APIを有効にする",
+        "### 2. OAuth同意画面を設定する",
+        "### 3. OAuthクライアントを作成する",
+        "### 4. Workerシークレットを設定する",
+        "### 5. 管理画面で接続を確認する",
+        "## サービスアカウントキーが作れない場合",
+        "## よくあるエラー",
+        "## 安全に運用するための確認表"
+      ]
+    },
+    {
+      "path": "docs/wiki/Architecture.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "5b73ecd51a82db23f9f2c1c04ab0d529ddbf99303c094dbb1772d560d8eec85c",
+      "headings": [
+        "# Architecture — L Harness アーキテクチャ",
+        "## 全体構成図",
+        "## モノレポ構造",
+        "## データフロー",
+        "### Webhook 受信フロー",
+        "### Cron 配信フロー（5分毎）",
+        "### イベントバス",
+        "## 認証フロー",
+        "### 3つの認証方式",
+        "### API Key 認証ミドルウェア",
+        "### LINE Webhook 署名検証",
+        "## D1 データベーススキーマ概要",
+        "### コアテーブル（友だち管理）",
+        "### シナリオ・配信",
+        "### UUID・マルチアカウント",
+        "### 自動化・スコアリング",
+        "### CV・アフィリエイト",
+        "### その他",
+        "## タイムスタンプ規約",
+        "## ステルス設計"
+      ]
+    },
+    {
+      "path": "docs/wiki/Broadcasts.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "9f714e543c94f4af99b5ff8d5804e477ed17811ad963def9107025eceeb8b865",
+      "headings": [
+        "# Broadcasts — 一斉配信",
+        "## 概要",
+        "## データモデル",
+        "### broadcasts テーブル",
+        "### API レスポンス形式",
+        "## ステータスライフサイクル",
+        "## バッチ送信メカニズム",
+        "### target_type: 'all'",
+        "### target_type: 'tag'",
+        "### ステルス遅延計算",
+        "### メッセージバリエーション",
+        "## セグメント配信",
+        "### SegmentCondition 構造",
+        "### ルールタイプ一覧",
+        "### SQL 生成",
+        "## API エンドポイント",
+        "### GET /api/broadcasts — 配信一覧",
+        "### GET /api/broadcasts/:id — 配信詳細",
+        "### POST /api/broadcasts — 配信作成",
+        "# テキスト配信（下書き — 全員向け）",
+        "# タグ指定 + 予約配信",
+        "# Flex メッセージ配信",
+        "### PUT /api/broadcasts/:id — 配信更新",
+        "### DELETE /api/broadcasts/:id — 配信削除",
+        "### POST /api/broadcasts/:id/send — 即時配信",
+        "### POST /api/broadcasts/:id/send-segment — セグメント配信",
+        "# VIPタグを持ち、かつ metadata.plan が \"premium\" の友だちに配信",
+        "# タグAまたはタグBを持つ友だちに配信",
+        "## 予約配信の仕組み",
+        "## SDK 使用例",
+        "## 配信失敗時の挙動"
+      ]
+    },
+    {
+      "path": "docs/wiki/Configuration.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "3afcbbad6512a7263f40c26a0b35dc15798879544038aec81a4ce6a972f16866",
+      "headings": [
+        "# Configuration — L Harness 設定リファレンス",
+        "## wrangler.toml",
+        "# シークレットは wrangler secret put で設定",
+        "# ここにハードコードしない",
+        "### 各フィールドの説明",
+        "## 環境変数 / シークレット",
+        "### Workers シークレット（wrangler secret put）",
+        "### シークレット設定コマンド",
+        "# 全シークレットを設定",
+        "# 設定済みシークレット一覧確認",
+        "### Env 型定義",
+        "### 予約とGoogleカレンダーの同期",
+        "### 管理画面の環境変数",
+        "## D1 データベースセットアップ",
+        "### 新規作成",
+        "# D1 作成",
+        "# 出力される database_id を wrangler.toml に記入",
+        "### スキーマ適用",
+        "# 本番",
+        "# ローカル開発",
+        "# = wrangler d1 execute line-crm --file=packages/db/schema.sql --local",
+        "### D1 ダッシュボード確認",
+        "# テーブル一覧確認",
+        "# レコード数確認",
+        "### D1 バインディング",
+        "## Cron トリガー",
+        "### 設定",
+        "### Cron ハンドラ",
+        "### Cron 実行間隔の変更",
+        "# 1分毎（より即時的な配信が必要な場合）",
+        "# 10分毎（コスト節約）",
+        "# 毎時0分（1時間毎）",
+        "## CORS 設定",
+        "## JST タイムゾーン標準化",
+        "### 設計方針",
+        "### フォーマット",
+        "### ユーティリティ関数",
+        "### API レスポンスでの表示",
+        "### 予約配信の時刻指定",
+        "## 認証が不要なパス一覧",
+        "## ローカル開発設定",
+        "### Workers ローカル起動",
+        "# → http://localhost:8787",
+        "# D1 はローカルモード（.wrangler/state/ に SQLite ファイル）",
+        "### 管理画面ローカル起動",
+        "# → http://localhost:3001",
+        "# NEXT_PUBLIC_API_URL=http://localhost:8787 に設定",
+        "### ローカル Webhook テスト",
+        "# → https://xxxx.ngrok.io",
+        "# LINE Console で Webhook URL を https://xxxx.ngrok.io/webhook に設定",
+        "## npm スクリプト一覧"
+      ]
+    },
+    {
+      "path": "docs/wiki/Friends.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "7a19926dc530f7ccbc0df3cf3dd3fa8d65d96ca9cfd7554efc34b78433fbcef2",
+      "headings": [
+        "# Friends — 友だち管理",
+        "## 概要",
+        "## データモデル",
+        "### friends テーブル",
+        "### API レスポンス形式（camelCase）",
+        "## Webhook 自動登録フロー",
+        "## API エンドポイント",
+        "### GET /api/friends — 友だち一覧",
+        "# 基本取得（デフォルト: limit=50, offset=0）",
+        "# ページネーション",
+        "# タグで絞り込み",
+        "### GET /api/friends/count — 友だち数",
+        "### GET /api/friends/:id — 友だち詳細",
+        "### POST /api/friends/:id/tags — タグ追加",
+        "### DELETE /api/friends/:id/tags/:tagId — タグ削除",
+        "### PUT /api/friends/:id/metadata — メタデータ更新",
+        "### POST /api/friends/:id/messages — メッセージ送信",
+        "# テキストメッセージ",
+        "# Flex メッセージ",
+        "# 画像メッセージ",
+        "## UUID クロスアカウント連携",
+        "### ⚠️ 重要: 友だち追加方法による UUID 取得の違い",
+        "# 友だち追加URL の例",
+        "### 紐づけ方法（`/auth/line` 以外の場合）",
+        "### テーブル構造",
+        "## SDK 使用例",
+        "## メタデータのユースケース"
+      ]
+    },
+    {
+      "path": "docs/wiki/Getting-Started.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "289302904e6e35367effbe5e29b551b07e3ea8d98ad9e91ea39fb633fba3dbbd",
+      "headings": [
+        "# Getting Started — L Harness 初期セットアップガイド",
+        "## 前提条件",
+        "## 1. LINE Developers Console セットアップ",
+        "### 1.1 Messaging API チャネル作成",
+        "### 1.2 LINE Login チャネル作成（必須）",
+        "## 2. リポジトリのセットアップ",
+        "# クローン",
+        "# 依存関係インストール",
+        "### モノレポ構造",
+        "## 3. Cloudflare D1 データベース作成",
+        "# D1 データベースを作成",
+        "# 出力例:",
+        "# ✅ Successfully created DB 'line-crm'",
+        "# database_id = \"b2712617-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"",
+        "### スキーマ適用",
+        "# 本番D1にスキーマ適用",
+        "# ローカルD1にスキーマ適用（開発用）",
+        "## 4. Workers シークレット設定",
+        "# LINE チャネルシークレット",
+        "# プロンプトに LINE チャネルシークレットを入力",
+        "# LINE チャネルアクセストークン",
+        "# プロンプトに チャネルアクセストークン（長期）を入力",
+        "# 管理画面API認証キー（任意の文字列）",
+        "# プロンプトに 任意のAPIキーを入力（例: sk-your-secret-key-here）",
+        "# LINE チャネルID",
+        "# LIFF URL（オプション）",
+        "# LINE Login チャネル情報（必須 — UUID自動取得に必要）",
+        "### 全環境変数一覧",
+        "### 管理画面の環境変数（Vercel / CF Pages）",
+        "## 5. Workers デプロイ",
+        "# ビルド & デプロイ",
+        "# デプロイ後に表示されるURLを控える",
+        "# 例: https://line-crm-worker.your-subdomain.workers.dev",
+        "### ローカル開発",
+        "# Workers ローカル起動（http://localhost:8787）",
+        "# 管理画面ローカル起動（http://localhost:3001）",
+        "## 6. LINE Webhook 設定",
+        "## 7. 管理画面デプロイ",
+        "### Cloudflare Pages（推奨）",
+        "### Vercel",
+        "## 8. 動作確認",
+        "### 8.1 Webhook テスト",
+        "# 友だち一覧を取得",
+        "### 8.2 メッセージ送信テスト",
+        "# 友だちにテキストメッセージを送信",
+        "### 8.3 管理画面ログイン確認",
+        "### 8.4 Cron 動作確認",
+        "# Cloudflare ダッシュボード → Workers → line-crm-worker → Triggers",
+        "# Cron Triggers に */5 * * * * が表示されていればOK",
+        "## 9. SDK セットアップ（プログラムからの操作）",
+        "## トラブルシューティング"
+      ]
+    },
+    {
+      "path": "docs/wiki/Home.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "67d8d2885ba20bcb0f60b6467ec5c8fa1305ded4f5be42222f435c87b31cd27d",
+      "headings": [
+        "# L Harness Wiki",
+        "## L Harness とは",
+        "## 主要機能",
+        "## 技術スタック",
+        "## デプロイ先",
+        "## L社 / U社 との比較",
+        "## Wiki ページ一覧",
+        "### 基本",
+        "### コア機能",
+        "### 拡張機能",
+        "### リファレンス",
+        "## D1テーブル一覧（42テーブル）",
+        "## ライセンス"
+      ]
+    },
+    {
+      "path": "docs/wiki/Release-Notes.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "525205ee3235f32d9887cbd6311eef3a9eda9a88f68e7a69b9069a6e8165e7af",
+      "headings": [
+        "# Release Notes",
+        "## v0.21.2 (2026-08-14)",
+        "### Added — Rich menu initial display",
+        "### Fixed — Admin update uploads",
+        "### Database",
+        "## v0.21.1 (2026-08-14)",
+        "### Fixed — Webinar analytics and registration delivery",
+        "### Database",
+        "## v0.21.0 (2026-08-14)",
+        "### Added — Live CTA consultation booking",
+        "### Added — Messaging and inquiry improvements",
+        "### Fixed",
+        "### Database",
+        "## v0.20.0 (2026-08-10)",
+        "### Added — Mileage economy",
+        "### Added — Webinar and consultation automation",
+        "### Database",
+        "## v0.17.0 (2026-07-08)",
+        "### Added — Link-tracking controls",
+        "### Added — Installer / self-update overhaul",
+        "## v0.16.0 (2026-07-07)",
+        "### Added — Affiliate tracking (ASP)",
+        "### Added — iOS proxy booking",
+        "### Improved — Chat & inbox",
+        "### Fixed",
+        "### Database",
+        "## v0.14.1 (2026-05-20)",
+        "### Changed",
+        "### Verification",
+        "### Notes"
+      ]
+    },
+    {
+      "path": "docs/wiki/Scenarios.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "2a4ab10bb0aa1b5d729ccf2a7ee357b2d4fb2d82ea45dad54c28e25cdf67cdb4",
+      "headings": [
+        "# Scenarios — ステップ配信（シナリオ）",
+        "## 概要",
+        "## データモデル",
+        "### scenarios テーブル",
+        "### scenario_steps テーブル",
+        "### friend_scenarios テーブル（進行状況）",
+        "## トリガータイプ",
+        "## 配信メカニズム",
+        "### 初回登録時の即時配信",
+        "### Cron 配信フロー（5分毎）",
+        "## 条件分岐",
+        "### condition_type の種類",
+        "### 条件不一致時の動作",
+        "### 条件分岐の例",
+        "## ステルスモード",
+        "### ジッター配信",
+        "### バッチ間遅延",
+        "## API エンドポイント",
+        "### GET /api/scenarios — シナリオ一覧",
+        "### GET /api/scenarios/:id — シナリオ詳細（ステップ付き）",
+        "### POST /api/scenarios — シナリオ作成",
+        "### PUT /api/scenarios/:id — シナリオ更新",
+        "### DELETE /api/scenarios/:id — シナリオ削除",
+        "### POST /api/scenarios/:id/steps — ステップ追加",
+        "# テキストステップ（即時配信）",
+        "# 1日後に Flex メッセージ（条件分岐付き）",
+        "### PUT /api/scenarios/:id/steps/:stepId — ステップ更新",
+        "### DELETE /api/scenarios/:id/steps/:stepId — ステップ削除",
+        "### POST /api/scenarios/:id/enroll/:friendId — 手動登録",
+        "## SDK 使用例",
+        "### parseDelay フォーマット",
+        "## よくあるパターン",
+        "### ウェルカムシーケンス",
+        "### 教育シーケンス",
+        "### セールスファネル（条件分岐付き）",
+        "# シナリオ作成",
+        "# Step 1: 商品紹介",
+        "# Step 2: 1日後に購入チェック（条件分岐）",
+        "# Step 3: 未購入者向けリマインド",
+        "# Step 4: 3日後のフォローアップ",
+        "## メッセージタイプ別の content フォーマット",
+        "### text",
+        "### image",
+        "### flex"
+      ]
+    },
+    {
+      "path": "docs/wiki/Tags.md",
+      "group": "DOC",
+      "workingTreeState": "HEAD",
+      "sha256": "90e516d9f4e040c4d44e24d8ac7844aaf8b71601390bbdcd3982baed59e08cdd",
+      "headings": [
+        "# Tags — タグ管理",
+        "## 概要",
+        "## データモデル",
+        "### tags テーブル",
+        "### friend_tags テーブル（多対多リレーション）",
+        "### API レスポンス形式",
+        "## タグの用途",
+        "### 1. 配信対象の絞り込み",
+        "# タグ指定で一斉配信",
+        "### 2. シナリオトリガー",
+        "# タグ追加でトリガーされるシナリオ",
+        "### 3. セグメント配信の条件",
+        "# タグ存在/不在をセグメント条件に使用",
+        "### 4. ステップ配信の条件分岐",
+        "# タグの有無で配信内容を分岐",
+        "### 5. IF-THEN オートメーション",
+        "### 6. 友だち一覧のフィルタリング",
+        "# 特定タグの友だちだけを取得",
+        "## API エンドポイント",
+        "### GET /api/tags — タグ一覧",
+        "### POST /api/tags — タグ作成",
+        "# 色指定あり",
+        "# 色指定なし（デフォルト: #3B82F6）",
+        "### DELETE /api/tags/:id — タグ削除",
+        "### POST /api/friends/:id/tags — 友だちにタグ付与",
+        "### DELETE /api/friends/:id/tags/:tagId — 友だちからタグ削除",
+        "## SDK 使用例",
+        "## よくあるタグ運用パターン",
+        "### ステータス管理タグ",
+        "# ステータスを示すタグ群",
+        "### 流入元トラッキングタグ",
+        "### 興味・属性タグ",
+        "### 自動タグ付与の仕組み",
+        "## DB操作関数一覧",
+        "## カラーパレット参考"
+      ]
+    },
+    {
+      "path": "examples/plugins/tag-rules/README.md",
+      "group": "F36",
+      "workingTreeState": "untracked",
+      "sha256": "0c54a34dccc52f4866799ee875af715471565cd7ac59d62a7c15fe9fe48f725c"
+    },
+    {
+      "path": "examples/plugins/tag-rules/src/index.ts",
+      "group": "F36",
+      "workingTreeState": "untracked",
+      "sha256": "f2ab90b0348d932a47f50c236449d55958dcbfdc82afbeaa3191c45e0c0a8fe4"
+    },
+    {
+      "path": "examples/plugins/tag-rules/src/rules.ts",
+      "group": "F36",
+      "workingTreeState": "untracked",
+      "sha256": "571322b077eeced7d0ddf1b863e73f0336af1cc45fba93e88f0c7f5aaf79a924"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/account-summary.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "aeac2ee46472fa5b38696395ac6eec961a8ae1bedb7cfb6d7f04beabae3a3385"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/broadcast.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "c2494a4dc94f9b416b682cc08a18ca4a75d905d9533a75ff8435d1f650b81ac3"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/create-form.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "510fa80cc6ab2a935cf1fb97df77f8b980f95a93f95123d6b5eda24b9353b230"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/create-rich-menu.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "ac490472d300a6ce1d937bd659063a93d220e3280caa55044c29df034a2a1d30"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/create-scenario.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "1d6895416bb256bf068fc0585a2312f77f4295f7e8db96a78878747995287876"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/create-tracked-link.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "095ccb5a0ec00114535f2828b28b49922eb156bbd612db999f52da077bbb14a2"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/enroll-scenario.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "d5f15b63e2b258e4b661029e6cc8085d383ac82b80c82a549ecb9bc1df51310e"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/get-conversation.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "3434435f460274245b60cd3a7058a9c98f7a013939ca981820b1dededf510906"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/get-conversion-logs.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "9b2216f326b57f9efc9bfabb88f730d4a13d129285ce4c018d176be783b70998"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/get-form-submissions.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "aedaa067de4bf586f43f06cdc72434d5d67d8a6d8470fb4a849265ec3108a047"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/get-friend-detail.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "3d0d873db89c5b288c5c5b1a2ed99adef738f6379474cacfc6b3455878ebab2c"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/get-link-clicks.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "561800fd34ab6ffef2e1dc241c9aca156f967adeca1e1d865ee1be5a92f3aa6e"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/index.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "0b31d9c88ad05b0b24c141417e881ca263d495b1b45ef09329c0411b28de653e"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/list-conversations.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "e6250a8f916e109a67823491f87e47e59be372db3437db0f24abca8cf2550c51"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/list-crm-objects.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "442c32aa54d39ee4ecd50e5aeffa770fd16c43fbe1cc11942d400f1d6325f794"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/list-friends.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "74379f42329bfe49ff93d58fd171bf5f33e0a2b308c37723eed91f2d46e8c670"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-ad-platforms.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "40f340965c9116e93adb525a325d8b4246b82e2b74fbd20a27b10d407dd19e72"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-auto-replies.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "dc454cbdeb5f022cdba23a3db601d589b011aaeb8e31498644b230ce7ff9d468"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-broadcasts.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "c34dffe32d46d90b05524b7aefb62dd6823f9f90aa22ece63313b0152f2b6d1e"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-entry-routes.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "bdb446cceb3e7692d038ba56494289b7cbfff7a7dc691eb73350b7f50f334e8f"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-forms.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "fc2b7cda5e650a09f61d7b60d40dd6b6f79a734379ada1cf28fedba6225faa5c"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-friends.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "ad3b7617ec822f59802bf16c2b45de4e68d0c7a243bd1123e747b68e11949448"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-message-templates.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "0ff7001983cf9a63cf3d287b22b1bbd3e41fcd8a55e7fb089da9fc0fc0524060"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-rich-menus.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "c33033388217f4bf4ac858159c99b80b5d95e10a2e6c32e1f8dee7de1f335c0a"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-scenarios.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "2959e22867a73ae1fb48b64210dbfc101eb39a6f803f099b90a6b7ffc47ab296"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-staff.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "5b67cc52d6574424c08ee4339e21b3f0de5bef5cb6c9e7dc1fedf50914229a19"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-tags.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "5b7cbff68fd7a2ece452a5f253a9e1e35d84cc3e3281458c05c591b56c5a49bd"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-tracked-links.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "56ea7dae70d67474fc52bc49011ab857349443754f53416d57d8641a560e45a9"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-traffic-pools.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "eaced401b8aeba1bdb5664ba84708b8697da7b60071e5511aee17f0dbedf9983"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/manage-webinar-video.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "104ae5a4bac24fd302f777b97efa679fc748488ab041ab84fbdf6821e3f3d3b7"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/send-message.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "31544fba3af03b988dcee5d17415202dffd1f09777ff412c79fc19262151665f"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/test-banner.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "49169bc31d609e485a984f4403e56799e8ce771c3867e7fe8a6e739a332a52a2"
+    },
+    {
+      "path": "packages/mcp-server/src/tools/upload-image.ts",
+      "group": "F34",
+      "workingTreeState": "HEAD",
+      "sha256": "7237c7cf2c706c83fb68774b224b5702f566882c32bc90e5a25328e4dca05e47"
+    },
+    {
+      "path": "packages/plugin-template/src/external-api.ts",
+      "group": "F36",
+      "workingTreeState": "HEAD",
+      "sha256": "fe93b3e0b0d4ddbfc0c4a52dde40ca486701c58b9b2dd26d6519e2da14059ba7"
+    },
+    {
+      "path": "packages/plugin-template/src/index.ts",
+      "group": "F36",
+      "workingTreeState": "modified",
+      "sha256": "b0145771246efa5cf893fad821b1639e66efe9a5997aa924b60bae0db3aab16b"
+    },
+    {
+      "path": "packages/plugin-template/src/notify.ts",
+      "group": "F36",
+      "workingTreeState": "HEAD",
+      "sha256": "afd27a338ea479c28fb85cac30f827419b2f36f0cd1c9d27a0a116e55e3ac4d8"
+    },
+    {
+      "path": "packages/plugin-template/src/sync.ts",
+      "group": "F36",
+      "workingTreeState": "HEAD",
+      "sha256": "1e63286c93157b69f15d71f68985806baa6a30b58eece2d8df6913fe4066fed5"
+    },
+    {
+      "path": "packages/update-engine/src/admin-url-placeholder.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "874067fe488b29022b96e34870288e1ac75222cd5019609b0d7ab499d5d0293c"
+    },
+    {
+      "path": "packages/update-engine/src/bundle.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "29aa4c83954fc11fe5dfbb7355bf33dbcca5cf5da0b6c94f27cf90ed291a1b30"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/_shared.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "8debe6f516a282841bc6d1722e2d771681c9866b2be45acdc7f74c866c7b6b29"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/asset-hash.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "f16f8d0c25944d4e9e618faf70a0511d697c2d83fd06d642ff617da360da6738"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/assets.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "5f6519ec7bb11b24bdcf9bd64d85d7fd11c001db17cdc0475631109013f4496d"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/d1.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "cac2e2d6b37af0e4413448936e55f764e5b9005fb20c891662e917f5734cc5a7"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/pages.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "27aade69008b7304865bd8e1b79dd9780de5ec47df4d97e9a18c859e1807b107"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/subdomain.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "ecf33828877b21819a605711f035b58b5d2286a86f616e3c48a7cb2d9b53b334"
+    },
+    {
+      "path": "packages/update-engine/src/cf-api/workers.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "d14cc69ff1f11448c7b2725550b3eafa2d4d4708ecf1437c6428bc8b93db9534"
+    },
+    {
+      "path": "packages/update-engine/src/events.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "51030dd1fc36671873d535928078f73e60436610093035ad4871f1c356642eea"
+    },
+    {
+      "path": "packages/update-engine/src/fork-detect.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "c5d6818199b239ff6214e6a591a0750f8caf61e8152048a45d8d3f399a06f88c"
+    },
+    {
+      "path": "packages/update-engine/src/index.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "c4e78e99be7522f81aef471e9660637e822092ee5731407f1e1be62c7ed26f82"
+    },
+    {
+      "path": "packages/update-engine/src/legacy-mileage.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "5cf11df42ee89c787fa4aa51d12e38ce2bd8f9d93fea4e1190c2fa1d634a3855"
+    },
+    {
+      "path": "packages/update-engine/src/manifest.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "4ec6d70ac827b1583e60f5a3a461c30ebdd8fd7a53642eb865c91b94446f3d65"
+    },
+    {
+      "path": "packages/update-engine/src/materialize.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "864d4538e1fbd04bbe5d2e114e45dde6b7c41a89c84462cc8cc0dee5ff763e80"
+    },
+    {
+      "path": "packages/update-engine/src/migrations.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "e66db4fde02a783b11809313fdd88a94c167990b6e8b18c4cba033066eecea04"
+    },
+    {
+      "path": "packages/update-engine/src/phases/apply.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "fedd89ae5e51042977b225572fa0b642e97e3dc6ee9a58a8cf1a372f12885df8"
+    },
+    {
+      "path": "packages/update-engine/src/phases/preflight.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "798056f0da88636d134773b81a4ea210d59f76cd9a37060d02738d6448ae8053"
+    },
+    {
+      "path": "packages/update-engine/src/phases/rollback.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "9c241077b0afd7f5db00767b0a1cba076ef30cc0bdd192d395291ce410509943"
+    },
+    {
+      "path": "packages/update-engine/src/phases/verify.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "39c2b990eeeee8b2bdbf129b7a8dad2254ef37a805ffb263e0d2ccd5c4274af1"
+    },
+    {
+      "path": "packages/update-engine/src/pure.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "786aee16850412143d5e8af4ea84ecc080936f032494335dd7beff0cdbea5c5c"
+    },
+    {
+      "path": "packages/update-engine/src/snapshot.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "be4df7a31fd69973a3a31c1c35596365c86c1c6a83cf2c1a3eb3dc16a36b684e"
+    },
+    {
+      "path": "packages/update-engine/src/sql-statements.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "145af9e47cbdd970fdc80bc96d824efbdcba4ec3533427a71581d4baf079a156"
+    },
+    {
+      "path": "packages/update-engine/src/types.ts",
+      "group": "F29",
+      "workingTreeState": "HEAD",
+      "sha256": "9db87202171f57f4893fa84da743d424a9edac16bb6f111c523e3cf58bc0f60a"
+    }
+  ]
+}

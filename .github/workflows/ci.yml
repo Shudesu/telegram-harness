@@ -18,5 +18,7 @@ jobs:
         with:
           node-version: "22"
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm check
+      - run: pnpm --filter web build
+      - run: node scripts/phase2-http-smoke.mjs

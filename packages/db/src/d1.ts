@@ -1,3 +1,4 @@
+import { CrmRepo } from "./crm.js";
 import type {
   AccountAction,
   AccountActionName,
@@ -177,7 +178,8 @@ function mapIncoming(row: IncomingRow): IncomingMessage {
 }
 
 export class D1Repo implements Repo {
-  constructor(private readonly db: D1Like) {}
+  readonly crm: CrmRepo;
+  constructor(private readonly db: D1Like) { this.crm = new CrmRepo(db); }
 
   async insertBot(bot: Bot): Promise<void> {
     await this.db
