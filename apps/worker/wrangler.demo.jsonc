@@ -1,0 +1,11 @@
+{
+  "name": "telegram-harness-demo-20261106",
+  "main": "src/cloud-demo/index.ts",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "d1_databases": [{ "binding": "DB", "database_name": "telegram-harness-demo-20261106", "database_id": "1d9a1195-8684-432c-b3c4-c044e04fb769", "migrations_dir": "../../packages/db/migrations" }],
+  "kv_namespaces": [{ "binding": "ROUTING", "id": "561cd5fdd4914fdcbb696e25a71ef0fb" }],
+  "ratelimits": [{ "name": "LOGIN_LIMIT", "namespace_id": "202611068798", "simple": { "limit": 10, "period": 60 } }]
+}

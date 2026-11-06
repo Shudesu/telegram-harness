@@ -9,7 +9,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./file": "./src/file-secrets.ts"
+    "./file": "./src/file-secrets.ts",
+    "./readonly": "./src/readonly.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
