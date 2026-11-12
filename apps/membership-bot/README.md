@@ -120,12 +120,7 @@ MCP からは何も直接送信・課金・変更されません。出力にユ�
 - 返金は `refundStarPayment` で行い、MCP からは「返金依頼」として積まれるだけです。オーナーが `/admin/membership/*` で承認して初めて実行されます。
 - デジタル商品・サービスは Telegram Stars での販売が必須です（外部決済は物理商品・サービス等に限る）。Telegram のポリシーとストアのガイドラインを確認してください。
 
-### 既知の課題
-
-レビューで見つかった、まだ直していない点です。
-
-- `join_verify` ルールが OFF のとき、オーナーが個別承認した認証 Mini App は `unknown_request` になる
-- Mini App の購入では、購入者を対象にした checkout ルールが一致せず、承認待ちになる
+- 参加申請の本人確認は `join_verify` ルールを ON にして使ってください。OFF のときは認証 Mini App が1件ずつオーナーの承認待ちになり、承認した時点から3分の回答時間が始まります（承認されないまま24時間たった申請は却下）。Telegram はガードBotに参加申請へすぐ応答することを求めているため、承認が遅いと Telegram 側で表示できないことがあります。
 
 ### ライセンス
 
@@ -197,12 +192,7 @@ or changed directly from MCP, and outputs never include user or chat ids.
 - Refunds use `refundStarPayment` and only run after the owner approves them via `/admin/membership/*`.
 - Digital goods and services must be sold in Telegram Stars; review Telegram's and the app stores' policies.
 
-### Known issues
-
-Found in review and not fixed yet.
-
-- With the `join_verify` rule off, a verification Mini App the owner approves one by one answers `unknown_request`
-- In the Mini App, a checkout rule scoped to the buyer does not match, so the purchase waits for approval
+- Use join verification with the `join_verify` rule on. With it off, each verification Mini App waits for the owner's approval, and the 3-minute answer window starts when the owner approves it (a request left unapproved for 24 hours is declined). Telegram expects a guard bot to answer a join request quickly, so a late approval may be refused by Telegram.
 
 ### License
 

@@ -1,6 +1,6 @@
 {
   "name": "telegram-harness",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Telegram Harness — Bot API publishing, an owner-account GramJS layer, and a membership / Stars / booking bot",
   "license": "MIT",
