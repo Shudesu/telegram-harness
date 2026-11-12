@@ -31,3 +31,7 @@ pnpm check
 ```
 
 That runs the secret scan, typecheck, and mocked tests. Do not deploy, do not point tests at `api.telegram.org`, and do not create a production D1.
+
+## apps/membership-bot
+
+A separate Cloudflare Worker (JavaScript) for memberships, Stars payments, bookings, widgets and the Mini App. Its MCP tools are reads or `request_*` tools that only queue work for the owner; keep it that way. `PAY_LIVE` and `MEMBERSHIP` stay `"0"` in `wrangler.example.jsonc`. `pnpm check` runs its tests and a wrangler dry-run build; do not run `wrangler deploy` from this repository's checks.

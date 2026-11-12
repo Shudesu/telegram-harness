@@ -1,8 +1,8 @@
 {
   "name": "telegram-harness",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Telegram Harness — Bot API publishing and an owner-account GramJS layer, both approval-gated",
+  "description": "Telegram Harness — Bot API publishing, an owner-account GramJS layer, and a membership / Stars / booking bot",
   "license": "MIT",
   "author": {
     "name": "野田修一 (Shudesu)",
@@ -22,7 +22,10 @@
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "check:secrets": "node scripts/check-no-secrets.mjs",
-    "check": "pnpm check:secrets && pnpm typecheck && pnpm test"
+    "check": "pnpm check:secrets && pnpm typecheck && pnpm test && pnpm test:membership-bot && pnpm build:membership-bot",
+    "dev:membership-bot": "pnpm --filter membership-bot exec wrangler dev",
+    "test:membership-bot": "pnpm --filter membership-bot test",
+    "build:membership-bot": "pnpm --filter membership-bot build"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
