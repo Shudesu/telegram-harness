@@ -7,6 +7,12 @@
 import {safeEqual} from './providers/contract.mjs';
 
 export const VERIFY_TIMEOUT_MS = 180000; // inside the 5-minute user_chat_id window
+// How long a join request waits while its verification Mini App is queued for the owner (join_verify
+// rule off). The 3-minute answer window only starts once the owner approves and the app is shown;
+// a request nobody approves is declined after this. Telegram expects a guard bot's query to be
+// answered quickly, so an approval this late may be refused by Telegram — turning join_verify on is
+// the reliable setup.
+export const VERIFY_APPROVAL_WAIT_MS = 86400000;
 export const QUESTIONS = [
   {q: '3 + 4 は？', choices: ['5', '7', '9']},
   {q: '1週間は何日？', choices: ['5日', '7日', '10日']},

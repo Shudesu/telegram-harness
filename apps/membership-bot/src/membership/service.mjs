@@ -16,7 +16,7 @@ import {PROVIDERS, providerStatus, startCheckout} from './providers/index.mjs';
 import {eventsFromUpdate, orderOfPayload} from './providers/stars.mjs';
 import {assertEvent, GOODS_KINDS} from './providers/contract.mjs';
 import {parsePayCallback} from '../richmsg/pay.mjs';
-import {VERIFY_TIMEOUT_MS, pickQuestion, isCorrect, parseVerifyCallback, checkInitData} from './verify.mjs';
+import {VERIFY_TIMEOUT_MS, VERIFY_APPROVAL_WAIT_MS, pickQuestion, isCorrect, parseVerifyCallback, checkInitData} from './verify.mjs';
 
 const DAY = 86400000;
 // Calendar interval matching the external PSP's billing (Stripe: 7 → week, 30/31 → month, 365/366 → year).
@@ -59,9 +59,15 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
       const r = a.resume;
       if (r?.kind === 'remove' && await stillEntitled(r.userId, r.chatId, null)) return null;            // repurchased meanwhile
       if (r?.kind === 'join_decision' && r.approve && !(await entitledFor(r.userId, r.chatId))) return null; // refunded/expired meanwhile
+      if (r?.kind === 'verify_webapp') {                                                                   // decided / withdrawn meanwhile
+        const jr = await store.get(jrKey(r.chatId, r.userId));
+        if (!jr || jr.state !== 'verifying' || jr.queryId !== r.queryId || jr.mode !== 'webapp_pending' || now() > jr.deadline) return null;
+      }
       return a.method === 'banChatMember' ? {...a.params, until_date: Math.floor(now() / 1000) + 60} : a.params;
     },
     after: (a, out) => resumeAfterApproval(a, out),
+    // A refused verification Mini App leaves the applicant nothing to answer: close it at the next cron.
+    rejected: a => a.resume?.kind === 'verify_webapp' ? resumeAfterApproval(a, {status: 'rejected'}) : undefined,
   }});
 
   // A gated write. Returns the Bot API result, or null when it was queued for approval (or failed).
@@ -137,7 +143,10 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
   // message because the Mini App opens the link itself.
   async function checkout({userId, chatId, skuId, provider, callbackId, deliverTo = null, silent = false}) {
     const found = await findSku(skuId);
-    const ack = text => callbackId && write('buyer_requested', 'answerCallbackQuery', {callback_query_id: callbackId, ...(text ? {text} : {})}, {chatId});
+    // The buyer's chat, for rule matching: /plans passes it as chatId; the Mini App only asks for a
+    // link (chatId null) but the buyer is the same, so a checkout rule scoped to them covers both.
+    const ruleChat = Number.isSafeInteger(chatId) ? chatId : deliverTo;
+    const ack = text => callbackId && write('buyer_requested', 'answerCallbackQuery', {callback_query_id: callbackId, ...(text ? {text} : {})}, {chatId: ruleChat});
     if (!found || !found.plan.listed) { await ack('この商品は現在販売していません'); return {status: 'unknown_sku'}; }
     const {plan, sku} = found;
     const orderId = await nextOrderId();
@@ -153,7 +162,7 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     let result;
     try {
       result = await startCheckout(provider, input, {env, fetch: fetchImpl, now,
-        call: (method, params) => write('buyer_requested', method, params, {chatId, reason: `order:${orderId}`, resume: {kind: 'checkout', orderId}}, true)});
+        call: (method, params) => write('buyer_requested', method, params, {chatId: ruleChat, reason: `order:${orderId}`, resume: {kind: 'checkout', orderId}}, true)});
     } catch (err) {
       const pending = err instanceof Pending;
       await gate.audit({kind: pending ? 'checkout_queued' : 'checkout_refused', orderId, provider, error: pending ? null : String(err?.message ?? err)});
@@ -458,6 +467,14 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     }
   }
 
+  // The verification Mini App is on the user's screen (at once under join_verify, or when the owner
+  // approved it): link its query to the join request for /verify and start the answer window.
+  async function webappShown(jr) {
+    jr.mode = 'webapp'; jr.deadline = now() + VERIFY_TIMEOUT_MS;
+    await store.put(`jrq:${jr.queryId}`, {chatId: jr.chatId, userId: jr.userId});
+    await store.put(jrKey(jr.chatId, jr.userId), jr);
+  }
+
   async function onJoinRequest(r) {
     const chatId = r.chat?.id, userId = r.from?.id;
     if (!Number.isSafeInteger(chatId) || !Number.isSafeInteger(userId)) return {status: 'ignored'};
@@ -471,10 +488,14 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     jr.question = {index: question.index}; jr.step = 'button';
     if (jr.queryId && origin) {
       // Guard bot (10.1): show the verification Mini App before deciding.
+      // The jr record is written before the request so an approval that resumes it always finds it.
+      jr.mode = 'webapp_pending'; jr.deadline = now() + VERIFY_APPROVAL_WAIT_MS;
+      await store.put(jrKey(chatId, userId), jr);
       const s = await request('join_verification', 'sendChatJoinRequestWebApp',
-        {chat_join_request_query_id: jr.queryId, web_app_url: `${origin}/verify`}, {chatId, target: userId});
-      if (s.status === 'executed') { jr.mode = 'webapp'; await store.put(`jrq:${jr.queryId}`, {chatId, userId}); }
-      else if (s.status === 'pending_approval') jr.mode = 'webapp_pending';
+        {chat_join_request_query_id: jr.queryId, web_app_url: `${origin}/verify`},
+        {chatId, target: userId, resume: {kind: 'verify_webapp', chatId, userId, queryId: jr.queryId}});
+      if (s.status === 'executed') await webappShown(jr);
+      else if (s.status !== 'pending_approval') { jr.mode = null; jr.deadline = now() + VERIFY_TIMEOUT_MS; }
     }
     if (!jr.mode && jr.userChatId) {
       // Fallback: DM inside the 5-minute window. A guard-bot query that could not show the Mini App
@@ -567,6 +588,11 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
       jr.state = out.status === 'executed' ? (r.approve ? 'approved' : 'declined') : 'decision_failed';
       await store.put(jrKey(r.chatId, r.userId), jr);
       if (r.approve && out.status === 'executed') await approvedNotice(jr);
+    } else if (r.kind === 'verify_webapp') {
+      const jr = await store.get(jrKey(r.chatId, r.userId));
+      if (!jr || jr.state !== 'verifying' || jr.queryId !== r.queryId || jr.mode !== 'webapp_pending') return;
+      if (out.status === 'executed') await webappShown(jr);
+      else { jr.mode = 'webapp_failed'; jr.deadline = Math.min(jr.deadline, now()); await store.put(jrKey(r.chatId, r.userId), jr); } // declined at the next cron
     } else if (r.kind === 'cancel') {
       const ent = await store.get(entKey(r.userId, r.planId));
       if (ent && out.status === 'executed') { ent.autoRenew = false; await store.put(entKey(r.userId, r.planId), ent); }

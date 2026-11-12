@@ -44,7 +44,8 @@ export const PRESETS = {
 const pad = n => String(n).padStart(12, '0');
 
 // hooks.prepare(approval) → params to run with (e.g. a fresh until_date); hooks.after(approval, outcome)
-// resumes the workflow the approved write belonged to.
+// resumes the workflow the approved write belonged to; hooks.rejected(approval) lets it close a
+// workflow whose only next step the owner refused.
 export function makeGate({store, exec, now = () => Date.now(), hooks = {}}) {
   async function nextId(kind) {
     const key = `seq:${kind}`;
@@ -128,7 +129,11 @@ export function makeGate({store, exec, now = () => Date.now(), hooks = {}}) {
       a.state = approve ? 'approved' : 'rejected';
       a.decidedBy = by; a.decidedAt = now();
       await store.put(`approval:${id}`, a);
-      if (!approve) { await audit({kind: 'rejected', approvalId: id, method: a.method, by}); return {status: 'rejected'}; }
+      if (!approve) {
+        await audit({kind: 'rejected', approvalId: id, method: a.method, by});
+        if (hooks.rejected) await hooks.rejected(a);
+        return {status: 'rejected'};
+      }
       // The world may have moved on since this was queued (repurchase, refund): prepare() re-checks
       // and returns null to skip a write that is no longer right.
       const params = hooks.prepare ? await hooks.prepare(a) : a.params;

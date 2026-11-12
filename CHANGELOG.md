@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+`apps/membership-bot`: the two remaining known issues
+
+- With the `join_verify` rule off, a verification Mini App the owner approves one by one now works (it answered `unknown_request`). The 3-minute answer window starts at the approval; a request left unapproved for 24 hours, or whose Mini App the owner rejects, is declined
+- A Mini App purchase now matches a checkout rule scoped to the buyer, the same as the chat `/plans` purchase
+
 ## 0.3.1
 
 `apps/membership-bot`: refund and billing-period fixes for external payments and subscriptions
