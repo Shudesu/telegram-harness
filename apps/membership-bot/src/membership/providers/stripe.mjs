@@ -30,6 +30,14 @@ async function api(deps, method, path, params, {idempotencyKey, account} = {}) {
   return res.json();
 }
 
+// An invoice with its payments. Basil+ (2025-03-31) carries the PaymentIntent only under the expanded
+// invoice.payments; older API versions reject that expansion but have invoice.payment_intent / charge.
+async function getInvoice(deps, id, account) {
+  const path = `/invoices/${encodeURIComponent(id)}`;
+  try { return await api(deps, 'GET', `${path}?expand[]=payments`, null, {account}); }
+  catch (err) { if (err?.status !== 400) throw err; return api(deps, 'GET', path, null, {account}); }
+}
+
 // Stripe recurring interval from a day count (week/month/year when it lines up, else days).
 function interval(days) {
   if (days === 7) return {interval: 'week', interval_count: 1};
@@ -37,6 +45,9 @@ function interval(days) {
   if (days === 365 || days === 366) return {interval: 'year', interval_count: 1};
   return {interval: 'day', interval_count: days};
 }
+
+// Every id a charge may later be named by (refunds and disputes name the PaymentIntent or the charge).
+const refList = (...xs) => [...new Set(xs.filter(x => typeof x === 'string' && x))];
 
 const metaOf = o => o?.metadata?.order_id ? o.metadata
   : o?.subscription_details?.metadata ?? o?.parent?.subscription_details?.metadata ?? o?.metadata ?? {};
@@ -62,10 +73,10 @@ function mapEvent(ev) {
       if (o.payment_status !== 'paid') return [];
     // falls through
     case 'checkout.session.async_payment_succeeded':
-      return [{...b(), type: 'paid', amount: o.amount_total, paymentRef: o.payment_intent ?? o.invoice ?? undefined, subscriptionRef: o.subscription ?? undefined}];
+      return [{...b(), type: 'paid', amount: o.amount_total, paymentRef: o.payment_intent ?? o.invoice ?? undefined, paymentRefs: refList(o.payment_intent, o.invoice), subscriptionRef: o.subscription ?? undefined}];
     case 'invoice.paid':
       if (o.billing_reason !== 'subscription_cycle') return [];
-      return [{...b(), type: 'renewed', amount: o.amount_paid, subscriptionRef: subOf(o), paymentRef: o.payment_intent ?? o.id, periodEnd: o.lines?.data?.[0]?.period?.end}];
+      return [{...b(), type: 'renewed', amount: o.amount_paid, subscriptionRef: subOf(o), paymentRef: o.payment_intent ?? o.id, paymentRefs: refList(o.payment_intent, o.id, o.charge), periodEnd: o.lines?.data?.[0]?.period?.end}];
     case 'invoice.payment_failed':
       return [{...b(), type: 'failed', amount: o.amount_due, subscriptionRef: subOf(o), paymentRef: o.payment_intent ?? o.id}];
     case 'customer.subscription.updated':
@@ -74,9 +85,9 @@ function mapEvent(ev) {
     case 'customer.subscription.deleted':
       return [{...b(), type: 'expired', subscriptionRef: o.id, periodEnd: o.ended_at ?? periodEnd(o)}];
     case 'charge.refunded':
-      return [{...b(), type: 'refunded', amount: o.amount, refundAmount: o.amount_refunded, paymentRef: o.payment_intent ?? o.id}];
+      return [{...b(), type: 'refunded', amount: o.amount, refundAmount: o.amount_refunded, paymentRef: o.payment_intent ?? o.id, paymentRefs: refList(o.payment_intent, o.id, o.invoice)}];
     case 'charge.dispute.created':
-      return [{...b(), type: 'disputed', amount: o.amount, paymentRef: o.payment_intent ?? o.charge}];
+      return [{...b(), type: 'disputed', amount: o.amount, paymentRef: o.payment_intent ?? o.charge, paymentRefs: refList(o.payment_intent, o.charge)}];
     default:
       return [];
   }
@@ -121,15 +132,28 @@ export const provider = {
     let ok = false;
     for (const s of sigs) ok = safeEqual(s, expected) || ok; // no early exit
     if (!ok) throw Error('bad_signature');
-    return mapEvent(JSON.parse(raw));
+    const events = mapEvent(JSON.parse(raw));
+    // A subscription payment may arrive as an invoice id only (no payment_intent on the event). Its
+    // refund or dispute later names the PaymentIntent or charge, so look those up now and keep them.
+    for (const e of events) {
+      if (!['paid', 'renewed'].includes(e.type) || !String(e.paymentRef ?? '').startsWith('in_') || e.paymentRefs.some(r => /^(pi|ch|py)_/.test(r))) continue;
+      try {
+        const inv = await getInvoice(deps, e.paymentRef);
+        const pay = (inv.payments?.data ?? []).map(p => p.payment ?? {});
+        e.paymentRefs = refList(...e.paymentRefs, inv.payment_intent, inv.charge, ...pay.map(p => p.payment_intent), ...pay.map(p => p.charge));
+      } catch {
+        await deps.onReviewNeeded?.({reason: 'invoice_refs_unresolved'}); // granted anyway; a refund may then need manual matching
+      }
+    }
+    return events;
   },
 
   async refund({paymentRef, amount, idempotencyKey, connectedAccount}, deps) {
     // A subscription checkout may only give us the invoice (in_…): resolve it to what /refunds takes.
-    // UNVERIFIED for newer API versions, where the PaymentIntent moved under invoice.payments.
+    // Newer API versions (Basil+) carry the PaymentIntent only under the expanded invoice.payments.
     let target = {payment_intent: paymentRef};
     if (String(paymentRef).startsWith('in_')) {
-      const inv = await api(deps, 'GET', `/invoices/${encodeURIComponent(paymentRef)}`, null, {account: connectedAccount});
+      const inv = await getInvoice(deps, paymentRef, connectedAccount);
       const pi = inv.payment_intent ?? inv.payments?.data?.[0]?.payment?.payment_intent;
       if (pi) target = {payment_intent: pi}; else if (inv.charge) target = {charge: inv.charge}; else throw Error('refund_reference_unresolved');
     } else if (String(paymentRef).startsWith('ch_')) target = {charge: paymentRef};
