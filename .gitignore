@@ -14,3 +14,11 @@ out/
 
 .env*
 !.env.example
+
+# apps/membership-bot
+apps/membership-bot/wrangler.jsonc
+apps/membership-bot/.dev.vars.*
+!apps/membership-bot/.dev.vars.example
+apps/membership-bot/scripts/before.json
+apps/membership-bot/scripts/avatar.jpg
+.secrets/

@@ -1,0 +1,7 @@
+# Copy to .dev.vars for `wrangler dev`, and register the same names with `wrangler secret put` for production.
+# Never commit real values.
+BOT_TOKEN=
+WEBHOOK_SECRET=
+ADMIN_TOKEN=
+MCP_API_KEY=
+MANAGED_BOT_KEY=
