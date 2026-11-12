@@ -20,13 +20,26 @@ import {VERIFY_TIMEOUT_MS, pickQuestion, isCorrect, parseVerifyCallback, checkIn
 
 const DAY = 86400000;
 // Calendar interval matching the external PSP's billing (Stripe: 7 → week, 30/31 → month, 365/366 → year).
-export function addInterval(ms, days) {
-  const d = new Date(ms);
-  if (days === 30 || days === 31) d.setUTCMonth(d.getUTCMonth() + 1);
-  else if (days === 365 || days === 366) d.setUTCFullYear(d.getUTCFullYear() + 1);
-  else d.setUTCDate(d.getUTCDate() + days);
+// Month/year steps land on the same UTC day of the target month, clamped to its last day
+// (Jan 31 → Feb 28/29, Feb 29 → Feb 28 of a non-leap year) instead of overflowing into the next month.
+function addMonths(ms, months) {
+  const d = new Date(ms), day = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(day, last));
   return d.getTime();
 }
+export function addInterval(ms, days) {
+  if (days === 30 || days === 31) return addMonths(ms, 1);
+  if (days === 365 || days === 366) return addMonths(ms, 12);
+  const d = new Date(ms);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.getTime();
+}
+// Every reference one charge is known by (a Stripe invoice, its PaymentIntent and its charge are one payment).
+const refsOf = e => [...new Set([e?.paymentRef, ...(Array.isArray(e?.paymentRefs) ? e.paymentRefs : [])].filter(r => typeof r === 'string' && r))];
+const grantRefs = g => Array.isArray(g.refs) ? g.refs : g.paymentRef ? [g.paymentRef] : [];
 const REMOVE_RETRIES = 5, DECISION_RETRIES = 5;
 // The rich-message pay button and /plans share one callback grammar: pay/<skuId>/<provider>.
 export const parsePayData = parsePayCallback;
@@ -168,8 +181,9 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
   }
 
   // ---------- entitlements ----------
-  // ent.grants[orderId] = {ms: time this order added (null = permanent), at}. Refunding one order
-  // takes back only its own time; access ends when nothing paid for is left.
+  // ent.grants[orderId] = {ms: time this order added (null = permanent), at, from, until}. [from, until)
+  // is the stretch of the membership this charge pays for. Refunding one charge takes back only the part
+  // of it not yet used; access ends when nothing paid for is left.
   const entKey = (userId, planId) => `ent:${userId}:${planId}`;
   const isLive = (e, t) => e && ['active', 'grace'].includes(e.state) && (e.expiresAt === null || e.expiresAt > t || (e.state === 'grace' && e.graceUntil > t));
 
@@ -183,9 +197,14 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     const grantKey = e.type === 'renewed' ? `${order.id}:${e.id}` : order.id;
     if (ent.grants?.[grantKey] && isLive(ent, t)) return; // already applied (redelivery after a partial failure)
     const live = isLive(ent, t);
-    // Grants that no longer contribute (the term they were part of has ended) are dropped, so a later
-    // refund of them cannot shorten a newer, separately paid term.
+    // Grants that no longer contribute (their stretch has been used up — including during renewal
+    // grace) are dropped, so a later refund of them cannot shorten a newer, separately paid term.
+    // Under permanent access nothing is pruned: the stretches anchor the time banked after them.
     if (!live || !ent.grants) ent.grants = {};
+    else if (ent.expiresAt !== null) for (const [k, g] of Object.entries(ent.grants)) {
+      const consumed = g.ms !== null && (Number.isFinite(g.until) ? g.until <= t : ent.expiresAt !== null && ent.expiresAt <= t);
+      if (consumed) delete ent.grants[k];
+    }
     const start = live && ent.expiresAt !== null && ent.expiresAt ? Math.max(ent.expiresAt, t) : t;
     // added = what this purchase itself is worth (null = permanent), independent of the effective expiry.
     let expiresAt, added;
@@ -194,7 +213,10 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     else if (terms.recurring && order.provider !== 'telegram_stars') { expiresAt = addInterval(start, terms.days); added = expiresAt - start; } // same calendar interval the PSP bills on
     else { added = terms.days * DAY; expiresAt = start + added; }                                    // stack inside the term
     if (live && ent.expiresAt === null) expiresAt = null;                                            // already permanent
-    ent.grants[grantKey] = {orderId: order.id, paymentRef: e.paymentRef ?? null, ms: added, at: t};
+    // Under permanent access timed purchases only bank time (counted if the permanent one is refunded),
+    // so they get no stretch of their own and are never pruned as used up.
+    ent.grants[grantKey] = {orderId: order.id, paymentRef: e.paymentRef ?? null, refs: refsOf(e), ms: added, at: t,
+      ...(added !== null && expiresAt !== null ? {from: expiresAt - added, until: expiresAt} : {})};
     Object.assign(ent, {state: 'active', expiresAt, graceUntil: null, chats: live ? [...new Set([...ent.chats, ...terms.chats])] : [...terms.chats],
       sourceOrderId: order.id, provider: order.provider, paymentRef: e.paymentRef ?? ent.paymentRef, subscriptionRef: e.subscriptionRef ?? ent.subscriptionRef,
       autoRenew: terms.recurring, lastEventAt: e.occurredAt, removal: null});
@@ -243,10 +265,13 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     await store.put(entKey(ent.userId, ent.planId), ent);
   }
 
+  // A charge of this order that was already refunded (a subscription order stays 'paid' after that).
+  const refundedCharge = (order, e) => refsOf(e).some(r => (order.refunds ?? []).includes(r) || (order.refundedRefs ?? []).includes(r));
+
   async function orderForEvent(e) {
     if (e.orderId) return store.get(`order:${e.orderId}`);
     // Disputes and some refunds carry no metadata: correlate through the payment / subscription ref.
-    for (const k of [e.paymentRef && `payref:${e.provider}:${e.paymentRef}`, e.subscriptionRef && `subref:${e.provider}:${e.subscriptionRef}`]) {
+    for (const k of [...refsOf(e).map(r => `payref:${e.provider}:${r}`), e.subscriptionRef && `subref:${e.provider}:${e.subscriptionRef}`]) {
       const ref = k && await store.get(k);
       if (ref) return store.get(`order:${ref.orderId}`);
     }
@@ -272,29 +297,37 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
     const ent = await store.get(key);
     switch (e.type) {
       case 'paid': {
-        if (order.state === 'refunded') return {status: 'ignored_after_refund'}; // refund arrived first
-        if (order.state === 'paid' && ent?.grants?.[order.id]) return {status: 'already_paid'};
+        if (order.state === 'refunded' || refundedCharge(order, e)) return {status: 'ignored_after_refund'}; // refund arrived first
+        // `granted` survives the pruning of used-up grants (older orders fall back to the grant itself).
+        if (order.state === 'paid' && (order.granted || ent?.grants?.[order.id])) return {status: 'already_paid'};
         if (e.amount !== undefined && (e.amount !== order.amount || (e.currency && e.currency !== order.currency))) {
           await gate.audit({kind: 'amount_mismatch', orderId: order.id}); return {status: 'amount_mismatch'};
         }
-        Object.assign(order, {state: 'paid', paidAt: order.paidAt ?? now(), paymentRef: e.paymentRef, subscriptionRef: e.subscriptionRef});
+        Object.assign(order, {state: 'paid', paidAt: order.paidAt ?? now(), paymentRef: e.paymentRef, paymentRefs: refsOf(e), subscriptionRef: e.subscriptionRef});
         await store.put(`order:${order.id}`, order);
-        if (e.paymentRef) await store.put(`payref:${order.provider}:${e.paymentRef}`, {orderId: order.id});
+        for (const r of refsOf(e)) await store.put(`payref:${order.provider}:${r}`, {orderId: order.id});
         if (e.subscriptionRef) await store.put(`subref:${order.provider}:${e.subscriptionRef}`, {orderId: order.id});
         await grant(order, e);
+        order.granted = true;
+        await store.put(`order:${order.id}`, order);
         return {status: 'granted'};
       }
       case 'renewed':
         if (order.state !== 'paid' || !ent) return {status: 'ignored'};
         if (e.resumed) { ent.autoRenew = true; await store.put(key, ent); return {status: 'resumed'}; }
         if (ent.lastEventAt && e.occurredAt < ent.lastEventAt) return {status: 'stale'};
-        if (e.paymentRef) await store.put(`payref:${order.provider}:${e.paymentRef}`, {orderId: order.id});
+        if (refundedCharge(order, e)) return {status: 'ignored_after_refund'}; // a replay of a charge already refunded
+        for (const r of refsOf(e)) await store.put(`payref:${order.provider}:${r}`, {orderId: order.id});
         await grant(order, e);
         return {status: 'renewed'};
       case 'failed':
         // A renewal failure arrives at (or just after) the end of the paid term: that is still the
-        // subscriber's term, not a revoked one, so it starts grace.
+        // subscriber's term, not a revoked one, so it starts grace. Only a paid subscription that is
+        // part of this membership can do that (a failed unpaid checkout is not a renewal), and grace
+        // already running is not extended by further failed retries.
         if (!ent || !['active', 'grace'].includes(ent.state)) return {status: 'ignored'};
+        if (order.state !== 'paid' || !order.terms?.recurring || !Object.values(ent.grants ?? {}).some(g => g.orderId === order.id)) return {status: 'ignored'};
+        if (ent.state === 'grace' && Number.isFinite(ent.graceUntil)) return {status: 'grace'};
         ent.state = 'grace'; ent.graceUntil = Math.max(ent.expiresAt ?? 0, now()) + graceMs;
         await store.put(key, ent);
         await gate.audit({kind: 'grace_started', userId: order.userId, planId: order.planId});
@@ -318,34 +351,63 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
         await store.put(key, ent);
         return {status: 'expired_partial'};
       case 'refunded': case 'disputed': {
-        const was = order.state;
-        // A subscription order carries several charges; a refund is for one of them (its paymentRef).
-        const mine = g => g.orderId === order.id && (!e.paymentRef || !g.paymentRef || g.paymentRef === e.paymentRef);
-        const recurringPartial = order.terms?.recurring && was === 'paid' && e.paymentRef && e.paymentRef !== order.paymentRef;
-        if (!recurringPartial) { order.state = 'refunded'; order.refundedAt = now(); }
-        order.refunds = [...new Set([...(order.refunds ?? []), e.paymentRef ?? '-'])];
+        const was = order.state, t = now(), refs = refsOf(e);
+        // A partial refund (Stripe / KOMOJU report the cumulative refunded amount) does not take the
+        // membership away: it is recorded for the owner to review. The full refund arrives later as its own event.
+        const charged = Number.isFinite(e.amount) ? e.amount : order.amount;
+        if (e.type === 'refunded' && was === 'paid' && Number.isFinite(e.refundAmount) && e.refundAmount > 0 && Number.isFinite(charged) && e.refundAmount < charged) {
+          order.partialRefunds = [...(order.partialRefunds ?? []), {ref: refs[0] ?? '-', amount: e.refundAmount, at: t}];
+          await store.put(`order:${order.id}`, order);
+          await gate.audit({kind: 'partial_refund_needs_review', orderId: order.id, refundAmount: e.refundAmount, amount: charged});
+          return {status: 'partial_refund_recorded'};
+        }
+        // A subscription order carries several charges; a refund is for one of them. Refunding a charge
+        // does not end the subscription, so the order stays renewable (later renewals still grant).
+        const keepRenewable = order.terms?.recurring && was === 'paid' && refs.length > 0;
+        if (!keepRenewable) { order.state = 'refunded'; order.refundedAt = t; }
+        order.refunds = [...new Set([...(order.refunds ?? []), refs[0] ?? '-'])];                  // one entry per refunded charge
+        const mine = g => g.orderId === order.id && (!refs.length || !grantRefs(g).length || grantRefs(g).some(r => refs.includes(r)));
+        // Every id the refunded charge was paid under, so a replay of that payment under any of them is refused.
+        const aliases = [...new Set([...refs, ...Object.values(ent?.grants ?? {}).filter(g => refs.length && mine(g)).flatMap(grantRefs)])];
+        if (aliases.length > 1) order.refundedRefs = [...new Set([...(order.refundedRefs ?? []), ...aliases])];
         await store.put(`order:${order.id}`, order);
         // Resumable: a redelivery after an interrupted write finds the order already refunded but its
         // grant still on the entitlement, and finishes the job.
         if (!['paid', 'refunded'].includes(was) || !ent || !['active', 'grace'].includes(ent.state)) return {status: 'revoked'};
         if (!Object.values(ent.grants ?? {}).some(mine)) return {status: 'refund_recorded'}; // its time was already used up
-        // Take back only what this order paid for.
+        // Take back only what this charge paid for and has not been used yet.
         let permanentLeft = false, giveBack = 0;
+        const shifts = [];
         for (const [k, g] of Object.entries(ent.grants ?? {})) {
-          if (mine(g)) { if (g.ms !== null) giveBack += g.ms; delete ent.grants[k]; }
+          if (mine(g)) {
+            if (g.ms !== null) {
+              const unused = Number.isFinite(g.until) ? Math.min(g.ms, Math.max(0, g.until - Math.max(Number.isFinite(g.from) ? g.from : t, t))) : g.ms;
+              giveBack += unused;
+              if (unused && Number.isFinite(g.until)) shifts.push({after: g.until, by: unused});
+            }
+            delete ent.grants[k];
+          }
           else if (g.ms === null) permanentLeft = true;
+        }
+        // Stretches paid for after the refunded one move earlier by the time taken back.
+        for (const g of Object.values(ent.grants ?? {})) for (const sh of shifts) {
+          if (Number.isFinite(g.from) && Number.isFinite(g.until) && g.from >= sh.after) { g.from -= sh.by; g.until -= sh.by; }
         }
         const left = Object.keys(ent.grants ?? {}).length;
         if (!left) { await endEntitlement(ent, 'revoked', e.type); return {status: 'revoked'}; }
         if (!permanentLeft) {
           if (ent.expiresAt === null) {
-            // The permanent grant was the refunded one: what is left is the timed purchases, counted
-            // from the earliest of them.
-            const rest = Object.values(ent.grants);
-            ent.expiresAt = Math.min(...rest.map(g => g.at)) + rest.reduce((n, g) => n + g.ms, 0);
+            // The permanent grant was the refunded one: what is left is the timed purchases. Those with a
+            // stretch of their own (bought before the permanent one, possibly shifted by an earlier
+            // refund) end where that stretch ends; time banked under permanent access is added after it.
+            // The banked ones get concrete stretches now, so a later restore never counts them twice.
+            const rest = Object.values(ent.grants), placed = rest.filter(g => Number.isFinite(g.until)), banked = rest.filter(g => !Number.isFinite(g.until));
+            let cursor = placed.length ? Math.max(...placed.map(g => g.until)) : Math.min(...banked.map(g => g.at));
+            for (const g of banked.sort((a, b) => a.at - b.at)) { g.from = cursor; g.until = cursor + g.ms; cursor = g.until; }
+            ent.expiresAt = cursor;
           }
           else ent.expiresAt -= giveBack;
-          if (ent.expiresAt <= now()) { await endEntitlement(ent, 'revoked', e.type); return {status: 'revoked'}; }
+          if (ent.expiresAt <= t) { await endEntitlement(ent, 'revoked', e.type); return {status: 'revoked'}; }
         }
         await store.put(key, ent);
         await gate.audit({kind: 'entitlement_shortened', userId: ent.userId, planId: ent.planId, orderId: order.id, expiresAt: ent.expiresAt});
@@ -541,6 +603,9 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
   async function refund(orderId, {queueOnly = false} = {}) {
     const order = await store.get(`order:${orderId}`);
     if (!order || order.state !== 'paid') throw Error('not_refundable');
+    // A subscription order stays 'paid' after one of its charges is refunded: never refund that charge twice.
+    const firstRefs = order.paymentRefs?.length ? order.paymentRefs : [order.paymentRef];
+    if ([...(order.refunds ?? []), ...(order.refundedRefs ?? [])].some(r => firstRefs.includes(r))) throw Error('not_refundable');
     try {
       const r = await PROVIDERS[order.provider].refund({paymentRef: order.paymentRef, idempotencyKey: `refund:${order.id}`, telegramUserId: order.userId, fullAmount: order.amount},
         {env, fetch: fetchImpl, now, call: (method, params) => write('owner_refund', method, params, {reason: `order:${orderId}`, queueOnly}, true)});

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1
+
+`apps/membership-bot`: refund and billing-period fixes for external payments and subscriptions
+
+- Refunding one charge of a subscription (including the first) no longer stops later renewals; a replayed payment of a refunded charge is ignored
+- A refund takes back only the unused part of that charge. Used-up charges (for example after a renewal during grace) no longer shorten a newer period
+- Monthly and yearly terms clamp to the last day of the month (Jan 31 → Feb 28, Feb 29 → Feb 28)
+- Partial Stripe/KOMOJU refunds keep the membership and are recorded for owner review; the full refund revokes it
+- Stripe payments recorded under an invoice id now also store the PaymentIntent/charge, so metadata-free refunds and disputes find the order
+- Only a paid subscription of that membership starts renewal-failure grace, and repeated failures do not extend it
+
 ## 0.3.0
 
 - `apps/membership-bot`: Cloudflare Workers bot for memberships, Telegram Stars payments (invoices, subscriptions, refunds), bookings, 13 widgets, Mini App (`/app/`, `/verify`), Managed Bots, `/terms` and `/paysupport`

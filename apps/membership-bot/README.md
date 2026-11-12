@@ -120,14 +120,10 @@ MCP からは何も直接送信・課金・変更されません。出力にユ�
 - 返金は `refundStarPayment` で行い、MCP からは「返金依頼」として積まれるだけです。オーナーが `/admin/membership/*` で承認して初めて実行されます。
 - デジタル商品・サービスは Telegram Stars での販売が必須です（外部決済は物理商品・サービス等に限る）。Telegram のポリシーとストアのガイドラインを確認してください。
 
-### 既知の課題（外部決済・サブスク）
+### 既知の課題
 
-レビューで見つかった、まだ直していない点です。Stripe／KOMOJU／銀行振込や自動更新を本番で使う前に確認してください。
+レビューで見つかった、まだ直していない点です。
 
-- 初回の課金を返金すると、その後の自動更新が会員期間に反映されない
-- 月末（例：1/31）や 2/29 に始まる月額・年額は、期限が翌々月にずれることがある
-- Stripe の部分返金でも会員権がすべて取り消される。サブスクの請求書 ID で記録した注文は返金イベントと紐づかないことがある
-- 未払いのまま失敗した決済でも猶予期間が始まることがある。猶予中の更新のあとに古い課金を返金すると、期間が短くなりすぎる
 - `join_verify` ルールが OFF のとき、オーナーが個別承認した認証 Mini App は `unknown_request` になる
 - Mini App の購入では、購入者を対象にした checkout ルールが一致せず、承認待ちになる
 
@@ -201,14 +197,10 @@ or changed directly from MCP, and outputs never include user or chat ids.
 - Refunds use `refundStarPayment` and only run after the owner approves them via `/admin/membership/*`.
 - Digital goods and services must be sold in Telegram Stars; review Telegram's and the app stores' policies.
 
-### Known issues (external payments and subscriptions)
+### Known issues
 
-Found in review and not fixed yet. Check these before using Stripe, KOMOJU, bank transfer or auto-renewal in production.
+Found in review and not fixed yet.
 
-- Refunding the first charge of a subscription makes later renewals stop extending the membership
-- Monthly or yearly terms that start at a month end (e.g. Jan 31) or on Feb 29 can run past the billing period
-- A partial Stripe refund revokes the whole membership, and orders stored under a subscription invoice id may not match refund events
-- A failed, unpaid checkout can start the grace period, and refunding an old charge after a renewal during grace can cut the period too short
 - With the `join_verify` rule off, a verification Mini App the owner approves one by one answers `unknown_request`
 - In the Mini App, a checkout rule scoped to the buyer does not match, so the purchase waits for approval
 

@@ -17,7 +17,8 @@
 // CheckoutResult {provider, kind: 'invoice_message'|'invoice_link'|'url'|'bank_transfer',
 //                 url?, externalRef, instructions?}
 // NormalizedEvent {id, provider, type: 'paid'|'renewed'|'failed'|'canceled'|'expired'|'refunded'|'disputed',
-//                 tenantId, telegramUserId, orderId?, subscriptionRef?, paymentRef?, amount?, currency?,
+//                 tenantId, telegramUserId, orderId?, subscriptionRef?, paymentRef?, paymentRefs? (aliases of the
+//                 same charge), amount?, currency?,
 //                 refundAmount?, periodEnd? (unix s), occurredAt (unix s)}
 export const GOODS_KINDS = ['digital', 'physical_service', 'physical_goods'];
 export const EVENT_TYPES = ['paid', 'renewed', 'failed', 'canceled', 'expired', 'refunded', 'disputed'];
