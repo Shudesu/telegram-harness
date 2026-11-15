@@ -11,6 +11,7 @@
 import {makeService, isMembershipUpdate} from './service.mjs';
 import {doStore} from './store.mjs';
 import {verifyPage} from './verify.mjs';
+import {newNonce, pageResponse, apiJson} from './webapp.mjs';
 import {safeEqual} from './providers/contract.mjs';
 import {PRESETS} from './gate.mjs';
 import {MCP_OPS, listOwnerRequests, closeOwnerRequest} from '../mcp/ops.mjs';
@@ -109,13 +110,14 @@ export async function membershipFetch(request, env) {
     catch (err) { return Response.json({ok: false, error: String(err?.message ?? err)}, {status: 400}); }
   }
   if (request.method === 'GET' && url.pathname === '/verify') {
-    return new Response(verifyPage(), {headers: {'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store'}});
+    const nonce = newNonce();
+    return pageResponse(verifyPage(nonce), nonce, {cache: 'no-store'});
   }
   const ver = request.method === 'POST' && /^\/verify\/(start|answer)$/.exec(url.pathname);
   if (ver) {
     let body = {};
     try { body = await request.json(); } catch {}
-    return Response.json(await objectOf(env).membership('verify', ver[1], body));
+    return apiJson(await objectOf(env).membership('verify', ver[1], body));
   }
   const pay = request.method === 'POST' && /^\/pay\/(stripe|komoju|bank_gmo)$/.exec(url.pathname);
   if (pay) {

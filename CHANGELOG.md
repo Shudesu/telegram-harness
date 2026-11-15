@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.3
+
+`apps/membership-bot`: Mini App security and UX groundwork
+
+- One initData check for `/app/` and `/verify` (`src/membership/webapp.mjs`). Both now accept initData signed within the last hour and at most 300 s in the future (before: `/app/` 24 hours, `/verify` 1 hour with no future bound). A repeated field or a malformed hash / `auth_date` is refused
+- `/app/` and `/verify` are served with a per-response CSP nonce for scripts (no `unsafe-inline` for scripts), `object-src 'none'`, `frame-ancestors` limited to Telegram Web, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, a `Permissions-Policy` and HSTS. Their JSON APIs also send nosniff and `no-store`
+- New `/app/` layout: home screen (member status, four round shortcuts, swipeable notices), bottom tabs (home / plans / member card / more), a bottom sheet (closes with ×, the backdrop, a swipe down or the Telegram BackButton), BackButton on sub-screens, SettingsButton, haptics, theme and safe-area following, a one-time notice and home-screen offer remembered in CloudStorage. Payment rules are unchanged
+- `/verify` follows the Telegram theme and gives haptic feedback
+- Reserved for a later opt-in app lock (nothing is stored or checked yet): `/app/api/lock*` answers `501 app_lock_not_available`; Durable Object keys `lock:` / `bio:` / `rescue:`; names `APP_LOCK` and `APP_LOCK_PEPPER`
+
 ## 0.3.2
 
 `apps/membership-bot`: the two remaining known issues

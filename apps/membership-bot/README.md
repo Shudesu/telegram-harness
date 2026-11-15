@@ -103,6 +103,10 @@ curl -s "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" \
 | `MEMBER_GRACE_DAYS` | — | 支払い失敗後の猶予日数 |
 | `SEED_FILE_IDS` / `SEED_OPTINS` | — | 旧環境からの移行用（通常は不要） |
 
+予約済みの名前（v0.3.3 では未使用。設定しても何も起きない）：`APP_LOCK`（変数）と `APP_LOCK_PEPPER`（シークレット）は、今後オプトインで入れる「アプリ内ロック」（パスコード・生体認証で解約などの危ない操作の直前だけ確認する機能）用。`/app/api/lock*` は今は `501 app_lock_not_available` を返し、会員 Durable Object のキー `lock:` `bio:` `rescue:` もこの機能のために空けてある。これは Bot 内の画面のロックで、Telegram アカウント本体の 2FA・パスワードとは別物（このプロジェクトはそちらには触れない）。
+
+Mini App の安全面：`/app/` と `/verify` の initData は `src/membership/webapp.mjs` の1か所で検証する（署名から1時間以内、未来は300秒まで）。どちらのページも CSP（スクリプトはレスポンスごとの nonce と telegram.org の SDK だけ）、`X-Content-Type-Options: nosniff`、`Referrer-Policy: no-referrer` などを付けて返す。
+
 ### MCP ツール一覧（36）
 
 `POST /mcp`、`Authorization: Bearer <MCP_API_KEY>`。
@@ -177,6 +181,10 @@ Secrets (`wrangler secret put`; locally `apps/membership-bot/.dev.vars`): `BOT_T
 
 Vars (`wrangler.jsonc`): `MEMBERSHIP` (`1` = on), `PAY_LIVE` (`1` = real Stars invoices from the Mini App; does not affect the chat `/plans` checkout), `BOT_USERNAME`,
 `TENANT_ID` (default `main`), `MEMBER_GRACE_DAYS`, `SEED_FILE_IDS` / `SEED_OPTINS` (migration only).
+
+Reserved names (unused in v0.3.3; setting them does nothing): `APP_LOCK` (var) and `APP_LOCK_PEPPER` (secret), for a later opt-in in-app lock (passcode / biometrics asked only before risky actions such as cancelling). `/app/api/lock*` answers `501 app_lock_not_available` for now, and the membership Durable Object keys `lock:` `bio:` `rescue:` are kept free for it. This is a lock on the bot's own pages, not the Telegram account's 2FA / password, which this project never touches.
+
+Mini App security: initData for `/app/` and `/verify` is checked in one place, `src/membership/webapp.mjs` (signed within 1 hour, at most 300 s ahead). Both pages are served with a CSP (scripts only by a per-response nonce plus the telegram.org SDK), `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and related headers.
 
 ### MCP tools (36)
 

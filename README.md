@@ -8,7 +8,7 @@ Telegram のチャンネルとグループを、公式 Bot API だけでまと�
 
 Bot API の横に、所有者本人のアカウントを GramJS（MTProto、`api_id` / `api_hash` は https://my.telegram.org）で扱う層がある。チャンネルの作成と編集、管理者の変更、BotFather への定型操作も同じ承認キューを通る。セッションとボットトークンは秘密の名前だけで扱い、値はログやリポジトリに置かない。一斉 DM、メンバー収集、知らない人への招待、アカウントの大量作成はできない。未確認の上限と利用規約上の注意は [docs/user-account.md](docs/user-account.md)。
 
-**現バージョン**: v0.3.0 ・ MIT License ・ TypeScript / Cloudflare Workers + D1
+**現バージョン**: v0.3.3 ・ MIT License ・ TypeScript / Cloudflare Workers + D1
 
 ## できること
 
@@ -33,7 +33,7 @@ Bot API の横に、所有者本人のアカウントを GramJS（MTProto、`api
 - **Stars 決済**：3 つの会員プラン、Stars の請求書と自動更新サブスクリプション。プラン登録と checkout ルールの有効化をするまで販売は始まらない。`PAY_LIVE=1` で Mini App が本物の請求書を作る。チャットの `/plans` は checkout ルールを有効にした時点で本物の請求になる。Stripe・KOMOJU・銀行振込のアダプタも差し替え可能
 - **予約**：業態 → メニュー → スタッフ → 日時 → 確認 を 1 枚のカードで完結（デモデータ・AI 生成の架空スタッフ）
 - **ウィジェット**：13 種類のリッチメッセージ・ウィジェットと `/widgets` ギャラリー、`/start` の 6 ステップガイド、Managed Bots（`/newbot`）
-- **Mini App**：`/app/`（会員・決済）と `/verify`（認証）
+- **Mini App**：`/app/`（会員・決済。ホーム・下のタブ・下から出るシート・Telegram の戻るボタンとテーマに対応）と `/verify`（認証）。どちらも CSP（スクリプトは nonce のみ）などの安全ヘッダー付きで、initData は1か所で検証（1時間以内・未来は300秒まで）
 - **MCP（36 ツール）**：`POST /mcp`。読み取り 19 個はすぐ返り、`request_*` 17 個は送信・返金・キック・設定変更を「オーナー承認待ち」に積むだけで実行しない。出力にユーザー ID・チャット ID は含めない
 
 Stars で販売する前に、`/terms`（利用規約・特定商取引法に基づく表記）と `/paysupport`（支払いの問い合わせ窓口）を自分の事業者情報で整えること。日本で有償販売する場合は特商法の表示が必要。手順は [apps/membership-bot/README.md](apps/membership-bot/README.md#stars-決済の注意)。
