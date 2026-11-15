@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.4
+
+`apps/membership-bot`: opt-in app lock for the Mini App (off by default)
+
+- With `APP_LOCK=1` and the secret `APP_LOCK_PEPPER`, a member can turn on an app lock in the Mini App: a 6-digit passcode (simple patterns refused), an optional Face ID / fingerprint shortcut through Telegram's BiometricManager, and a `THR-` recovery code shown once and confirmed by its last 4 characters
+- The lock is asked only before a cancellation or refund request (new `/app/api/request`, written as a support ticket for the owner), never when the app is opened. One unlock is good for 5 minutes and is spent by one such request
+- Server-side attempt limits (5 → 1 min, then 5 min / 15 min / 1 h / 6 h, 10 → passcode refused), only hashes stored (PBKDF2 with the pepper; HMAC for codes and tokens), biometric tokens replaced on every use (derived per generation, so a replay of any earlier one is detected and revokes the device and live step-ups), single-use recovery codes
+- Self-service reset when everything is lost: `/applock_reset` in the private chat (its reply is the notice), 72 hours, cancellable with `/applock_cancel`; owner ids (`APP_LOCK_OWNER_IDS`) also need `/admin/membership/lock_rescue_approve`. `lock_stats` for the owner (counts only)
+- With `APP_LOCK` unset nothing changes: `/app/api/lock*` still answers 501, the page shows nothing new and the chat commands are not recognised
+
 ## 0.3.3
 
 `apps/membership-bot`: Mini App security and UX groundwork

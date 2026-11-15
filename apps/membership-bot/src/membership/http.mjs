@@ -15,6 +15,7 @@ import {newNonce, pageResponse, apiJson} from './webapp.mjs';
 import {safeEqual} from './providers/contract.mjs';
 import {PRESETS} from './gate.mjs';
 import {MCP_OPS, listOwnerRequests, closeOwnerRequest} from '../mcp/ops.mjs';
+import {makeAppLock, appLockAvailable} from './applock.mjs';
 
 export {isMembershipUpdate};
 export const membershipOn = env => env?.MEMBERSHIP === '1';
@@ -44,7 +45,21 @@ const ADMIN = {
   // the owner does the change with the ops above, then closes the request.
   requests: (svc, a) => listOwnerRequests(svc.store, a.state === 'all' ? null : (a.state ?? 'pending')),
   request_close: (svc, a) => closeOwnerRequest(svc, String(a.id ?? ''), a.state),
+  // v0.3.4 app lock (APP_LOCK=1 only): counts and pending resets (no user ids), and the approval of
+  // an owner account's self-service reset once its 72 hours are over.
+  lock_stats: (svc, a, env) => lockOf(svc, env).stats(),
+  lock_rescue_approve: (svc, a, env) => lockOf(svc, env).approveOwnerRescue(String(a.ref ?? '')),
 };
+
+// The app lock runs in this same object, on the same store and audit log.
+const LOCK_OPS = new Set(['state', 'setup', 'confirmRecovery', 'unlock', 'bioEnroll', 'bioUnlock', 'bioDelete', 'recover', 'rescueRequest', 'rescueAnnounce', 'rescueCancel', 'disable']);
+function lockOf(svc, env) {
+  if (!appLockAvailable(env)) throw Error('app_lock_not_available');
+  return makeAppLock({store: svc.store, env, audit: svc.gate.audit});
+}
+// Member requests that the lock guards: written as a support ticket for the owner (nothing is
+// cancelled or refunded here; the owner does that with the existing queued operations).
+const REQUEST_KINDS = {cancel: '解約申請', refund: '返金申請'};
 
 // Runs inside the membership Durable Object (already serialised by the caller's queue).
 export async function runMembership(storage, env, op, args) {
@@ -66,6 +81,23 @@ export async function runMembership(storage, env, op, args) {
     }
     case 'app_orders': return svc.ordersOf(args[0].userId);
     case 'app_ticket': return svc.supportTicket(args[0].userId, args[0].text);
+    // v0.3.4 app lock: args = [operation, userId, body].
+    case 'app_lock': {
+      if (!LOCK_OPS.has(args[0])) throw Error('unknown_lock_op');
+      return lockOf(svc, env)[args[0]](args[1], args[2] ?? {});
+    }
+    // A cancellation / refund request from the Mini App. With the member's lock on, a fresh unlock
+    // (step-up token, single use) is required first.
+    case 'app_request': {
+      const {userId, kind, text, stepUp} = args[0];
+      if (!Object.hasOwn(REQUEST_KINDS, kind)) return {status: 'bad_kind'};
+      const body = String(text ?? '').trim();
+      if (body.length > 800) return {status: 'too_long'};
+      const gate = await lockOf(svc, env).requireStepUp(userId, stepUp, kind);
+      if (!gate.ok) return {status: gate.error};
+      const r = await svc.supportTicket(userId, `【${REQUEST_KINDS[kind]}】${body ? ` ${body}` : ''}（Mini App から${gate.locked ? '・アプリロック解錠済み' : ''}）`);
+      return r.status === 'created' ? {status: 'created', id: r.id} : {status: r.status};
+    }
     case 'pay': return svc.payWebhook(args[0], new Request('https://pay.invalid/', {method: 'POST', headers: args[1], body: args[2]}));
     // Telegram Harness MCP (src/mcp): reads and queue-only requests, never approve / rule_add / plan_set.
     case 'mcp': {
@@ -74,7 +106,7 @@ export async function runMembership(storage, env, op, args) {
     }
     case 'admin': {
       if (!Object.hasOwn(ADMIN, args[0])) throw Error('unknown_admin_op');
-      return ADMIN[args[0]](svc, args[1] ?? {});
+      return ADMIN[args[0]](svc, args[1] ?? {}, env);
     }
     default: throw Error('unknown_op');
   }

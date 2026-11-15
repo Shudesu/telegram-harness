@@ -9,6 +9,7 @@ import {FRESH, session} from './engine.mjs';
 import {WIDGET_BUTTON, FALLBACK_DATA, LEGACY_TEXT, CAPTION, widgetHtml, nextDates, parseRequest} from './widget.mjs';
 import {makeStudio, studioMatch, studioKeyboard} from './studio/flow.mjs';
 import {planById} from './studio/plans.mjs';
+import {appLockAvailable} from './membership/applock.mjs';
 import {BOT} from './schema.mjs';
 import {NEWBOT_BUTTON, NOT_ENABLED_TEXT, DEFAULT_TEMPLATE, newbotKeyboard, templateFor, managedCall, sealToken, webhookSecret, managedConfigured} from './managed.mjs';
 
@@ -75,6 +76,8 @@ function liveHooks(env) {
     } : null,
     orders: on ? userId => mo().membership('app_orders', {userId}) : null,
     ticket: on ? (userId, text) => mo().membership('app_ticket', {userId, text}) : null,
+    // v0.3.4: /applock_reset and /applock_cancel (APP_LOCK=1 only).
+    appLock: on && appLockAvailable(env) ? (op, userId) => mo().membership('app_lock', op, userId, {}) : null,
   };
 }
 
@@ -84,7 +87,7 @@ export async function handleExtra(g, update, io, deps) {
   const m = update?.message;
   const isOurs = (m && typeof m.text === 'string' && (WIDGET_COMMANDS.has(m.text.trim()) || NEWBOT_COMMANDS.has(m.text.trim())))
     || update?.callback_query?.data === FALLBACK_DATA || update?.widget_query || update?.managed_bot || m?.managed_bot_created
-    || studioMatch(update, t, g);
+    || studioMatch(update, t, g, {lock: appLockAvailable(deps.env)});
   if (!isOurs) return null;
   // Paused: commands and the fallback button go to the engine, which discards them like any other
   // input during a handoff; a widget request gets its mandatory answer and nothing else.
@@ -106,7 +109,7 @@ export async function handleExtra(g, update, io, deps) {
   io.persist(g);
 
   // 0) t78u studio: /start tour, widget booking, gallery, keyboard, FAQ auto-reply, studio widgets.
-  if (studioMatch(update, t, g)) {
+  if (studioMatch(update, t, g, {lock: appLockAvailable(deps.env)})) {
     const h = {FALLBACK_DATA, LEGACY_TEXT, BOT, origin: deps.origin, keyOf, bind: id => bind(g, id, now), ...liveHooks(deps.env),
       legacy: (chatId, from, messageId, text) => legacy(update.update_id, {id: chatId}, from, messageId, now, text),
       newbot: (chatId, from) => newbot(g, t, io, deps, chatId, from, now)};

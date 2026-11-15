@@ -103,7 +103,12 @@ curl -s "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" \
 | `MEMBER_GRACE_DAYS` | — | 支払い失敗後の猶予日数 |
 | `SEED_FILE_IDS` / `SEED_OPTINS` | — | 旧環境からの移行用（通常は不要） |
 
-予約済みの名前（v0.3.3 では未使用。設定しても何も起きない）：`APP_LOCK`（変数）と `APP_LOCK_PEPPER`（シークレット）は、今後オプトインで入れる「アプリ内ロック」（パスコード・生体認証で解約などの危ない操作の直前だけ確認する機能）用。`/app/api/lock*` は今は `501 app_lock_not_available` を返し、会員 Durable Object のキー `lock:` `bio:` `rescue:` もこの機能のために空けてある。これは Bot 内の画面のロックで、Telegram アカウント本体の 2FA・パスワードとは別物（このプロジェクトはそちらには触れない）。
+アプリロック（v0.3.4、オプトイン）：会員が Mini App の「その他 → アプリロック」で自分でオンにする、Bot 内の画面のロック。解約・返金の申請（`/app/api/request`）の直前だけ 6桁のパスコード（または Telegram の BiometricManager による Face ID・指紋）を確認し、Mini App を開くたびには聞かない。全員への強制はしない。
+- 有効にする：シークレット `APP_LOCK_PEPPER`（32文字以上の乱数。値はリポジトリに入れない。あとで変えると全員のパスコードとリカバリーコードが使えなくなる）を登録してから、変数 `APP_LOCK=1`（`MEMBERSHIP=1` も必要）。外すときは `APP_LOCK` を消すだけで、ページも API も v0.3.3 と同じ動きに戻る（保存済みのロックは読まれないだけで残る）。
+- 保存はハッシュだけ：パスコードは `PBKDF2-SHA256(HMAC(pepper, passcode))`（ユーザーごとの16バイトのソルト、10万回＝Workers の上限）、リカバリーコード（`THR-` で始まる20文字・100ビット）と解錠トークン（5分・危ない操作1回で使い切り）は `HMAC(pepper, …)`。生体トークンは使うたびに次の世代に入れ替わり、`HMAC(pepper, 端末ID・端末ごとの乱数・世代)` で作るので保存しない（何世代前のものが来ても使い回しとして検出できる）。会員 Durable Object のキー `lock:` `bio:` `rescue:` に置く（マイグレーション不要）。
+- 間違えたとき：5回で1分、6〜9回目で5分・15分・1時間・6時間、10回でパスコードでは開かなくなる（リカバリーコードか救済リセット）。判定はすべてサーバー側。入れ替え済みの古い生体トークンが来たら、その端末の登録と発行済みの解錠トークンを消す。端末を削除したときも発行済みの解錠トークンは消える。
+- 救済リセット：会員が Bot との個別チャットで `/applock_reset` を送ると、その返信が受付のお知らせ（72時間後に解除・取り消しは `/applock_cancel`）。返信が届いたことを確かめてから申請を有効にする（届かなければ何も起きない）。Bot から自分で送るメッセージはこの返信だけ。72時間後、次にロックを見たときに外れる（会員資格・注文は変わらない）。`APP_LOCK_OWNER_IDS` に入れた ID のロックは、72時間後にオーナーが `/admin/membership/lock_rescue_approve`（`lock_stats` で参照番号を確認）で承認したときに外れる。
+- これは Telegram アカウント本体の 2FA・パスワードとは別物（このプロジェクトはそちらには触れない）。MCP には足していない。
 
 Mini App の安全面：`/app/` と `/verify` の initData は `src/membership/webapp.mjs` の1か所で検証する（署名から1時間以内、未来は300秒まで）。どちらのページも CSP（スクリプトはレスポンスごとの nonce と telegram.org の SDK だけ）、`X-Content-Type-Options: nosniff`、`Referrer-Policy: no-referrer` などを付けて返す。
 
@@ -182,7 +187,12 @@ Secrets (`wrangler secret put`; locally `apps/membership-bot/.dev.vars`): `BOT_T
 Vars (`wrangler.jsonc`): `MEMBERSHIP` (`1` = on), `PAY_LIVE` (`1` = real Stars invoices from the Mini App; does not affect the chat `/plans` checkout), `BOT_USERNAME`,
 `TENANT_ID` (default `main`), `MEMBER_GRACE_DAYS`, `SEED_FILE_IDS` / `SEED_OPTINS` (migration only).
 
-Reserved names (unused in v0.3.3; setting them does nothing): `APP_LOCK` (var) and `APP_LOCK_PEPPER` (secret), for a later opt-in in-app lock (passcode / biometrics asked only before risky actions such as cancelling). `/app/api/lock*` answers `501 app_lock_not_available` for now, and the membership Durable Object keys `lock:` `bio:` `rescue:` are kept free for it. This is a lock on the bot's own pages, not the Telegram account's 2FA / password, which this project never touches.
+App lock (v0.3.4, opt-in): a lock on the bot's own pages that each member turns on for themselves in the Mini App (More → App lock). It asks for a 6-digit passcode (or Face ID / fingerprint through Telegram's BiometricManager) only right before a cancellation or refund request (`/app/api/request`), never when the Mini App is opened. Nobody is forced into it.
+- To enable: set the secret `APP_LOCK_PEPPER` (random, at least 32 characters; never in the repository; changing it later invalidates every passcode and recovery code), then the var `APP_LOCK=1` (`MEMBERSHIP=1` is also needed). Removing `APP_LOCK` brings pages and APIs back to the v0.3.3 behaviour (stored locks are kept, just not read).
+- Only hashes are stored: the passcode as `PBKDF2-SHA256(HMAC(pepper, passcode))` (per-user 16-byte salt, 100,000 rounds = the Workers limit); the recovery code (`THR-` + 20 characters, 100 bits) and the step-up token (5 minutes, spent by one risky action) as `HMAC(pepper, …)`. The biometric token moves to a new generation on every use and is derived as `HMAC(pepper, device id ‖ per-device random seed ‖ generation)`, so it is not stored and an earlier generation, however old, is recognised as a replay. Keys `lock:` `bio:` `rescue:` in the membership Durable Object (no migration).
+- Wrong attempts: 5 → 1 minute, then 5 min / 15 min / 1 h / 6 h, and after 10 the passcode no longer opens it (recovery code or the self-service reset). Decided on the server. A biometric token that was already replaced coming back removes that device and every live step-up; removing a device also withdraws every live step-up.
+- Self-service reset: the member sends `/applock_reset` in their private chat with the bot; the reply is the notice (removed after 72 hours, `/applock_cancel` to cancel). The reset becomes active only once that reply was delivered (otherwise nothing happens). That reply is the only message the bot sends about it. After 72 hours the lock is removed the next time it is read (membership and orders unchanged). For ids listed in `APP_LOCK_OWNER_IDS` the owner approves it afterwards with `/admin/membership/lock_rescue_approve` (reference from `lock_stats`).
+- This is not the Telegram account's 2FA / password, which this project never touches. Nothing was added to the MCP.
 
 Mini App security: initData for `/app/` and `/verify` is checked in one place, `src/membership/webapp.mjs` (signed within 1 hour, at most 300 s ahead). Both pages are served with a CSP (scripts only by a per-response nonce plus the telegram.org SDK), `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and related headers.
 
