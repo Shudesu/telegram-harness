@@ -35,20 +35,40 @@ const TEXTS = {
 const FAQ_TEXT = [[/^(料金|値段|価格|いくら)/, 0], [/^(営業時間|何時)/, 1], [/^(キャンセル)/, 2], [/^(駐車場)/, 3]];
 const KEEP = 40, MIN_GAP_MS = 1500;
 
+// v0.3.4 app lock: the self-service reset is started and cancelled only here, in the member's private
+// chat, so the Bot's only message about it is the reply to their own command. Recognised only while
+// the app lock is available (APP_LOCK=1); otherwise these texts go where they always went.
+const LOCK_TEXTS = {applock_reset: cmd('/applock_reset'), applock_cancel: cmd('/applock_cancel')};
 const SUPPORT_WITH_TEXT = /^\/paysupport(?:@teleharness_bot)?\s+(\S[\s\S]*)$/;
-const commandOf = text => {
+const commandOf = (text, lock = false) => {
   const t = (text ?? '').trim();
   if (SUPPORT_WITH_TEXT.test(t)) return 'paysupport';
   for (const [k, set] of Object.entries(TEXTS)) if (set.has(t)) return k;
+  if (lock) for (const [k, set] of Object.entries(LOCK_TEXTS)) if (set.has(t)) return k;
   return null;
 };
+const jst = ms => { const d = new Date(ms + 9 * 3600000); return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()} ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`; };
+export function lockReplyText(c, r) {
+  const when = r?.executeAfter ? `${jst(r.executeAfter)}（日本時間）` : '';
+  const warn = '\n\n心当たりがない場合は、いますぐ /applock_cancel を送ってください。あわせて Telegram の「設定 → デバイス」で知らない端末がないか確認してください。\n運営がパスコードやリカバリーコードを聞くことはありません。';
+  if (c === 'applock_reset') {
+    if (r?.status === 'requested') return `🔐 アプリロックの救済リセットを受け付けました。\n${when} 以降、${r.owner ? '運営の承認を経てから' : 'Mini App を開いたときに'}ロックが外れます。会員資格・注文はそのままです。${warn}`;
+    if (r?.status === 'already_requested') return `🔐 救済リセットは受付済みです（${when} 以降に解除）。取り消すには /applock_cancel を送ってください。`;
+    if (r?.status === 'no_lock') return 'アプリロックは設定されていません。';
+  }
+  if (c === 'applock_cancel') {
+    if (r?.status === 'cancelled') return '✅ 救済リセットの申請を取り消しました。アプリロックはそのままです。';
+    if (r?.status === 'nothing_to_cancel') return '取り消す申請はありません。';
+  }
+  return 'いま受け付けられませんでした。時間をおいてもう一度お送りください。';
+}
 const faqOf = text => { const t = (text ?? '').trim().normalize('NFKC'); return t.length <= 40 ? FAQ_TEXT.find(([re]) => re.test(t))?.[1] ?? null : null; };
 
 // Is this update the studio's? `t` is the t63u journal extension (widgets registry).
-export function studioMatch(update, t, g) {
+export function studioMatch(update, t, g, {lock = false} = {}) {
   const m = update?.message;
   if (m && typeof m.text === 'string') {
-    if (commandOf(m.text)) return true;
+    if (commandOf(m.text, lock)) return true;
     const s = g?.sessions?.[`${m.chat?.id}:${m.from?.id}`];
     return faqOf(m.text) !== null && !s?.paused && (s?.industry ?? null) === null && Boolean(g?.optins?.[`${m.chat?.id}:${m.from?.id}`]);
   }
@@ -198,7 +218,25 @@ export function makeStudio(g, t, io, h) {
   // ---- entry points --------------------------------------------------------------------------
   async function onText(m) {
     const chatId = m.chat.id, from = m.from;
-    const c = commandOf(m.text);
+    const c = commandOf(m.text, Boolean(h.appLock));
+    if (c === 'applock_reset' || c === 'applock_cancel') {
+      // Answered for anyone in their own private chat (like /paysupport); the membership object
+      // decides, and this reply is the notice. The member's own command is consent to this one reply
+      // (also after /stop), so the transport may deliver it.
+      g.optins[h.keyOf(from.id)] ??= {since: now, lastStartAt: null};
+      h.bind(chatId);
+      io.persist(g);
+      // A new reset stays inactive until this reply, its only notice, has been delivered.
+      const r = await h.appLock(c === 'applock_reset' ? 'rescueRequest' : 'rescueCancel', from.id).catch(() => null);
+      await io.call('sendMessage', {chat_id: chatId, text: lockReplyText(c, r)});
+      if (c === 'applock_reset' && r?.status === 'requested') {
+        // One retry. If the outcome is still unknown (the reset may or may not be active), the member
+        // is told so, with where to check it, how to send it again and how to cancel it.
+        const a = await h.appLock('rescueAnnounce', from.id).catch(() => null) ?? await h.appLock('rescueAnnounce', from.id).catch(() => null);
+        if (!a) await io.call('sendMessage', {chat_id: chatId, text: '⚠️ 救済リセットの受付が確定したかを確認できませんでした。Mini App の「その他 → アプリロック」で「受付中」と出ていなければ、もう一度 /applock_reset を送ってください。取り消したいときは /applock_cancel を送ってください。'});
+      }
+      return {handled: c};
+    }
     if (c === 'start') {
       g.optins[h.keyOf(from.id)] = {since: g.optins[h.keyOf(from.id)]?.since ?? now, lastStartAt: m.date * 1000};
       h.bind(chatId);

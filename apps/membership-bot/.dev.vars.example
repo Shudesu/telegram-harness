@@ -5,4 +5,8 @@ WEBHOOK_SECRET=
 ADMIN_TOKEN=
 MCP_API_KEY=
 MANAGED_BOT_KEY=
-# Reserved for the opt-in app lock (not implemented in v0.3.3; unused): APP_LOCK_PEPPER=
+# Opt-in app lock (used only when the var APP_LOCK=1): a random secret of at least 32 characters.
+# Never commit it. Changing it later invalidates every member's passcode and recovery code.
+# APP_LOCK_PEPPER=
+# Optional: Telegram user ids (comma-separated) whose app-lock reset also needs owner approval.
+# APP_LOCK_OWNER_IDS=

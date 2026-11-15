@@ -11,10 +11,14 @@
 // 300 s in the future), the page is served with a per-response CSP nonce, and the page has a home
 // screen, bottom tabs, a bottom sheet, the Telegram BackButton / SettingsButton and theme following.
 // /app/api/lock* is reserved for the opt-in app lock and answers 501 (../membership/applock.mjs).
+//
+// v0.3.4 (P1): with APP_LOCK=1 those routes work, and /app/api/request takes a cancellation or
+// refund request (a support ticket) behind the member's own lock, if they turned one on. With
+// APP_LOCK unset nothing of this exists: the routes answer as in v0.3.3 and the page is unchanged.
 import {randomBytes} from 'node:crypto';
 import {providerStatus} from '../membership/providers/index.mjs';
 import {verifyInitData, newNonce, pageResponse, apiJson, TELEGRAM_SDK} from '../membership/webapp.mjs';
-import {isAppLockPath} from '../membership/applock.mjs';
+import {isAppLockPath, appLockOn, appLockAvailable} from '../membership/applock.mjs';
 import {CSS as WIDGET_CSS} from './ui.mjs';
 import {memberNo as memberNoOf} from './flow.mjs';
 import {APP_PLANS, SALON, planById, billingLabel, PERIOD_DAYS} from './plans.mjs';
@@ -34,8 +38,11 @@ export async function appFetch(request, env, {now = Date.now()} = {}) {
     const nonce = newNonce();
     return pageResponse(appHtml(nonce), nonce, {cache: 'no-cache'});
   }
-  // Reserved for the opt-in app lock (not built): nothing is read or written.
-  if (isAppLockPath(url.pathname)) return json({error: 'app_lock_not_available'}, 501);
+  // The opt-in app lock (APP_LOCK=1 only; otherwise nothing is read or written).
+  if (isAppLockPath(url.pathname) || (url.pathname === '/app/api/request' && appLockOn(env))) {
+    if (!appLockOn(env)) return json({error: 'app_lock_not_available'}, 501);
+    return lockFetch(request, env, url, now);
+  }
   const m = request.method === 'POST' && /^\/app\/api\/(state|checkout|complete)$/.exec(url.pathname);
   if (!m) return new Response('not_found', {status: 404});
   let body; try { body = await request.json(); } catch { return json({error: 'bad_request'}, 400); }
@@ -51,7 +58,7 @@ export async function appFetch(request, env, {now = Date.now()} = {}) {
       member = e ? {no: memberNoOf(user.id), pl: planById(e.planId)?.name ?? e.title, until: e.expiresAt ? untilOf(e.expiresAt) : '無期限', renew: e.autoRenew === true, links: e.links ?? [], live: true} : null;
     } else member = await chat.studioApp('member', null);
     return json({user: {first_name: user.first_name}, salon: SALON, plans: APP_PLANS.map(p => ({...p, bill: billingLabel(p)})), providers: providers(env), live: payLive(env), member,
-      legal: {terms: TERMS_POINTS, tokusho: TOKUSHO}});
+      legal: {terms: TERMS_POINTS, tokusho: TOKUSHO}, ...(appLockAvailable(env) ? {lock: {available: true}} : {})});
   }
   const plan = APP_PLANS.find(p => p.id === body.plan);
   if (!plan) return json({error: 'unknown_plan'}, 400);
@@ -72,6 +79,45 @@ export async function appFetch(request, env, {now = Date.now()} = {}) {
   if (!/^TEST-I-[0-9A-F]{6}$/.test(body.invoice ?? '')) return json({error: 'bad_invoice'}, 400);
   const member = await chat.studioApp('test_join', {plan: plan.name, invoice: body.invoice});
   return json({member});
+}
+
+// ---------------------------------------------------------------------------------------------
+// App lock routes (APP_LOCK=1). Every call carries the Mini App initData; the user is the one it
+// was signed for, never a field of the body. The decision is made by the membership object.
+const LOCK_OPS = {
+  'POST /app/api/lock': 'state',
+  'POST /app/api/lock/setup': 'setup',
+  'POST /app/api/lock/confirm-recovery': 'confirmRecovery',
+  'POST /app/api/lock/unlock': 'unlock',
+  'POST /app/api/lock/bio/enroll': 'bioEnroll',
+  'POST /app/api/lock/bio/unlock': 'bioUnlock',
+  'POST /app/api/lock/recover': 'recover',
+  'DELETE /app/api/lock/rescue': 'rescueCancel',
+  'POST /app/api/lock/disable': 'disable',
+};
+const LOCK_FIELDS = ['passcode', 'stepUp', 'last4', 'token', 'type', 'label', 'code'];
+const statusOf = e => e === 'unlock_required' ? 403 : /locked/.test(e) ? 423 : e === 'rate_limited' ? 429 : 400;
+async function lockFetch(request, env, url, now) {
+  const route = `${request.method} ${url.pathname}`;
+  const bio = request.method === 'DELETE' && /^\/app\/api\/lock\/bio\/([0-9a-f]{12})$/.exec(url.pathname);
+  const op = LOCK_OPS[route] ?? (bio ? 'bioDelete' : url.pathname === '/app/api/request' && request.method === 'POST' ? 'request' : null);
+  // The reset is started only from the private chat (/applock_reset): its reply is the notice.
+  if (route === 'POST /app/api/lock/rescue') return json({error: 'use_chat_command', command: '/applock_reset'}, 409);
+  if (!op) return new Response('not_found', {status: 404});
+  if (!appLockAvailable(env)) return json({error: 'app_lock_not_configured'}, 503);
+  let body; try { body = await request.json(); } catch { return json({error: 'bad_request'}, 400); }
+  const who = await verifyInitData(body?.initData, env.BOT_TOKEN, {now});
+  if (!who) return json({error: 'unauthorized'}, 401);
+  const mo = env.CHAT.getByName(`membership:${env.TENANT_ID ?? 'main'}`);
+  if (op === 'request') {
+    const r = await mo.membership('app_request', {userId: who.user.id, kind: body.kind, text: typeof body.text === 'string' ? body.text : '', stepUp: body.stepUp});
+    return r?.status === 'created' ? json({ok: true, id: r.id}) : json({error: r?.status ?? 'failed'}, statusOf(r?.status ?? ''));
+  }
+  const args = {};
+  for (const k of LOCK_FIELDS) if (typeof body[k] === 'string' && body[k].length <= 200) args[k] = body[k];
+  if (bio) args.id = bio[1];
+  const r = await mo.membership('app_lock', op, who.user.id, args);
+  return r?.error ? json(r, statusOf(r.error)) : json(r ?? {});
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -119,6 +165,13 @@ button.pc.on{background:var(--bg);color:var(--tx);border-color:var(--bt);box-sha
 .shx{position:absolute;top:10px;right:12px;width:32px;height:32px;padding:0;border-radius:50%;font-size:15px;color:var(--ht)}
 .shi{margin:10px 0 4px;font-size:46px}.shp h2{margin:4px 0 6px;font-size:19px}.shp p{margin:0 auto 8px;max-width:30em;color:var(--ht);font-size:14px;line-height:1.6}.shp .cta{padding:13px;border-radius:12px;font-size:15px}
 .fb{display:none}.nomain .fb{display:block;width:calc(100% - 28px);margin:12px 14px}
+.pin{padding:calc(18px + var(--tg-content-safe-area-inset-top,0px)) 16px 0;text-align:center}.pin .pi{font-size:34px}.pin h2{margin:6px 0 14px;font-size:18px}
+.dots{display:flex;justify-content:center;gap:14px;margin:6px 0}.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ht)}.dots i.on{background:var(--bt);border-color:var(--bt)}
+.pmsg{min-height:2.6em;margin:8px 10px;color:var(--ng);font-size:13px;line-height:1.4}
+.kp{display:grid;grid-template-columns:repeat(3,72px);justify-content:center;gap:12px 22px;margin:6px 0 14px}.kp button{width:72px;height:72px;border-radius:50%;background:var(--bg);font-size:26px;font-weight:500}.kp button:active{background:var(--s2)}
+.rcb{display:flex;align-items:center;gap:8px;margin:12px 14px;padding:14px;border-radius:14px;background:var(--bg)}.rcb code{flex:1;font:15px/1.5 ui-monospace,monospace;letter-spacing:.04em;word-break:break-all;user-select:all}.rcb button{padding:8px 12px}
+.in{display:block;width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--s2);border-radius:10px;background:var(--s2);color:var(--tx);font:16px/1.4 ui-monospace,monospace}textarea.in{font:15px/1.5 system-ui,sans-serif;resize:vertical}
+.lst .lr small{font-size:11px}.lst div.lr{cursor:default}
 @media (prefers-reduced-motion:reduce){.shp,.shb,.ok-ic,.sk{transition:none;animation:none}}`;
 
 const PAGE_JS = `(function(){'use strict';var T=window.Telegram&&Telegram.WebApp,S={plan:1,data:null,inv:null,tab:'home',sub:null,fresh:0,hide:true,busy:0},A=document.getElementById('a'),TB=document.getElementById('tabs'),SH=document.getElementById('sh'),SP=document.getElementById('shp'),SC=document.getElementById('shc');
@@ -162,10 +215,10 @@ function helpSheet(){sheet({icon:'💬',title:'お問い合わせ',text:'チャ�
 // ---- navigation: BackButton is shown while a sub-screen or the sheet is open.
 function nav(){var on=shOn||!!S.sub;if(NB){try{on?T.BackButton.show():T.BackButton.hide()}catch(e){}}document.body.classList.toggle('sub',!!S.sub);
 TB.querySelectorAll('button').forEach(function(b){if(b.dataset.t==S.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})}
-function goBack(){if(shOn){hp('sel');closeSheet();return}if(S.sub){hp('sel');S.sub=null;S.fresh=0;render()}}
+function goBack(){if(shOn){hp('sel');closeSheet();return}if(S.sub=='pin'){hp('sel');L.cb=null;L.pin1='';pinBack();return}if(S.sub=='rec'||S.sub=='rc'){hp('sel');L.code=null;L.rc=null;L.st=null;S.sub='lock';render();return}if(S.sub){hp('sel');S.sub=null;S.fresh=0;render()}}
 function go(t){closeSheet();S.sub=null;S.fresh=0;if(S.tab!=t)hp('sel');S.tab=t;render();window.scrollTo(0,0);if(t=='card'&&S.data&&!S.data.member)joinSheet()}
 function push(v){S.sub=v;render();window.scrollTo(0,0)}
-function render(){if(!S.data)return;var v=S.sub||S.tab;({home:home,plans:plans,card:card,more:more,terms:terms,invoice:invoice,done:done})[v]();var b=$('bk');if(b)b.onclick=goBack;nav()}
+function render(){if(!S.data)return;var v=S.sub||S.tab;({home:home,plans:plans,card:card,more:more,terms:terms,invoice:invoice,done:done,lock:lock,pin:pin,rc:rc,rec:rec,req:req})[v]();var b=$('bk');if(b)b.onclick=goBack;nav()}
 // ---- screens
 function act(id,ic,t){return '<button class=ac data-a='+id+'><i aria-hidden=true>'+ic+'</i>'+t+'</button>'}
 var NEWS=[['⭐ Stars でかんたん登録','お支払いは Telegram の公式の支払い画面で完結します。'],['🔁 自動更新はいつでも停止','Telegram の 設定 → Telegram Stars → サブスクリプション から止められます。'],['💬 困ったときは /paysupport','チャットで送ると、運営がお返事します。']];
@@ -185,8 +238,8 @@ function card(){var m=S.data.member;if(!m){A.innerHTML='<div class=top><h1>会�
 A.innerHTML='<div class=top><h1>会員証</h1><p>'+(m.live?'有効な会員資格です':'チャットの会員証ウィジェットにも反映されます')+'</p></div>'+cardHtml(m);links(m);main('',null);sec('',null)}
 function cardHtml(m){return '<div class=card><div class=q>'+qr(m.no)+'</div><div><div class=n>TELEHARNESS MEMBER</div><b>⭐ '+esc(m.pl)+'会員</b><div class=n>No. '+esc(m.no)+'</div><div class=n>'+(m.renew?'次回更新 ':'有効期限 ')+esc(m.until)+'</div></div></div><div class=note>'+(m.live?'お支払いは Telegram Stars で処理されました。'+(m.links&&m.links.length?'':'会員グループは準備中です（開設しだいチャットでご案内します）。')+(m.renew?'自動更新は Telegram の 設定 → Telegram Stars → サブスクリプション から停止できます。':'')+'返金・お問い合わせはチャットで /paysupport':'この会員証はデモです。実在の会員資格・入会はありません。')+'</div>'}
 function links(m){(m.links||[]).forEach(function(u,i){if(String(u).indexOf('https://t.me/')!==0)return;var b=document.createElement('button');b.className='pc';b.textContent='👥 会員グループ'+(i+1)+'に参加申請';b.onclick=function(){hp('tap');try{T.openTelegramLink(u)}catch(e){location.href=u}};A.appendChild(b)})}
-function more(){A.innerHTML='<div class=top><h1>その他</h1></div><div class=sec>サポート</div><div class=lst><button class=lr id=m1><span>📄</span>利用規約・特商法表記<span class=ch>›</span></button><button class=lr id=m2><span>💬</span>お問い合わせ（/paysupport）<span class=ch>›</span></button><button class=lr id=m3><span>↩️</span>チャットに戻る<span class=ch>›</span></button></div><div class=note>運営からパスワードや認証コードを聞くことはありません。お支払いは Telegram の支払い画面でのみ行われます。</div>';
-$('m1').onclick=function(){hp('tap');push('terms')};$('m2').onclick=function(){helpSheet()};$('m3').onclick=function(){hp('tap');if(T)T.close()};main('',null);sec('',null)}
+function more(){A.innerHTML='<div class=top><h1>その他</h1></div><div class=sec>サポート</div><div class=lst><button class=lr id=m1><span>📄</span>利用規約・特商法表記<span class=ch>›</span></button><button class=lr id=m2><span>💬</span>お問い合わせ（/paysupport）<span class=ch>›</span></button><button class=lr id=m3><span>↩️</span>チャットに戻る<span class=ch>›</span></button></div>'+(S.data.lock?'<div class=sec>安全</div><div class=lst><button class=lr id=m4><span>🔐</span>アプリロック<span class=ch>›</span></button><button class=lr id=m5><span>📝</span>解約・返金の申請<span class=ch>›</span></button></div>':'')+'<div class=note>運営からパスワードや認証コードを聞くことはありません。お支払いは Telegram の支払い画面でのみ行われます。</div>';
+$('m1').onclick=function(){hp('tap');push('terms')};$('m2').onclick=function(){helpSheet()};$('m3').onclick=function(){hp('tap');if(T)T.close()};if(S.data.lock){$('m4').onclick=function(){hp('tap');L.st=null;push('lock')};$('m5').onclick=function(){hp('tap');L.st=null;push('req')}}main('',null);sec('',null)}
 function terms(){var L=S.data.legal;A.innerHTML=back()+hero('📄 利用規約','特定商取引法に基づく表記')+'<div class=lg><h3>利用規約（要約）</h3><ul>'+L.terms.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul></div><div class=lg><h3>特定商取引法に基づく表記</h3><dl>'+L.tokusho.map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd>'}).join('')+'</dl></div>';main('',null);sec('',null)}
 function invoice(){var i=S.inv;A.innerHTML=back()+hero('🧾 お支払い確認','TEST 請求書（実際のStarsは動きません）')+'<div class=inv><div class=mu>'+esc(i.title)+'</div><div class=amt>⭐ '+i.stars+'</div><div class=mu>請求番号 '+esc(i.id)+'</div></div><div class=note>本番では Telegram 公式の支払い画面（openInvoice）が開きます。いまはデモのため、この画面でテスト完了まで進みます。</div>';
 main('テスト支払いを完了する',pay);sec('キャンセル',function(){hp('warning');goBack()})}
@@ -203,6 +256,66 @@ function refresh(){loading();api('state').then(function(d){S.data=d;if(S.want){d
 // ---- once-only offers (flags in CloudStorage, so they are not shown again on another device)
 function notice(){cget('th_notice_v1',function(v){if(v||shOn||S.sub)return;cset('th_notice_v1','1');sheet({icon:'✨',title:'会員ページが新しくなりました',text:'下のタブで ホーム・プラン・会員証 を切り替えられます。お支払いはこれまでどおり Telegram の支払い画面で行います。',btn:'はじめる'})})}
 function homeOffer(){if(!ver('8.0'))return;cget('th_home_v1',function(v){if(v)return;try{T.checkHomeScreenStatus(function(st){if(st!='missed')return;cset('th_home_v1','1');sheet({icon:'📲',title:'ホーム画面に追加しますか',text:'スマホのホーム画面から、会員証をすぐ開けるようになります。',btn:'追加する',fn:function(){try{T.addToHomeScreen()}catch(e){}}})})}catch(e){}})}
+// ---- v0.3.4 app lock (shown only when the server says lock.available). Every decision is the
+// server's; this page only collects the passcode / code and keeps a 5-minute unlock in memory.
+var L={seq:0,subm:0,st:null,su:null,suExp:0,pin:'',pin1:'',mode:null,msg:'',ret:null,cb:null,code:null,rc:null,kind:'cancel'},BM=null;
+function lapi(p,b,m){b=b||{};b.initData=T&&T.initData||'';return fetch('/app/api/'+p,{method:m||'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(function(r){return r.json().then(function(j){if(r.status==401&&j.error=='unauthorized')throw Error('unauthorized');if(r.status>=500)throw Error(j.error||r.status);if(j.error=='unlock_required')L.su=null;return j})})}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+function bmInit(cb){if(BM!==null)return cb(BM);try{if(!ver('7.2'))throw 0;var B=T.BiometricManager;if(B.isInited){BM=B.isBiometricAvailable?B:false;return cb(BM)}B.init(function(){BM=B.isBiometricAvailable?B:false;cb(BM)})}catch(e){BM=false;cb(false)}}
+function bmName(){return BM&&BM.biometricType=='face'?'Face ID・顔認証':'指紋認証'}
+function devName(){var p=T&&T.platform||'';return p=='ios'?'iOS 端末':p=='android'?'Android 端末':p=='macos'?'Mac':p=='tdesktop'?'PC':'端末'}
+function jt(ms){var d=new Date(ms);return (d.getMonth()+1)+'/'+d.getDate()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+function setSu(j){L.su=j.stepUp;L.suExp=j.stepUpExpiresAt||0}
+function lmsg(j){var e=j&&j.error;return e=='wrong_passcode'?(j.remaining>0?'パスコードが違います（あと'+j.remaining+'回まちがえると、しばらく入力できなくなります）':'パスコードが違います'+(j.lockedUntil?'。'+jt(j.lockedUntil)+' まで入力できません':'')):e=='locked'?jt(j.lockedUntil)+' まで入力できません':e=='locked_hard'?'まちがいが続いたため、パスコードでは開けません。リカバリーコードを使ってください':e=='passcode_too_simple'?'同じ数字・連番・くり返しは使えません':e=='passcode_format'?'数字6桁で入力してください':e=='wrong_recovery_code'?'リカバリーコードが違います':e=='recovery_locked'?'リカバリーコードは '+jt(j.recoveryLockedUntil)+' まで入力できません':e=='recovery_locked_hard'?'リカバリーコードでは開けません。救済リセットをご利用ください':e=='wrong_last4'?'下4文字が違います。控えたコードを見直してください':e=='setup_abandoned'?'確認できなかったため設定を取り消しました。最初からやり直してください':e=='too_many_tries'?'確認の回数が上限に達しました。控えたコードはそのまま使えます':e=='unlock_required'?'もう一度ロックを解除してください':e=='too_many_devices'?'生体認証を登録できる端末は5台までです':e=='rate_limited'?'本日の申請の上限に達しました':'うまくいきませんでした（'+esc(e||'error')+'）'}
+function lockLoad(cb){lapi('lock').then(function(j){L.st=j;cb&&cb(j)},function(e){err(msgOf(e))})}
+// Unlock for a risky action: biometrics first (if this device enrolled), else the passcode.
+function needUnlock(cb,fresh){if(!fresh&&L.su&&Date.now()<L.suExp-10000)return cb(L.su);bmInit(function(B){if(B&&B.isBiometricTokenSaved&&lsGet('th_bio_id')){try{B.authenticate({reason:'本人確認のため'},function(ok,tok){if(!ok||!tok)return pinUnlock(cb);lapi('lock/bio/unlock',{token:tok}).then(function(j){if(j.ok){setSu(j);var done=function(saved){if(!saved){lsSet('th_bio_id',null);err('この端末の'+bmName()+'を更新できませんでした。次回はパスコードで開き、設定から登録し直してください')}hp(saved?'success':'warning');cb(j.stepUp)};try{B.updateBiometricToken(j.token,function(ok){done(!!ok)})}catch(e){done(false)}}else{if(j.error=='bio_revoked'||j.error=='bio_invalid'){try{B.updateBiometricToken('')}catch(e){}lsSet('th_bio_id',null)}pinUnlock(cb)}},function(e){err(msgOf(e))})})}catch(e){pinUnlock(cb)}}else pinUnlock(cb)})}
+function pinUnlock(cb){pinStart('unlock',cb)}
+function pinStart(m,cb){if(S.sub!='pin')L.ret=S.sub;L.seq++;L.subm=0;L.mode=m;L.pin='';L.msg='';L.cb=cb||null;push('pin')}
+function pinBack(){L.seq++;L.subm=0;S.sub=L.ret;L.ret=null;render()}
+var PT={'new':'新しいパスコード（6桁）',confirm:'確認のため、もう一度',unlock:'パスコードを入力',change:'新しいパスコード（6桁）',change2:'確認のため、もう一度',rnew:'新しいパスコード（6桁）',rnew2:'確認のため、もう一度'};
+function pin(){var h=back()+'<div class=pin><div class=pi aria-hidden=true>🔐</div><h2 id=pt>'+PT[L.mode]+'</h2><div class=dots role=img aria-label="'+L.pin.length+'/6桁">';for(var i=0;i<6;i++)h+='<i'+(i<L.pin.length?' class=on':'')+'></i>';
+h+='</div><p class=pmsg role=alert>'+esc(L.msg)+'</p><div class=kp>';[1,2,3,4,5,6,7,8,9,'',0,'del'].forEach(function(k){h+=k===''?'<span></span>':'<button data-k="'+k+'" aria-label="'+(k=='del'?'1文字消す':k)+'">'+(k=='del'?'⌫':k)+'</button>'});
+h+='</div>'+(L.mode=='unlock'?'<button class=lk id=fg>パスコードを忘れたとき</button>':'')+'</div>';A.innerHTML=h;A.querySelectorAll('.kp button').forEach(function(b){b.onclick=function(){pinKey(b.dataset.k)}});var f=$('fg');if(f)f.onclick=function(){hp('sel');S.sub=null;push('rec')};main('',null);sec('',null)}
+function pinKey(k){if(L.busy||L.subm)return;if(k=='del'){L.pin=L.pin.slice(0,-1);hp('sel');return render()}if(L.pin.length>=6)return;L.pin+=k;hp('sel');render();if(L.pin.length==6){var p=L.pin,q=++L.seq;L.subm=1;setTimeout(function(){L.subm=0;if(q==L.seq&&S.sub=='pin')pinDone(p)},120)}}
+document.addEventListener('keydown',function(e){if(S.sub!='pin')return;if(/^[0-9]$/.test(e.key))pinKey(e.key);else if(e.key=='Backspace')pinKey('del')});
+function pinAgain(m,msg){L.mode=m;L.pin='';L.msg=msg||'';hp('error');render()}
+function pinDone(p){var m=L.mode;L.pin='';
+if(m=='new'||m=='change'||m=='rnew'){L.pin1=p;L.mode=m=='new'?'confirm':m+'2';L.msg='';return render()}
+if(m=='confirm'||m=='change2'||m=='rnew2'){var first={confirm:'new',change2:'change',rnew2:'rnew'}[m];if(p!==L.pin1)return pinAgain(first,'一致しませんでした。もう一度最初から入力してください');var b={passcode:p},path=m=='rnew2'?'lock/recover':'lock/setup';if(m=='change2')b.stepUp=L.su;if(m=='rnew2')b.code=L.rc;
+L.busy=1;return lapi(path,b).then(function(j){L.busy=0;L.pin1='';if(j.recoveryCode){L.rc=null;if(j.stepUp)setSu(j);if(m=='rnew2'&&lsGet('th_bio_id')){lsSet('th_bio_id',null);try{BM&&BM.updateBiometricToken('')}catch(e){}}L.code=j.recoveryCode;S.sub='rc';L.ret=null;render();try{T.HapticFeedback.notificationOccurred('success')}catch(e){}}else if(j.ok){hp('success');L.st=null;pinBack()}else if(j.error=='unlock_required'){L.pin1='';pinBack();err(lmsg(j))}else if(m=='rnew2'&&/recovery/.test(j.error)){L.rc=null;S.sub='rec';L.msg=lmsg(j);render();hp('error')}else pinAgain(first,lmsg(j))},function(e){L.busy=0;err(msgOf(e))})}
+if(m=='unlock'){L.busy=1;lapi('lock/unlock',{passcode:p}).then(function(j){L.busy=0;if(j.ok){setSu(j);hp('success');var cb=L.cb;L.cb=null;pinBack();if(cb)cb(j.stepUp)}else{L.st=null;pinAgain('unlock',lmsg(j))}},function(e){L.busy=0;err(msgOf(e))})}}
+// The recovery code: shown once, copied or written down, confirmed with its last 4 characters.
+function rc(){if(!L.code){S.sub='lock';return render()}A.innerHTML='<div class=top><h1>リカバリーコード</h1><p>パスコードを忘れたときに使います</p></div><div class=rcb><code id=rcv>'+esc(L.code)+'</code><button id=cp>コピー</button></div><div class=lg><ul><li>この画面を閉じると二度と表示されません。紙に書くか、パスワード管理アプリに保存してください。</li><li>1回使うと無効になり、新しいコードに変わります。</li><li>運営がこのコードを聞くことはありません。誰にも教えないでください。</li></ul></div><div class=lg><label for=l4>控えたら、コードの最後の4文字を入力してください</label><input id=l4 class=in maxlength=4 autocomplete=off autocapitalize=characters spellcheck=false inputmode=text></div>';
+$('cp').onclick=function(){hp('tap');try{navigator.clipboard.writeText(L.code).then(function(){$('cp').textContent='コピーしました'},function(){})}catch(e){}};main('確認して続ける',rcConfirm);sec('',null)}
+function rcConfirm(){var v=($('l4')||{}).value||'';if(L.busy)return;L.busy=1;lapi('lock/confirm-recovery',{last4:v}).then(function(j){L.busy=0;if(j.ok){L.code=null;if(j.stepUp)setSu(j);L.st=null;hp('success');S.sub='lock';render();offerBio()}else if(j.error=='setup_abandoned'||j.error=='nothing_to_confirm'){L.code=null;L.st=null;S.sub='lock';render();err(lmsg(j))}else err(lmsg(j))},function(e){L.busy=0;err(msgOf(e))})}
+function offerBio(){bmInit(function(B){if(!B||lsGet('th_bio_id'))return;sheet({icon:B.biometricType=='face'?'🙂':'👆',title:bmName()+'も使いますか',text:'次からは'+bmName()+'で確認できます（パスコードはそのまま使えます）。この端末だけの設定です。',btn:'使う',fn:function(){needUnlock(bioEnroll)}})})}
+function bioEnroll(su){bmInit(function(B){if(!B)return;try{B.requestAccess({reason:'解約・返金の申請の前の本人確認に使います'},function(ok){if(!ok){sheet({icon:'⚙️',title:bmName()+'が許可されていません',text:'Telegram の設定でこの Mini App に'+bmName()+'の利用を許可してから、もう一度お試しください。',btn:'設定を開く',fn:function(){try{B.openSettings()}catch(e){}}});return}
+lapi('lock/bio/enroll',{stepUp:su,type:B.biometricType,label:devName()}).then(function(j){if(!j.ok)return err(lmsg(j));B.updateBiometricToken(j.token,function(saved){if(saved){lsSet('th_bio_id',j.id);hp('success')}else{lapi('lock/bio/'+j.id,{stepUp:su},'DELETE');err('この端末に保存できませんでした')}L.st=null;render()})},function(e){err(msgOf(e))})})}catch(e){err('この端末では使えません')}})}
+function lockRow(id,ic,t,sub){return '<button class=lr id='+id+'><span>'+ic+'</span><span>'+t+(sub?'<br><small class=mu>'+sub+'</small>':'')+'</span><span class=ch>›</span></button>'}
+function lock(){var s=L.st;if(!s){A.innerHTML=back()+'<div class=top><h1>🔐 アプリロック</h1><p>読み込み中…</p></div><div class=sk></div>';main('',null);sec('',null);lockLoad(function(){if(S.sub=='lock')render()});return}
+var h=back()+'<div class=top><h1>🔐 アプリロック</h1><p>'+(s.on?'オン：大事な操作の前に本人確認します':s.pending?'設定の途中です':'オフ')+'</p></div>';
+if(!s.on){h+='<div class=lg><h3>アプリロックとは</h3><ul><li>解約・返金の申請など大事な操作の前だけ、6桁のパスコード（または Face ID・指紋）で本人か確かめます。</li><li>Mini App を開くたびには聞きません。会員証の表示やお支払いはこれまでどおりです。</li><li>使うかどうかは自由で、いつでも外せます。</li><li>Telegram アカウントの2段階認証とは別のものです。</li></ul></div>';A.innerHTML=h;main('アプリロックを有効にする',function(){pinStart('new')});sec(s.pending?'設定をやめる':'',function(){lapi('lock/disable',{}).then(function(){L.st=null;render()})});return}
+if(s.hard||s.lockedUntil)h+='<div class=err role=alert>⚠️ '+(s.hard?'まちがいが続いたため、パスコードでは開けません。リカバリーコードか救済リセットを使ってください。':'パスコードは '+jt(s.lockedUntil)+' まで入力できません。')+'</div>';
+if(s.rescue)h+='<div class=err role=alert>🕒 救済リセットを受付中：'+jt(s.rescue.executeAfter)+' 以降に'+(s.rescue.state=='awaiting_owner_approval'?'運営の確認後に':'')+'ロックが外れます。心当たりがなければ取り消してください。<br><button id=rx>救済リセットを取り消す</button></div>';
+h+='<div class=sec>生体認証</div><div class=lst>';var mine=lsGet('th_bio_id'),here=false;s.devices.forEach(function(d){if(d.id==mine)here=true;h+='<div class=lr><span>'+(d.type=='face'?'🙂':'👆')+'</span><span>'+esc(d.label)+(d.id==mine?'（この端末）':'')+'<br><small class=mu>登録 '+jt(d.createdAt)+(d.lastUsedAt?'・最後に使用 '+jt(d.lastUsedAt):'')+'</small></span><button class=lk data-d='+d.id+'>削除</button></div>'});
+if(!s.devices.length)h+='<div class=lr><span>—</span><span class=mu>登録している端末はありません</span></div>';h+='</div><div id=bioadd></div>';
+h+='<div class=sec>パスコード</div><div class=lst>'+lockRow('lc','🔢','パスコードを変更')+lockRow('lr','🧾','パスコードを忘れたとき','リカバリーコードで開けます')+lockRow('lx','🆘','リカバリーコードもないとき','救済リセット（72時間後に解除）')+'</div>';
+h+='<div class=sec>オフにする</div><div class=lst>'+lockRow('lo','🔓','アプリロックを外す')+'</div><div class=note>運営からパスコードやリカバリーコードを聞くことはありません。</div>';A.innerHTML=h;
+A.querySelectorAll('[data-d]').forEach(function(b){b.onclick=function(){var id=b.dataset.d;needUnlock(function(su){lapi('lock/bio/'+id,{stepUp:su},'DELETE').then(function(j){if(!j.ok)return err(lmsg(j));L.su=null;if(id==lsGet('th_bio_id')){lsSet('th_bio_id',null);try{BM&&BM.updateBiometricToken('')}catch(e){}}L.st=null;hp('success');render()})})}});
+bmInit(function(B){var x=$('bioadd');if(!x||!B||here)return;x.innerHTML='<div class=lst style="margin-top:8px">'+lockRow('lb',B.biometricType=='face'?'🙂':'👆','この端末で'+bmName()+'を使う')+'</div>';$('lb').onclick=function(){needUnlock(bioEnroll)}});
+$('lc').onclick=function(){needUnlock(function(){pinStart('change')})};$('lr').onclick=function(){hp('tap');L.msg='';push('rec')};$('lx').onclick=function(){sheet({icon:'🆘',title:'救済リセット',text:'パスコードもリカバリーコードも分からないときは、このBotとのチャットで /applock_reset と送ってください。72時間後にロックが外れます（会員資格・注文はそのまま）。受付のお知らせはそのチャットに届き、心当たりがなければ /applock_cancel で取り消せます。',btn:'チャットに戻る',fn:function(){if(T)T.close()}})};
+var rx=$('rx');if(rx)rx.onclick=function(){lapi('lock/rescue',{},'DELETE').then(function(){L.st=null;hp('success');render()},function(e){err(msgOf(e))})};
+$('lo').onclick=function(){needUnlock(function(su){lapi('lock/disable',{stepUp:su}).then(function(j){if(!j.ok)return err(lmsg(j));L.st=null;L.su=null;if(BM&&lsGet('th_bio_id')){try{BM.updateBiometricToken('')}catch(e){}lsSet('th_bio_id',null)}hp('success');render()})})};main('',null);sec('',null)}
+function rec(){A.innerHTML=back()+'<div class=top><h1>リカバリーコードで開く</h1><p>設定のときに控えたコード（THR- で始まる）を入力してください</p></div>'+(L.msg?'<div class=err role=alert>'+esc(L.msg)+'</div>':'')+'<div class=lg><label for=rcin>リカバリーコード</label><input id=rcin class=in autocomplete=off autocapitalize=characters spellcheck=false placeholder="THR-XXXXX-XXXXX-XXXXX-XXXXX"></div><div class=note>使うとこのコードは無効になり、新しいパスコードと新しいリカバリーコードを設定します。登録済みの生体認証はすべて解除されます。</div>';
+main('次へ（新しいパスコードを設定）',function(){var v=($('rcin')||{}).value||'';if(!/[A-Za-z0-9]{20}/.test(v.replace(/[ -]/g,'').replace(/^THR/i,'')))return err('コードを最後まで入力してください');L.rc=v;L.msg='';L.ret='lock';L.mode='rnew';L.pin='';S.sub='pin';render()});sec('',null)}
+// Cancellation / refund request: a support ticket. With the member's lock on it needs an unlock first.
+function req(){var s=L.st;if(!s){A.innerHTML=back()+'<div class=top><h1>解約・返金の申請</h1><p>読み込み中…</p></div><div class=sk></div>';main('',null);sec('',null);lockLoad(function(){if(S.sub=='req')render()});return}
+A.innerHTML=back()+'<div class=top><h1>解約・返金の申請</h1><p>運営が内容と注文を確認してチャットでご連絡します</p></div><div class=sec>申請の種類</div><div class=lst><button class=lr id=k1 aria-pressed='+(L.kind=='cancel')+'><span>'+(L.kind=='cancel'?'◉':'○')+'</span>解約（自動更新の停止）</button><button class=lr id=k2 aria-pressed='+(L.kind=='refund')+'><span>'+(L.kind=='refund'?'◉':'○')+'</span>返金</button></div><div class=lg><label for=rt>くわしい内容（任意・800文字まで）</label><textarea id=rt class=in rows=4 maxlength=800></textarea></div><div class=note>'+(s.on?'🔐 アプリロックがオンなので、送る前に本人確認をします。':'送った内容は /paysupport のお問い合わせと同じ窓口に届きます。')+' Stars の自動更新は Telegram の 設定 → Telegram Stars からも止められます。</div>';
+var keep=L.txt||'';$('rt').value=keep;$('rt').oninput=function(){L.txt=this.value};$('k1').onclick=function(){L.kind='cancel';hp('sel');render()};$('k2').onclick=function(){L.kind='refund';hp('sel');render()};main('申請する',reqSend);sec('',null)}
+function reqSend(){var go2=function(){var s=L.st;if(s&&s.on)needUnlock(function(su){reqPost(su)},true);else reqPost(null)};var q=(L.kind=='cancel'?'解約':'返金')+'を申請します。よろしいですか？';try{if(ver('6.2'))return T.showConfirm(q,function(ok){if(ok)go2()})}catch(e){}if(window.confirm(q))go2()}
+function reqPost(su){if(S.busy)return;S.busy=1;busy(true);lapi('request',{kind:L.kind,text:L.txt||'',stepUp:su}).then(function(j){S.busy=0;busy(false);L.su=null;if(j.ok){L.txt='';hp('success');S.sub=null;S.tab='more';render();sheet({icon:'✅',title:'申請を受け付けました',text:'受付番号 '+j.id+'。運営が確認して、このBotとのチャットでご連絡します。',btn:'閉じる'})}else if(j.error=='unlock_required'){lockLoad(function(st){if(st.on)needUnlock(function(su){reqPost(su)},true);else err(lmsg(j))})}else err(lmsg(j))},function(e){S.busy=0;busy(false);err(msgOf(e))})}
 // ---- start
 TB.querySelectorAll('button').forEach(function(b){b.onclick=function(){go(b.dataset.t)}});
 (function(){var q=/[?&]p=([a-z]+)/.exec(location.search);if(q)S.want=q[1]})();
