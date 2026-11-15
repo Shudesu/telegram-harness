@@ -16,7 +16,8 @@ import {PROVIDERS, providerStatus, startCheckout} from './providers/index.mjs';
 import {eventsFromUpdate, orderOfPayload} from './providers/stars.mjs';
 import {assertEvent, GOODS_KINDS} from './providers/contract.mjs';
 import {parsePayCallback} from '../richmsg/pay.mjs';
-import {VERIFY_TIMEOUT_MS, VERIFY_APPROVAL_WAIT_MS, pickQuestion, isCorrect, parseVerifyCallback, checkInitData} from './verify.mjs';
+import {VERIFY_TIMEOUT_MS, VERIFY_APPROVAL_WAIT_MS, pickQuestion, isCorrect, parseVerifyCallback} from './verify.mjs';
+import {verifyInitData} from './webapp.mjs';
 
 const DAY = 86400000;
 // Calendar interval matching the external PSP's billing (Stripe: 7 → week, 30/31 → month, 365/366 → year).
@@ -542,10 +543,10 @@ export function makeService({store, env = {}, fetch: fetchImpl = globalThis.fetc
 
   // Mini App endpoints (/verify/start, /verify/answer). Identity is only the signed initData.
   async function verifyApi(op, body) {
-    const who = await checkInitData(body?.initData, env.BOT_TOKEN, now());
+    const who = await verifyInitData(body?.initData, env.BOT_TOKEN, {now: now()});
     if (!who?.queryId) return {ok: false, error: 'unauthorized'};
     const ref = await store.get(`jrq:${who.queryId}`);
-    if (!ref || ref.userId !== who.userId) return {ok: false, error: 'unknown_request'};
+    if (!ref || ref.userId !== who.user.id) return {ok: false, error: 'unknown_request'};
     const jr = await liveJr(ref.chatId, ref.userId);
     if (!jr) return {ok: false, error: 'closed'};
     if (op === 'start') {

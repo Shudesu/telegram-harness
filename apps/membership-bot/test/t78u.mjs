@@ -354,7 +354,8 @@ await test('Mini App: initData is verified (bad hash, other token, stale auth_da
   assert.equal((await appPost('state', {initData: good.replace(/hash=[0-9a-f]{4}/, 'hash=0000')})).status, 401);
   assert.equal((await appPost('state', {initData: initData(undefined, undefined, '1:OTHER')})).status, 401);
   assert.equal((await appPost('state', {initData: initData(undefined, Math.floor(Date.now() / 1000) - 90000)})).status, 401);
-  assert.equal(A.verifyInitData(good, TOKEN).id, CHAT);
+  const {verifyInitData} = await import('../src/membership/webapp.mjs');
+  assert.equal((await verifyInitData(good, TOKEN)).user.id, CHAT);
 });
 
 await test('Mini App payment flow (TEST): plans → checkout (no invoice at Telegram) → complete → member card', async () => {
@@ -426,7 +427,7 @@ await test('t80u: the three plans register as SKUs app-<plan> (no member group) 
   assert.deepEqual(S.PLANS.map(p => p[1]), [250, 500, 1500]);
   const page = await (await worker.fetch(new Request('https://w.invalid/app/'), env, ctx)).text();
   assert.ok(page.includes('利用規約・特商法表記') && page.includes('/paysupport') && page.includes('次回更新'));
-  assert.doesNotThrow(() => new Function(/<script>([\s\S]*)<\/script>/.exec(page.split('telegram-web-app.js"></script>')[1])[1]));
+  assert.doesNotThrow(() => new Function(/<script nonce="[^"]+">([\s\S]*)<\/script>/.exec(page.split('telegram-web-app.js"></script>')[1])[1]));
 });
 
 await test('t80u: with only the checkout rule, each plan gets a real Stars invoice link (subscription for auto-renew), nothing else is sent', async () => {

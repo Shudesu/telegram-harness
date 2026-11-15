@@ -5,3 +5,4 @@ WEBHOOK_SECRET=
 ADMIN_TOKEN=
 MCP_API_KEY=
 MANAGED_BOT_KEY=
+# Reserved for the opt-in app lock (not implemented in v0.3.3; unused): APP_LOCK_PEPPER=

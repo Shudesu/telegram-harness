@@ -6,7 +6,7 @@ Manage Telegram channels and groups through the official Bot API, and operate th
 
 Posts, replies, edits, and deletes are drafts. Channel edits, admin changes, and BotFather changes are account actions. Approving one does not send it. The publisher runs only items that are already approved and due. The local worker is a dry-run and will not start with `TELEGRAM_ALLOW_NETWORK=true` or `TELEGRAM_USER_ALLOW_NETWORK=true`.
 
-**Version**: v0.3.0 · MIT License · TypeScript / Cloudflare Workers + D1
+**Version**: v0.3.3 · MIT License · TypeScript / Cloudflare Workers + D1
 
 ## What it does
 
@@ -27,7 +27,7 @@ Posts, replies, edits, and deletes are drafts. Channel edits, admin changes, and
 - **Stars payments**: three plans, Stars invoices and auto-renewing subscriptions. Nothing is sold until you register plans and enable the checkout rule. `PAY_LIVE=1` switches the Mini App to real invoices; the chat `/plans` checkout charges for real as soon as the checkout rule is on. Stripe, KOMOJU and bank-transfer adapters are pluggable
 - **Bookings**: business → menu → staff → time → confirm inside one card (demo data, AI-generated fictional staff)
 - **Widgets**: 13 rich-message widgets, a `/widgets` gallery, a 6-step `/start` tour, and Managed Bots (`/newbot`)
-- **Mini App**: `/app/` (membership and payment) and `/verify` (verification)
+- **Mini App**: `/app/` (membership and payment, with a home screen, bottom tabs, a bottom sheet, the Telegram BackButton and theme following) and `/verify` (verification). Both are served with a CSP (scripts by nonce only) and other security headers, and initData is checked in one place (signed within 1 hour, at most 300 s ahead)
 - **MCP (36 tools)**: `POST /mcp`. 19 read tools answer at once; 17 `request_*` tools only queue sends, refunds, kicks and setting changes for owner approval. Output never includes user or chat ids
 
 Before selling with Stars, fill in `/terms` (terms and the Japanese 特定商取引法 notice) and `/paysupport` (payment support desk) with your own seller details. See [apps/membership-bot/README.md](apps/membership-bot/README.md#stars-payments-before-going-live).
