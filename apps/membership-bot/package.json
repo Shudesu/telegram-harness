@@ -7,7 +7,7 @@
   "scripts": {
     "test": "node --import ./test/loader.mjs test/worker.mjs && node --import ./test/loader.mjs test/t63u.mjs && node --import ./test/loader.mjs test/membership.mjs && node --import ./test/loader.mjs test/membership-review.mjs && node --import ./test/loader.mjs test/refund-period.mjs && node --import ./test/loader.mjs test/joinverify-checkout.mjs && node --import ./test/loader.mjs test/providers.mjs && node --import ./test/loader.mjs test/richmsg.mjs && node --import ./test/loader.mjs test/t78u.mjs && node --import ./test/loader.mjs test/miniapp-p0.mjs && node --import ./test/loader.mjs test/miniapp-p1.mjs && node --import ./test/loader.mjs test/mcp.mjs",
     "build": "wrangler deploy --dry-run --outdir dist --config wrangler.example.jsonc",
-    "deploy": "wrangler deploy",
+    "deploy": "node scripts/deploy.mjs",
     "tail": "wrangler tail --format json",
     "profile": "node scripts/profile.mjs"
   },
