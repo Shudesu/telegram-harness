@@ -12,6 +12,6 @@
     "profile": "node scripts/profile.mjs"
   },
   "devDependencies": {
-    "wrangler": "^4.40.0"
+    "wrangler": "^4.164.0"
   }
 }
