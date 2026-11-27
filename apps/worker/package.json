@@ -14,7 +14,7 @@
     "@telegram-harness/shared": "workspace:*",
     "@telegram-harness/telegram-sdk": "workspace:*",
     "@telegram-harness/user-account": "workspace:*",
-    "hono": "^4.6.0"
+    "hono": "^4.13.21"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
